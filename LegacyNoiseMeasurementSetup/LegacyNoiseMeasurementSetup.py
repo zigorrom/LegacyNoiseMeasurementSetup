@@ -87,7 +87,7 @@ class ArduinoController():
             [ARDUINO_FUNCTIONS.MotorCommand,"ii"]
             ]
         self.__messenger = PyCmdMessenger.CmdMessenger(self.__arduino, self.__commands)
-        
+        self.read_idn()
 
         
     def read_idn(self):
@@ -117,7 +117,21 @@ class ArduinoController():
         print("response: {0}, value: {1}".format(ARDUINO_FUNCTIONS[cmd], val))
         assert cmd !=  ARDUINO_FUNCTIONS.Error, "Error while handling request on the controller"
         
-        
+  
+class MotorizedPotentiometer():
+    def __init__(self, motor_controller, motor_channel, multimeter):
+        self.__motor_controller = motor_controller
+        self.__motor_channel = motor_channel
+        self.__multimiter = multimeter
+
+    def measure_voltage(self):
+        pass
+
+    def set_voltage(self):
+        pass
+
+    def set_average(self,average):
+        pass
 
 
 
