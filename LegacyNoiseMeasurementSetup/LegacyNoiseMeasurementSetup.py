@@ -279,7 +279,7 @@ if __name__== "__main__":
 
     ard = ArduinoController("COM8", 115200)
     #ard.open();
-    #var = ard.read_idn()
+    var = ard.read_idn()
     #print(var)
     for i in range(1,33,1):
         ard.switch_channel(i,True)
