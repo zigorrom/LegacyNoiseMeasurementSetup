@@ -1,6 +1,8 @@
 ﻿import visa
 import time
 import serial
+import base64
+import PyCmdMessenger
 from n_enum import enum
 
 def instrument_await_function(func):
@@ -42,16 +44,17 @@ class SerialInstrument:
         return self.__port.isOpen()
 
     def write(self, string):
-        assert self.isOpen()
+        #assert self.isOpen()
         print("sending to device: {0}".format(string))
-        self.__port.write(string)
+        self.__port.write(string.encode('ascii'))   #base64.b64encode(bytes(string, 'utf-8')))   #string.encode('')
+                          
 
     def read(self, num_of_bytes = 1):
-        assert self.isOpen()
+        #assert self.isOpen()
         return self.__port.read(num_of_bytes).decode()
 
     def read_until_termination(self):
-        assert self.isOpen()
+        #assert self.isOpen()
         read_chars = []
         current_char = None
         while current_char != self.termination_char:
@@ -61,7 +64,7 @@ class SerialInstrument:
         return "".join(read_chars)
 
     def query(self,string):
-        assert self.isOpen()
+        #assert self.isOpen()
         self.write(string)
         return self.read_until_termination()
 
@@ -70,24 +73,50 @@ class SerialInstrument:
 
 ARDUINO_FUNCTIONS = enum("Watchdog","Acknowledge","SwitchChannel", "Error", "MotorCommand")
 
-class ArduinoController(SerialInstrument):
+
+
+
+class ArduinoController():
     def __init__(self, resource, baud_rate = 9600):
-        super().__init__(resource, baud_rate)
-        self.termination_char = ';'
+        self.__arduino = PyCmdMessenger.ArduinoBoard(resource, baud_rate,10)
+        self.__commands = [
+            [ARDUINO_FUNCTIONS.Watchdog,"s"],
+            [ARDUINO_FUNCTIONS.Acknowledge, "s*"],
+            [ARDUINO_FUNCTIONS.SwitchChannel,"i?"],
+            [ARDUINO_FUNCTIONS.Error,"s"],
+            [ARDUINO_FUNCTIONS.MotorCommand,"ii"]
+            ]
+        self.__messenger = PyCmdMessenger.CmdMessenger(self.__arduino, self.__commands)
+        
+
         
     def read_idn(self):
-        return self.query("{0};".format(ARDUINO_FUNCTIONS.Watchdog).encode())
+        self.__messenger.send(ARDUINO_FUNCTIONS.Watchdog)
+        msg = self.__messenger.receive()
+        return msg
+
+        #return self.query("{0};".format(ARDUINO_FUNCTIONS.Watchdog))
 
     def switch_channel(self, channel, state):
-        self.write('{0},{1},{2};'.format(ARDUINO_FUNCTIONS.SwitchChannel,channel, 1 if state else 0).encode())
-        self._parse_response(self.read_until_termination())
+        assert isinstance(channel, int)and isinstance(state, bool)
+        self.__messenger.send(ARDUINO_FUNCTIONS.SwitchChannel,channel,state)
+        print("channel: {0}, state: {1}".format(channel, state))
+        response= self.__messenger.receive()
+        self._parse_response(response)
+
     
     def set_motor_speed(self, channel, speed):
-        pass
+        assert isinstance(channel, int)and isinstance(speed, int)
+        self.__messenger.send(ARDUINO_FUNCTIONS.MotorCommand,channel,speed)
+        print("channel: {0}, speed: {1}".format(channel, speed))
+        response = self.__messenger.receive()
+        self._parse_response(response)
 
     def _parse_response(self,response):
-        print(response) 
-    
+        cmd,val,t = response
+        print("response: {0}, value: {1}".format(ARDUINO_FUNCTIONS[cmd], val))
+        assert cmd !=  ARDUINO_FUNCTIONS.Error, "Error while handling request on the controller"
+        
         
 
 
@@ -277,14 +306,19 @@ class HP3567A(VisaInstrument):
  
 if __name__== "__main__":
 
-    ard = ArduinoController("COM8", 115200)
+    ard = ArduinoController("COM4", 115200)
     #ard.open();
-    var = ard.read_idn()
+    #var = ard.read_idn()
     #print(var)
+    time.sleep(2)
     for i in range(1,33,1):
         ard.switch_channel(i,True)
+    var = ard.read_idn()
+    print(var)
 
-    ard.close()
+    ard.set_motor_speed(1,200)
+    ard.set_motor_speed(1 ,0)
+    #ard.close()
     #    time.sleep(1)
     #    print(i)
     #    ard.write("2,{0},1;".format(i).encode())
