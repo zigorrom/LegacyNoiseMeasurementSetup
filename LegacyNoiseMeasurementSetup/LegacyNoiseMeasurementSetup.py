@@ -327,6 +327,8 @@ if __name__== "__main__":
     time.sleep(2)
     for i in range(1,33,1):
         ard.switch_channel(i,True)
+        time.sleep(0.3)
+        ard.switch_channel(i,False)
     var = ard.read_idn()
     print(var)
 
