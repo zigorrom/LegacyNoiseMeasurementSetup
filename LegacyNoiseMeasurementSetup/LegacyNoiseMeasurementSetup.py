@@ -1,9 +1,11 @@
-﻿import visa
+﻿import sys
+import visa
 import time
 import serial
 import base64
 import PyCmdMessenger
 from n_enum import enum
+from PyQt4 import uic, QtGui, QtCore
 
 def instrument_await_function(func):
         def wrapper(self,*args,**kwargs):
@@ -68,13 +70,7 @@ class SerialInstrument:
         self.write(string)
         return self.read_until_termination()
 
-
-
-
 ARDUINO_FUNCTIONS = enum("Watchdog","Acknowledge","SwitchChannel", "Error", "MotorCommand")
-
-
-
 
 class ArduinoController():
     def __init__(self, resource, baud_rate = 9600):
@@ -132,8 +128,6 @@ class MotorizedPotentiometer():
 
     def set_average(self,average):
         pass
-
-
 
 
 
@@ -317,23 +311,104 @@ class HP3567A(VisaInstrument):
         self.write("*WAI")
 
 
+mainViewBase, mainViewForm = uic.loadUiType("UI_NoiseMeasurement.ui")
+class MainView(mainViewBase,mainViewForm):
+    def __init__(self, parent = None):
+       super(mainViewBase,self).__init__(parent)
+       self.setupUi(self)
+       
+
+
+
+    @QtCore.pyqtSlot()
+    def on_startButton_clicked(self):
+        print("start")
+
+    @QtCore.pyqtSlot()
+    def on_stopButton_clicked(self):
+        print("stop")
+
+    def show_range_selector(self,model):
+        dialog = RangeSelectorView(model)
+        result = dialog.exec_()
+        print(result)
+
+    @QtCore.pyqtSlot()
+    def on_VdsRange_clicked(self):
+        print("Vds range")
+        self.show_range_selector(None)
+
+    @QtCore.pyqtSlot()
+    def on_VfgRange_clicked(self):
+        print("Vfg range")
+        self.show_range_selector(None)
+
+    @QtCore.pyqtSlot()
+    def on_transistorSelector_clicked(self):
+        print("Select transistors")
+
+    @QtCore.pyqtSlot()
+    def on_folderBrowseButton_clicked(self):
+        print("Select folder")
+        folder_name = QtGui.QFileDialog.getExistingDirectory(self, "Select Folder")
+        
+        msg = QtGui.QMessageBox()
+        msg.setIcon(QtGui.QMessageBox.Information)
+        msg.setText("This is a message box")
+        msg.setInformativeText("This is additional information")
+        msg.setWindowTitle("MessageBox demo")
+        msg.setDetailedText(folder_name)
+        msg.setStandardButtons(QtGui.QMessageBox.Ok | QtGui.QMessageBox.Cancel)
+        retval = msg.exec_()
+    
+    @QtCore.pyqtSlot()
+    def on_selectVoltageChangeOrder_clicked(self):
+        print("selectVoltageChangeOrder")
+        
+  
+
+    
+
+
+
+rangeSelectorBase, rangeSelectorForm = uic.loadUiType("UI_RangeSelector.ui")
+class RangeSelectorView(rangeSelectorBase,rangeSelectorForm):
+    def __init__(self,parent = None):
+        super(rangeSelectorBase,self).__init__(parent)
+        self.setupUi(self)
+
+    #def set
+
+
  
 if __name__== "__main__":
+    app = QtGui.QApplication(sys.argv)
+    app.setApplicationName("LegacyNoiseMeasurementSetup")
+    app.setStyle("cleanlooks")
 
-    ard = ArduinoController("COM4", 115200)
-    #ard.open();
+    wnd = MainView()
+    wnd.show()
+
+    sys.exit(app.exec_())
+
+
+
+    #ard = ArduinoController("COM4", 115200)
+    ##ard.open();
+    ##var = ard.read_idn()
+    ##print(var)
+    #time.sleep(2)
+    #for i in range(1,33,1):
+    #    ard.switch_channel(i,True)
+    #    time.sleep(0.3)
+    #    ard.switch_channel(i,False)
     #var = ard.read_idn()
     #print(var)
-    time.sleep(2)
-    for i in range(1,33,1):
-        ard.switch_channel(i,True)
-        time.sleep(0.3)
-        ard.switch_channel(i,False)
-    var = ard.read_idn()
-    print(var)
 
-    ard.set_motor_speed(1,200)
-    ard.set_motor_speed(1 ,0)
+    #ard.set_motor_speed(1,200)
+    #ard.set_motor_speed(1 ,0)
+
+
     #ard.close()
     #    time.sleep(1)
     #    print(i)
