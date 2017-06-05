@@ -25,11 +25,17 @@
     <Compile Include="binding.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="configuration.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="LegacyNoiseMeasurementSetup.py" />
     <Compile Include="nodes.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="n_enum.py" />
+    <Compile Include="xml_serializer.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
