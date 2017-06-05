@@ -310,6 +310,413 @@ class HP3567A(VisaInstrument):
     def wait_operation_complete(self):
         self.write("*WAI")
 
+class ExperimentSettings:
+    def __init__(self):
+        #this settings - separate class. shoy\uld be saved to file
+
+        self.__working_directory = None
+        self.__expeiment_name = None
+        self.__measurement_name = None
+        self.__measurement_count  = 0
+        
+        self.__calibrate_before_measurement = False
+        self.__overload_rejecion = False
+
+        self.__display_refresh = 10
+        self.__averages = 100
+
+        self.__use_homemade_amplifier = True
+        self.__homemade_amp_coeff = 178
+        self.__use_second_amplifier = True
+        self.__second_amp_coeff = 100
+
+        self.__load_resistance = 5000
+        
+        self.__need_measure_temperature = False
+        self.__meas_gated_structure = True
+        self.__meas_characteristic_type = 0; # 0 is output 1 is transfer
+
+
+        self.__use_transistor_selector = False
+        self.__transistor_list = None
+
+        self.__use_set_vds_range = False
+        self.__vds_range = None
+
+        self.__use_set_vfg_range = False
+        self.__vfg_range = None
+
+        self.__front_gate_voltage = 0
+        self.__drain_source_voltage = 0
+
+
+    @property
+    def vds_range(self):
+        return self.__vds_range
+
+    @vds_range.setter
+    def vds_range(self,value):
+        self.__vds_range = value
+
+    @property
+    def vfg_range(self):
+        return self.__vfg_range
+
+    @vfg_range.setter
+    def vfg_range(self,value):
+        self.__vfg_range = value
+
+    @property
+    def front_gate_voltage(self):
+        return self.__front_gate_voltage
+
+    @front_gate_voltage.setter
+    def front_gate_voltage(self,value):
+        self.__front_gate_voltage = value
+
+    @property
+    def drain_source_voltage(self):
+        return self.__drain_source_voltage
+
+    @drain_source_voltage.setter
+    def drain_source_voltage(self,value):
+        self.__drain_source_voltage = value
+
+    @property
+    def working_directory(self):
+        return self.__working_directory
+
+    @working_directory.setter
+    def working_derectory(self,value):
+        self.__working_directory = value
+
+    #self.__expeiment_name = None
+    @property
+    def expeiment_name(self):
+        return self.__expeiment_name
+
+    @expeiment_name.setter
+    def expeiment_name(self,value):
+        self.__expeiment_name = value
+
+    #self.__measurement_name = None
+    @property
+    def measurement_name(self):
+        return self.__measurement_name
+
+    @measurement_name.setter
+    def measurement_name(self,value):
+        self.__measurement_name = value
+
+    #self.__measurement_count  = 0
+    @property
+    def measurement_count(self):
+        return self.__measurement_count
+
+    @measurement_count.setter
+    def measurement_count(self,value):
+        self.__measurement_count = value    
+
+
+    #self.__calibrate_before_measurement = False
+    @property
+    def calibrate_before_measurement(self):
+        return self.__calibrate_before_measurement
+
+    @calibrate_before_measurement.setter
+    def calibrate_before_measurement(self,value):
+        self.__calibrate_before_measurement= value    
+
+
+    #self.__overload_rejecion = False
+    @property
+    def overload_rejecion(self):
+        return self.__overload_rejecion
+
+    @overload_rejecion.setter
+    def overload_rejecion(self,value):
+        self.__overload_rejecion= value    
+
+    #self.__display_refresh = 10
+    @property
+    def display_refresh(self):
+        return self.__display_refresh
+
+    @display_refresh.setter
+    def display_refresh(self,value):
+        self.__display_refresh= value    
+    #self.__averages = 100
+    @property
+    def averages(self):
+        return self.__averages
+
+    @averages.setter
+    def averages(self,value):
+        self.__averages= value  
+
+    #self.__use_homemade_amplifier = True
+    @property
+    def use_homemade_amplifier(self):
+        return self.__use_homemade_amplifier
+
+    @use_homemade_amplifier.setter
+    def use_homemade_amplifier(self,value):
+        self.__use_homemade_amplifier= value  
+
+
+    #self.__homemade_amp_coeff = 178
+    @property
+    def homemade_amp_coeff(self):
+        return self.__homemade_amp_coeff
+
+    @homemade_amp_coeff.setter
+    def homemade_amp_coeff(self,value):
+        self.__homemade_amp_coeff= value  
+
+    #self.__use_second_amplifier = True
+    @property
+    def use_second_amplifier(self):
+        return self.__use_second_amplifier
+
+    @use_second_amplifier.setter
+    def use_second_amplifier(self,value):
+        self.__use_second_amplifier= value 
+
+
+    #self.__second_amp_coeff = 100
+    @property
+    def second_amp_coeff(self):
+        return self.__second_amp_coeff
+
+    @second_amp_coeff.setter
+    def second_amp_coeff(self,value):
+        self.__second_amp_coeff= value 
+
+    #self.__load_resistance = 5000
+    @property
+    def load_resistance(self):
+        return self.__load_resistance
+
+    @load_resistance.setter
+    def load_resistance(self,value):
+        self.__load_resistance= value 
+        
+    #self.__need_measure_temperature = False
+    @property
+    def need_measure_temperature(self):
+        return self.__need_measure_temperature
+
+    @need_measure_temperature.setter
+    def need_measure_temperature(self,value):
+        self.__need_measure_temperature= value 
+
+    #self.__meas_gated_structure = True
+    @property
+    def meas_gated_structure(self):
+        return self.__meas_gated_structure
+
+    @meas_gated_structure.setter
+    def meas_gated_structure(self,value):
+        self.__meas_gated_structure= value 
+   
+    #self.__meas_characteristic_type = 0; # 0 is output 1 is transfer
+    @property
+    def meas_characteristic_type(self):
+        return self.__meas_characteristic_type
+
+    @meas_characteristic_type.setter
+    def meas_characteristic_type(self,value):
+        self.__meas_characteristic_type= value
+
+    #self.__use_transistor_selector = False
+    @property
+    def use_transistor_selector(self):
+        return self.__use_transistor_selector
+
+    @use_transistor_selector.setter
+    def use_transistor_selector(self,value):
+        self.__use_transistor_selector= value
+
+    #self.__transistor_list = None
+    @property
+    def transistor_list(self):
+        return self.__transistor_list
+
+    @transistor_list.setter
+    def transistor_list(self,value):
+        self.__transistor_list= value
+
+    #self.__use_set_vds_range = False
+    @property
+    def use_set_vds_range(self):
+        return self.__use_set_vds_range
+
+    @use_set_vds_range.setter
+    def use_set_vds_range(self,value):
+        self.__use_set_vds_range= value
+    #self.__use_set_vfg_range = False
+    @property
+    def use_set_vfg_range(self):
+        return self.__use_set_vfg_range
+
+    @use_set_vfg_range.setter
+    def use_set_vfg_range(self,value):
+        self.__use_set_vfg_range= value
+
+
+
+
+class Experiment:
+    def __init__(self):
+        self.__hardware_settings = None
+        self.__exp_settings = ExperimentSettings()
+
+
+    def output_curve_measurement_function(self):
+        if self.__exp_settings.use_set_vds_range and self.__exp_settings.use_set_vfg_range:
+            for vfg in self.__exp_settings.vfg_range:
+                for vds in self.__exp_settings.vds_range:
+                    self.single_value_measurement(vds, vfg)
+           
+        elif not self.__exp_settings.use_set_vfg_range:
+            for vds in self.__exp_settings.vds_range:
+                    self.single_value_measurement(vds, self.__exp_settings.front_gate_voltage)
+                    
+        elif not self.__exp_settings.use_set_vds_range:
+             for vfg in self.__exp_settings.vfg_range:
+                    self.single_value_measurement(self.__exp_settings.drain_source_voltage, vfg)
+        else:
+            self.single_value_measurement(self.__exp_settings.drain_source_voltage,self.__exp_settings.front_gate_voltage)
+
+        #foreach vfg_voltage in Vfg_range 
+        #    foreach vds_voltage in Vds_range
+        #       single_value_measurement(vds_voltage,vfg_voltage)
+        
+
+    def transfer_curve_measurement_function(self):
+        if self.__exp_settings.use_set_vds_range and self.__exp_settings.use_set_vfg_range:
+            for vds in self.__exp_settings.vds_range:
+                for vfg in self.__exp_settings.vfg_range:
+                    self.single_value_measurement(vds, vfg)
+           
+        elif not self.__exp_settings.use_set_vfg_range:
+            for vds in self.__exp_settings.vds_range:
+                    self.single_value_measurement(vds, self.__exp_settings.front_gate_voltage)
+                    
+        elif not self.__exp_settings.use_set_vds_range:
+             for vfg in self.__exp_settings.vfg_range:
+                    self.single_value_measurement(self.__exp_settings.drain_source_voltage, vfg)
+        else:
+            self.single_value_measurement(self.__exp_settings.drain_source_voltage,self.__exp_settings.front_gate_voltage)
+
+        # foreach vds_voltage in Vds_range
+        #     foreach vfg_voltage in Vfg_range 
+        #       single_value_measurement(vds_voltage,vfg_voltage)
+    
+    def set_front_gate_voltage(self,voltage):
+        pass
+
+    def set_drain_source_voltage(self,voltage):
+        pass
+
+    def set_voltage(self, voltage):
+        pass   
+
+    def single_value_measurement(self, drain_source_voltage, gate_voltage):
+        self.set_drain_source_voltage(drain_source_voltage)
+        self.set_front_gate_voltage(gate_voltage)
+        self.set_drain_source_voltage(drain_source_voltage) ## specifics of the circuit!!! to correct the value of dropped voltage on opened channel
+        self.perform_single_measurement()
+        #set vds_voltage
+        # set vfg voltage
+        # stabilize voltage
+        # perform_single_measurement()
+        
+
+    def non_gated_structure_meaurement_function(self):
+        if self.__exp_settings.use_set_vds_range:
+             for vds in self.__exp_settings.vds_range:
+                    self.non_gated_single_value_measurement(vds)
+        else:
+            self.non_gated_single_value_measurement(self.__exp_settings.drain_source_voltage)
+
+        # foreach vds_voltage in Vds_range
+        #  non_gated_single_value_measurement(vds)
+
+    def non_gated_single_value_measurement(self, drain_source_voltage):
+        self.set_drain_source_voltage(drain_source_voltage)
+        self.perform_non_gated_single_measurement()
+        #set vds_voltage
+        # stabilize voltage
+        # perform_single_measurement()
+        pass
+
+   
+
+    def generate_experiment_function(self):
+        func = None
+        if not self.__exp_settings.meas_gated_structure:# non gated structure measurement
+            func = self.non_gated_structure_meaurement_function
+        elif self.__meas_characteristic_type == 0: #output curve
+            func = self.output_curve_measurement_function
+        elif self.__meas_characteristic_type == 1: #transfer curve
+            func = self.transfer_curve_measurement_function
+        else: 
+            raise AssertionError("function was not selected properly")
+        return func
+
+
+
+
+
+
+    def perform_non_gated_single_measurement(self):
+        #calibrate
+        #set overload_rejection
+        #set averaging
+        #measure_temperature
+        #switch Vfg to Vmain
+        #measure Vmain
+        #calculate Isample ,Rsample
+        #measure spectra 
+        #switch Vfg to Vmain
+        #measure Vmain
+        #calculate Isample ,Rsample
+        #calculate resulting spectra
+        #write data to measurement file and experiment file
+        
+        pass
+        
+
+    def perform_single_measurement(self):
+        #calibrate
+        #set overload_rejection
+        #set averaging
+        #measure_temperature
+        #measure Vds, Vfg
+        #switch Vfg to Vmain
+        #measure Vmain
+        #calculate Isample ,Rsample
+        #measure spectra 
+        #measure Vds, Vfg
+        #switch Vfg to Vmain
+        #measure Vmain
+        #calculate Isample ,Rsample
+        #calculate resulting spectra
+        #write data to measurement file and experiment file
+        
+        pass
+
+
+    def perform_experiment(self):
+
+        pass
+
+
+
+
+
+
 
 mainViewBase, mainViewForm = uic.loadUiType("UI_NoiseMeasurement.ui")
 class MainView(mainViewBase,mainViewForm):
