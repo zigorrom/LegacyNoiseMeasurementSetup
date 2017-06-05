@@ -22,7 +22,13 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="binding.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="LegacyNoiseMeasurementSetup.py" />
+    <Compile Include="nodes.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="n_enum.py" />
   </ItemGroup>
   <PropertyGroup>
