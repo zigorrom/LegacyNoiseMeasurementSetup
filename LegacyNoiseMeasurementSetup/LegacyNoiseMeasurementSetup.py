@@ -310,6 +310,49 @@ class HP3567A(VisaInstrument):
     def wait_operation_complete(self):
         self.write("*WAI")
 
+
+class ExperimentSettingsViewModel(QtCore.QAbstractListModel):
+    def __init__(self, settings = None, parent = None):
+        super(ExperimentSettingsViewModel,self).__init__(parent)#,parent)
+        self.__settings = settings #ExperimentSettings() #settings
+
+    def rowCount(self,index):
+        #return 1
+        if self.__settings:# amount of properties in ExperimentSettings class
+            return self.__settings.get_column_count()
+
+    #def columnCount(self, index):
+    #    if self.__settings:# amount of properties in ExperimentSettings class
+    #        return self.__settings.get_column_count()
+
+    """INPUTS: QModelIndex"""
+    """OUTPUT: int (flag)"""
+    def flags(self, index):
+        return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable
+
+    """INPUTS: QModelIndex, int"""
+    """OUTPUT: QVariant, strings are cast to QString which is a QVariant"""
+    def data(self, index, role):
+        if not index.isValid():
+            return None
+        if not self.__settings:
+            return None
+
+        if role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole:
+            return self.__settings.data(index.row()) #.column())
+
+    def setData(self, index, value,role = QtCore.Qt.EditRole):
+        if not index.isValid():
+            return False
+
+        if role == QtCore.Qt.EditRole:
+            self.__settings.setData(index.row(),value)#.column(),value)
+            self.dataChanged.emit(index,index)
+            return True
+
+
+
+
 class ExperimentSettings:
     def __init__(self):
         #this settings - separate class. shoy\uld be saved to file
@@ -349,6 +392,136 @@ class ExperimentSettings:
         self.__front_gate_voltage = 0
         self.__drain_source_voltage = 0
 
+    def get_column_count(self):
+       return 24  # amount of properties in ExperimentSettings class
+
+    def data(self,column):
+        #self.__working_directory = None
+        if column is 0: return self.working_directory
+        #self.__expeiment_name = None
+        elif column is 1: return self.expeiment_name
+        #self.__measurement_name = None
+        elif column is 2: return self.measurement_name
+        #self.__measurement_count  = 0
+        elif column is 3: return self.measurement_count
+
+        
+        #self.__calibrate_before_measurement = False
+        elif column is 4: return self.calibrate_before_measurement
+        #self.__overload_rejecion = False
+        elif column is 5: return self.overload_rejecion
+
+        #self.__display_refresh = 10
+        elif column is 6: return self.display_refresh
+        #self.__averages = 100
+        elif column is 7: return self.averages
+
+        #self.__use_homemade_amplifier = True
+        elif column is 8: return self.use_homemade_amplifier
+        #self.__homemade_amp_coeff = 178
+        elif column is 9: return self.homemade_amp_coeff
+
+
+        #self.__use_second_amplifier = True
+        elif column is 10: return self.use_second_amplifier
+        #self.__second_amp_coeff = 100
+        elif column is 11: return self.second_amp_coeff
+
+        #self.__load_resistance = 5000
+        elif column is 12: return self.load_resistance
+
+        #self.__need_measure_temperature = False
+        elif column is 13: return self.need_measure_temperature
+
+        #self.__meas_gated_structure = True
+        elif column is 14: return self.meas_gated_structure
+        #self.__meas_characteristic_type = 0; # 0 is output 1 is transfer
+        elif column is 15: return self.meas_characteristic_type
+
+        #self.__use_transistor_selector = False
+        elif column is 16: return self.use_transistor_selector
+        #self.__transistor_list = None
+        elif column is 17: return self.transistor_list
+
+        #self.__use_set_vds_range = False
+        elif column is 18: return self.use_set_vds_range
+        #self.__vds_range = None
+        elif column is 19: return self.vds_range
+
+        #self.__use_set_vfg_range = False
+        elif column is 20: return self.use_set_vfg_range
+        #self.__vfg_range = None
+        elif column is 21: return self.vfg_range
+
+        #self.__front_gate_voltage = 0
+        elif column is 22: return self.front_gate_voltage
+        #self.__drain_source_voltage = 0
+        elif column is 23: return self.drain_source_voltage
+        else:
+            return None
+
+    def setData(self,column, value):
+         #self.__working_directory = None
+        if column is 0: self.working_directory = value
+        #self.__expeiment_name = None
+        elif column is 1:  self.expeiment_name= value
+        #self.__measurement_name = None
+        elif column is 2:  measurement_name= value
+        #self.__measurement_count  = 0
+        elif column is 3:  measurement_count= value
+
+        
+        #self.__calibrate_before_measurement = False
+        elif column is 4:  self.calibrate_before_measurement= value
+        #self.__overload_rejecion = False
+        elif column is 5:  self.overload_rejecion= value
+
+        #self.__display_refresh = 10
+        elif column is 6:  self.display_refresh= value
+        #self.__averages = 100
+        elif column is 7:  self.averages= value
+
+        #self.__use_homemade_amplifier = True
+        elif column is 8:  self.use_homemade_amplifier= value
+        #self.__homemade_amp_coeff = 178
+        elif column is 9:  self.homemade_amp_coeff= value
+
+
+        #self.__use_second_amplifier = True
+        elif column is 10:  self.use_second_amplifier= value
+        #self.__second_amp_coeff = 100
+        elif column is 11:  self.second_amp_coeff= value
+
+        #self.__load_resistance = 5000
+        elif column is 12:  self.load_resistance= value
+
+        #self.__need_measure_temperature = False
+        elif column is 13:  self.need_measure_temperature= value
+
+        #self.__meas_gated_structure = True
+        elif column is 14:  self.meas_gated_structure= value
+        #self.__meas_characteristic_type = 0; # 0 is output 1 is transfer
+        elif column is 15:  self.meas_characteristic_type= value
+
+        #self.__use_transistor_selector = False
+        elif column is 16:  self.use_transistor_selector= value
+        #self.__transistor_list = None
+        elif column is 17:  self.transistor_list= value
+
+        #self.__use_set_vds_range = False
+        elif column is 18:  self.use_set_vds_range= value
+        #self.__vds_range = None
+        elif column is 19:  self.vds_range= value
+
+        #self.__use_set_vfg_range = False
+        elif column is 20:  self.use_set_vfg_range= value
+        #self.__vfg_range = None
+        elif column is 21:  self.vfg_range= value
+
+        #self.__front_gate_voltage = 0
+        elif column is 22:  self.front_gate_voltage= value
+        #self.__drain_source_voltage = 0
+        elif column is 23:  self.drain_source_voltage= value
 
     @property
     def vds_range(self):
@@ -387,7 +560,7 @@ class ExperimentSettings:
         return self.__working_directory
 
     @working_directory.setter
-    def working_derectory(self,value):
+    def working_directory(self,value):
         self.__working_directory = value
 
     #self.__expeiment_name = None
@@ -772,7 +945,49 @@ class MainView(mainViewBase,mainViewForm):
     def __init__(self, parent = None):
        super(mainViewBase,self).__init__(parent)
        self.setupUi(self)
+       self._settings = ExperimentSettings()
+       self.setModel(ExperimentSettingsViewModel(self._settings))
+       #self._viewModel = ExperimentSettingsViewModel(self._settings)
+       #self._dataMapper = QtGui.QDataWidgetMapper()
+
+    def setModel(self, model):
+       self._viewModel = model
        
+       
+
+       self._dataMapper = QtGui.QDataWidgetMapper()
+       self._dataMapper.setModel(self._viewModel)
+       print(self._dataMapper.rootIndex())
+        #self._dataMapper.addMapping(self. ,0)
+       self._dataMapper.addMapping(self.ui_experimentName ,1)
+       self._dataMapper.addMapping(self.ui_measurementName ,2)
+       self._dataMapper.addMapping(self.ui_measurementCount ,3)
+       self._dataMapper.addMapping(self.ui_calibrate ,4)
+       self._dataMapper.addMapping(self.ui_overload_reject ,5)
+       self._dataMapper.addMapping(self.ui_display_refresh ,6)
+       self._dataMapper.addMapping(self.ui_averages ,7)
+       self._dataMapper.addMapping(self.ui_use_homemade_amplifier ,8)
+       #self._dataMapper.addMapping(self. ,9)
+       #self._dataMapper.addMapping(self. ,10)
+       self._dataMapper.addMapping(self.ui_second_amp_coeff ,11)
+       self._dataMapper.addMapping(self.ui_load_resistance ,12)
+       self._dataMapper.addMapping(self.ui_need_meas_temp ,13)
+       self._dataMapper.addMapping(self.ui_meas_gated_structure ,14)
+       self._dataMapper.addMapping(self.ui_meas_characteristic_type ,15,"currentIndex")
+       self._dataMapper.addMapping(self.ui_use_dut_selector ,16)
+       #self._dataMapper.addMapping(self. ,17)
+       self._dataMapper.addMapping(self.ui_use_set_vds_range ,18)
+       #self._dataMapper.addMapping(self. ,19)
+       self._dataMapper.addMapping(self.ui_use_set_vfg_range ,20)
+       #self._dataMapper.addMapping(self. ,21)
+       self._dataMapper.addMapping(self.ui_front_gate_voltage ,22)
+       self._dataMapper.addMapping(self.ui_drain_source_voltage ,23)
+       
+       QtCore.QObject.connect(self._viewModel, QtCore.SIGNAL("dataChanged(QModelIndex, QModelIndex)"), self.on_data_changed)
+        
+
+    def on_data_changed(self):
+        print("view model changed")
 
     @QtCore.pyqtSlot()
     def on_startButton_clicked(self):
@@ -847,6 +1062,15 @@ if __name__== "__main__":
     app = QtGui.QApplication(sys.argv)
     app.setApplicationName("LegacyNoiseMeasurementSetup")
     app.setStyle("cleanlooks")
+
+    #listView = QtGui.QListView()
+    #settings = ExperimentSettings()
+    #vm = ExperimentSettingsViewModel(settings)
+    
+    #listView.setModel(vm)
+    
+    #listView.show()
+       
 
     wnd = MainView()
     wnd.show()
