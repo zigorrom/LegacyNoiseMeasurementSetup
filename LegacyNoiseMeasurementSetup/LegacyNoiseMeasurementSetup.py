@@ -709,8 +709,8 @@ class Experiment:
 
 
     def perform_experiment(self):
-
-        pass
+        function_to_execute = self.generate_experiment_function()
+        function_to_execute()
 
 
 
@@ -724,8 +724,6 @@ class MainView(mainViewBase,mainViewForm):
        super(mainViewBase,self).__init__(parent)
        self.setupUi(self)
        
-
-
 
     @QtCore.pyqtSlot()
     def on_startButton_clicked(self):
