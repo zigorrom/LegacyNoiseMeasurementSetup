@@ -261,7 +261,7 @@ class HP3567A(VisaInstrument):
         assert isinstance(value,int)
         self.write("FREQ:RES {0}".format(value))
 
-    def set_averaging(self,state):
+    def switch_averaging(self,state):
         self.write(":AVER {0}".format("ON" if state else "OFF"))
 
     def set_display_update_rate(self, rate):
@@ -427,7 +427,6 @@ class ExperimentSettings:
     def calibrate_before_measurement(self,value):
         self.__calibrate_before_measurement= value    
 
-
     #self.__overload_rejecion = False
     @property
     def overload_rejecion(self):
@@ -570,6 +569,35 @@ class Experiment:
     def __init__(self):
         self.__hardware_settings = None
         self.__exp_settings = ExperimentSettings()
+        self.__initialize_hardware()
+
+        self._measured_temp_start = 0;
+        self._measured_temp_end = 0;
+
+        self._measured_main_voltage_start = 0;
+        self._measured_main_voltage_end = 0;
+
+        self._measured_sample_voltage_start = 0;
+        self._measured_samole_voltage_end = 0;
+        
+        self._measured_gate_voltage_start = 0;
+        self._measured_gate_voltage_end = 0;
+
+        self._sample_current_start = 0;
+        self._sample_current_end = 0;
+
+        self._sample_resistance_start = 0;
+        self._sample_resistance_end = 0;
+
+        self._equivalent_resistance_start = 0;
+        self._equivalent_resistance_end = 0;
+
+
+    def __initialize_hardware(self):
+        self.__dynamic_signal_analyzer = HP3567A(self.__hardware_settings["analyzer"])
+        self.__arduino_controller = ArduinoController(self.__hardware_settings["arduino_controller"])
+        self.__drain_multimeter = HP34401A(self.__hardware_settings["drain_multimeter"])
+        self.__main_gate_multimeter = HP34401A(self.__hardware_settings["main_gate_multimeter"])
 
 
     def output_curve_measurement_function(self):
@@ -663,6 +691,13 @@ class Experiment:
             func = self.transfer_curve_measurement_function
         else: 
             raise AssertionError("function was not selected properly")
+
+        if self.__exp_settings.use_transistor_selector:
+            def execution_function(self):
+                for transistor in self.__exp_settings.transistor_list:
+                    func()
+            return execution_function
+
         return func
 
 
@@ -671,11 +706,25 @@ class Experiment:
 
 
     def perform_non_gated_single_measurement(self):
-        #calibrate
         #set overload_rejection
+        #self.__dynamic_signal_analyzer.switch_overload_rejection(self.__exp_settings.overload_rejecion)
+        #calibrate
+        #if self.__exp_settings.calibrate_before_measurement:
+        #    self.__dynamic_signal_analyzer.calibrate()
+        
         #set averaging
+        #self.__dynamic_signal_analyzer.set_average_count(self.__exp_settings.averages)
+
+        #set display updates
+        #self.__dynamic_signal_analyzer.set_display_update_rate(self.__exp_settings.display_refresh)
+
         #measure_temperature
+        #if self.__exp_settings.need_measure_temperature:
+        #    raise NotImplementedError()
+
         #switch Vfg to Vmain
+
+
         #measure Vmain
         #calculate Isample ,Rsample
         #measure spectra 
@@ -684,8 +733,8 @@ class Experiment:
         #calculate Isample ,Rsample
         #calculate resulting spectra
         #write data to measurement file and experiment file
-        
-        pass
+        print("performing perform_non_gated_single_measurement")
+        #pass
         
 
     def perform_single_measurement(self):
@@ -704,8 +753,8 @@ class Experiment:
         #calculate Isample ,Rsample
         #calculate resulting spectra
         #write data to measurement file and experiment file
-        
-        pass
+        print("performing perform_single_measurement")
+        #pass
 
 
     def perform_experiment(self):
@@ -750,6 +799,8 @@ class MainView(mainViewBase,mainViewForm):
 
     @QtCore.pyqtSlot()
     def on_transistorSelector_clicked(self):
+        dialog = DUTselectorView()
+        result = dialog.exec_()
         print("Select transistors")
 
     @QtCore.pyqtSlot()
@@ -774,6 +825,12 @@ class MainView(mainViewBase,mainViewForm):
 
     
 
+
+DUTselectorViewBase, DUTselectorViewForm = uic.loadUiType("UI_TransistorSelector.ui")
+class DUTselectorView(DUTselectorViewBase,DUTselectorViewForm):
+    def __init__(self,parent = None):
+        super(DUTselectorViewBase,self).__init__(parent)
+        self.setupUi(self)
 
 
 rangeSelectorBase, rangeSelectorForm = uic.loadUiType("UI_RangeSelector.ui")
