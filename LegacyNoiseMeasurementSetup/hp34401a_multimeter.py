@@ -1,5 +1,5 @@
 from n_enum import enum
-from CommunicationLayer import VisaInstrument, instrument_await_function
+from communication_layer import VisaInstrument, instrument_await_function
 
 HP34401A_FUNCTIONS = enum("AVER")
 

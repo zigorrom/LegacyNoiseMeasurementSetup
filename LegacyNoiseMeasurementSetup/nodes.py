@@ -1,5 +1,7 @@
 ﻿from binding import Observable,notifiable_property
 from PyQt4 import QtCore
+from range_handlers import RANGE_HANDLERS, normal_range_handler, back_forth_range_handler,zero_start_range_handler,zero_start_back_forth
+
 
 class SettingsModel(QtCore.QAbstractItemModel):
 
@@ -58,7 +60,7 @@ class SettingsModel(QtCore.QAbstractItemModel):
 
     """INPUTS: QModelIndex, QVariant, int (flag)"""
     def setData(self, index, value, role=QtCore.Qt.EditRole):
-
+        
         if index.isValid():
             
             node = index.internalPointer()
@@ -115,6 +117,15 @@ class SettingsModel(QtCore.QAbstractItemModel):
         
         return self.createIndex(parentNode.row(), 0, parentNode)
         
+    #def parent_from_node(self,node):
+        
+    #    parentNode = node.parent()
+        
+    #    if parentNode == self._rootNode:
+    #        return QtCore.QModelIndex()
+    #    return self.createIndex(parentNode.row(),0,parentNode)
+
+
     """INPUTS: int, int, QModelIndex"""
     """OUTPUT: QModelIndex"""
     """Should return a QModelIndex that corresponds to the given row, column and parent node"""
@@ -341,6 +352,8 @@ class ValueRange(Node):
         self.__points = 10
 
         self.__range_mode = 0
+
+        self.__unit_values = [1, 0.001] # order in user interface must be V->mV
     
     @property
     def start_value(self):
@@ -359,6 +372,22 @@ class ValueRange(Node):
         self.__start_units = value
 
     @property
+    def end_value(self):
+        return self.__end_val
+
+    @end_value.setter
+    def end_value(self,value):
+        self.__end_val = value
+
+    @property
+    def end_units(self):
+        return self.__end_units
+         
+    @end_units.setter
+    def end_units(self,value):
+        self.__end_units = value
+
+    @property
     def points(self):
         return self.__points
 
@@ -375,6 +404,8 @@ class ValueRange(Node):
     def range_mode(self,value):
         self.__range_mode = value
 
+    
+
     def typeInfo(self):
         return "ValueRange"
 
@@ -382,7 +413,38 @@ class ValueRange(Node):
     def typeInfo(cls):
         return "ValueRange"
 
+    def data(self, column):
+        ret = super().data(column)
+        if column is 2: ret = self.start_value
+        elif column is 3: ret = self.start_units
+        elif column is 4: ret = self.end_value
+        elif column is 5: ret = self.end_units
+        elif column is 6: ret = self.points
+        elif column is 7: ret = self.range_mode
+        return ret
 
+    def setData(self, column, value):
+        super().setData(column, value)
+        if column is 2: self.start_value = value
+        elif column is 3: self.start_units = value
+        elif column is 4: self.end_value = value
+        elif column is 5: self.end_units = value
+        elif column is 6: self.points = value
+        elif column is 7: self.range_mode = value
+
+    def get_start_value(self):
+        return self.start_value*self.__unit_values[self.start_units]
+
+    def get_end_value(self):
+        return self.end_value*self.__unit_values[self.end_units]
+
+    def get_range_handler(self):
+        if self.range_mode is 0: return normal_range_handler(self.get_start_value(), self.get_end_value(), len = self.points)
+        elif self.range_mode is 1: return back_forth_range_handler(self.get_start_value(), self.get_end_value(), len = self.points)
+        elif self.range_mode is 2: return zero_start_range_handler(self.get_start_value(), self.get_end_value(), len = self.points)
+        elif self.range_mode is 3: return zero_start_back_forth(self.get_start_value(), self.get_end_value(), len = self.points)
+        else:
+            raise ValueError("Incorrect value of selected range handler")
 
 
 class ExperimentSettings(Node):
@@ -417,10 +479,12 @@ class ExperimentSettings(Node):
         self.__transistor_list = None
 
         self.__use_set_vds_range = False
-        self.__vds_range = None
+        #self.__vds_range = None
+        #ValueRange("drain_source_range",self)
 
         self.__use_set_vfg_range = False
-        self.__vfg_range = None
+        #self.__vfg_range = None
+        #ValueRange("front_gate_range",self)
 
         self.__front_gate_voltage = 0
         self.__drain_source_voltage = 0
@@ -481,12 +545,12 @@ class ExperimentSettings(Node):
         #self.__use_set_vds_range = False
         elif column is 18: return self.use_set_vds_range
         #self.__vds_range = None
-        elif column is 19: return self.vds_range
+        #elif column is 19: return self.vds_range
 
         #self.__use_set_vfg_range = False
         elif column is 20: return self.use_set_vfg_range
         #self.__vfg_range = None
-        elif column is 21: return self.vfg_range
+        #elif column is 21: return self.vfg_range
 
         #self.__front_gate_voltage = 0
         elif column is 22: return self.front_gate_voltage
@@ -546,12 +610,12 @@ class ExperimentSettings(Node):
         #self.__use_set_vds_range = False
         elif column is 18:  self.use_set_vds_range= value
         #self.__vds_range = None
-        elif column is 19:  self.vds_range= value
+        #elif column is 19:  self.vds_range= value
 
         #self.__use_set_vfg_range = False
         elif column is 20:  self.use_set_vfg_range= value
         #self.__vfg_range = None
-        elif column is 21:  self.vfg_range= value
+        #elif column is 21:  self.vfg_range= value
 
         #self.__front_gate_voltage = 0
         elif column is 22:  self.front_gate_voltage= value
@@ -565,21 +629,21 @@ class ExperimentSettings(Node):
     def typeInfo(cls):
         return "ExperimentSettings"
 
-    @property
-    def vds_range(self):
-        return self.__vds_range
+    #@property
+    #def vds_range(self):
+    #    return self.__vds_range
 
-    @vds_range.setter
-    def vds_range(self,value):
-        self.__vds_range = value
+    #@vds_range.setter
+    #def vds_range(self,value):
+    #    self.__vds_range = value
 
-    @property
-    def vfg_range(self):
-        return self.__vfg_range
+    #@property
+    #def vfg_range(self):
+    #    return self.__vfg_range
 
-    @vfg_range.setter
-    def vfg_range(self,value):
-        self.__vfg_range = value
+    #@vfg_range.setter
+    #def vfg_range(self,value):
+    #    self.__vfg_range = value
 
     @property
     def front_gate_voltage(self):

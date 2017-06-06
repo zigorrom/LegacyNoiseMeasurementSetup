@@ -25,7 +25,7 @@
     <Compile Include="binding.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="CommunicationLayer.py">
+    <Compile Include="communication_layer.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="configuration.py">
@@ -51,6 +51,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="n_enum.py" />
+    <Compile Include="range_handlers.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="xml_serializer.py">
       <SubType>Code</SubType>
     </Compile>

@@ -2,7 +2,7 @@
 import time
 
 from PyQt4 import uic, QtGui, QtCore
-from nodes import ExperimentSettings, Node, SettingsModel
+from nodes import ExperimentSettings, Node, SettingsModel, ValueRange
 from configuration import Configuration
 
 
@@ -72,20 +72,48 @@ class MainView(mainViewBase,mainViewForm):
     def on_stopButton_clicked(self):
         print("stop")
 
-    def show_range_selector(self,model):
-        dialog = RangeSelectorView(model)
+    def show_range_selector(self,model, currentIndex):
+        dialog = RangeSelectorView()
+        dialog.setModel(model)
+        dialog.setSelection(currentIndex)
         result = dialog.exec_()
         print(result)
 
     @QtCore.pyqtSlot()
     def on_VdsRange_clicked(self):
         print("Vds range")
-        self.show_range_selector(None)
+        
+        rootNode = self._config.get_root_node()
+        rang = self._config.get_node_from_path("drain_source_range")
+        viewModel = SettingsModel(rootNode)
+        
+        assert isinstance(rang,ValueRange)
+        
+        idx = QtCore.QModelIndex()
+        if rang!= rootNode:
+            idx = viewModel.createIndex(rang.row(),0,rang)
+
+        self.show_range_selector(viewModel, idx)
+       
+
+
 
     @QtCore.pyqtSlot()
     def on_VfgRange_clicked(self):
         print("Vfg range")
-        self.show_range_selector(None)
+
+        rootNode = self._config.get_root_node()
+        rang = self._config.get_node_from_path("front_gate_range")
+        viewModel = SettingsModel(rootNode)
+        
+        assert isinstance(rang,ValueRange)
+        
+        idx = QtCore.QModelIndex()
+        if rang!= rootNode:
+            idx = viewModel.createIndex(rang.row(),0,rang)
+
+        self.show_range_selector(viewModel, idx)
+
 
     @QtCore.pyqtSlot()
     def on_transistorSelector_clicked(self):
@@ -132,8 +160,43 @@ class RangeSelectorView(rangeSelectorBase,rangeSelectorForm):
     def __init__(self,parent = None):
         super(rangeSelectorBase,self).__init__(parent)
         self.setupUi(self)
+        self._dataMapper = QtGui.QDataWidgetMapper()
 
-    #def set
+    def setSelection(self, current):
+        parent = current.parent()
+        self._dataMapper.setRootIndex(parent)
+        self._dataMapper.setCurrentModelIndex(current)
+
+    def setModel(self, model):
+        self._viewModel = model
+        self._dataMapper.setModel(self._viewModel)
+
+        #rootNode = configuration.get_root_node()
+        #self._viewModel = SettingsModel(rootNode)
+        #self._range = configuration.get_node_from_path("drain_source_range")
+        #assert isinstance(self._range,ValueRange)
+        #parent = self._range.parent()
+        #idx = QtCore.QModelIndex()
+        #if parent != rootNode:
+        #    idx = self._viewModel.createIndex(parent.row(),0,parent)
+        #self._viewModel = SettingsModel(self._settings)
+
+        self._dataMapper.setModel(self._viewModel)
+        self._dataMapper.addMapping(self.ui_start_val ,2)
+        self._dataMapper.addMapping(self.ui_start_units ,3,"currentIndex")
+        self._dataMapper.addMapping(self.ui_stop_val ,4)
+        self._dataMapper.addMapping(self.ui_stop_units ,5,"currentIndex")
+        self._dataMapper.addMapping(self.ui_count ,6)
+        self._dataMapper.addMapping(self.ui_range_mode ,7,"currentIndex")
+        
+        #QtCore.QObject.connect(self._viewModel, QtCore.SIGNAL("dataChanged(QModelIndex, QModelIndex)"), self.on_data_changed)
+        #self._dataMapper.setRootIndex(idx)
+        #self._dataMapper.toFirst()
+
+
+    def on_data_changed(self):
+        print("range changed")
+        
 
 
 def update():

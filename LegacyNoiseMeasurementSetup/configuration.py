@@ -1,7 +1,7 @@
 ﻿import os
 from PyQt4 import QtCore
 ##from nXmlNodeSerializer
-from nodes import Node, ExperimentSettings
+from nodes import Node, ExperimentSettings, ValueRange
 from xml_serializer import XmlNodeSerializer
 
 configuration_filename = "config.exp"
@@ -114,6 +114,10 @@ class Configuration(object):
         rootNode = Node("Settings")
         ##Settings
         settings = ExperimentSettings(parent = rootNode)
+        drain_source_range = ValueRange("drain_source_range",settings)
+        gate_source_range = ValueRange("front_gate_range",settings)
+
+
         
         return rootNode
 

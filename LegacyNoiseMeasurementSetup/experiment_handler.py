@@ -1,6 +1,7 @@
 
-from nodes import ExperimentSettings
+from nodes import ExperimentSettings, ValueRange
 from configuration import Configuration
+
 
 class Experiment:
     def __init__(self):
@@ -29,9 +30,12 @@ class Experiment:
         self._equivalent_resistance_start = 0;
         self._equivalent_resistance_end = 0;
 
-    def initialize_settings(self, settings):
-        assert isinstance(settings, ExperimentSettings)
-        self.__exp_settings = settings
+    def initialize_settings(self, configuration):
+        assert isinstance(configuration, Configuration)
+        self.__config = configuration
+        self.__exp_settings = configuration.get_node_from_path("Settings.ExperimentSettings")
+        assert isinstance(self.__exp_settings, ExperimentSettings)
+        
 
 
     def initialize_hardware(self):
@@ -41,20 +45,30 @@ class Experiment:
         #self.__main_gate_multimeter = HP34401A(self.__hardware_settings["main_gate_multimeter"])
         pass
 
+    def get_meas_ranges(self):
+        fg_range = self.__config.get_node_from_path("front_gate_range")
+        if self.__exp_settings.use_set_vfg_range:
+            assert isinstance(fg_range, ValueRange)
+        ds_range = self.__config.get_node_from_path("drain_source_range")
+        if self.__exp_settings.use_set_vds_range:
+            assert isinstance(fg_range, ValueRange)
+        return ds_range, fg_range
 
     def output_curve_measurement_function(self):
+        ds_range, fg_range = self.get_meas_ranges()
+        
         if self.__exp_settings.use_set_vds_range and self.__exp_settings.use_set_vfg_range:
-            for vfg in self.__exp_settings.vfg_range:
-                for vds in self.__exp_settings.vds_range:
+            for vfg in fg_range.get_range_handler():
+                for vds in ds_range.get_range_handler():
                     self.single_value_measurement(vds, vfg)
            
         elif not self.__exp_settings.use_set_vfg_range:
-            for vds in self.__exp_settings.vds_range:
+            for vds in ds_range.get_range_handler():
                     self.single_value_measurement(vds, self.__exp_settings.front_gate_voltage)
                     
         elif not self.__exp_settings.use_set_vds_range:
-             for vfg in self.__exp_settings.vfg_range:
-                    self.single_value_measurement(self.__exp_settings.drain_source_voltage, vfg)
+            for vfg in fg_range.get_range_handler():
+                   self.single_value_measurement(self.__exp_settings.drain_source_voltage, vfg)
         else:
             self.single_value_measurement(self.__exp_settings.drain_source_voltage,self.__exp_settings.front_gate_voltage)
 
@@ -64,17 +78,20 @@ class Experiment:
         
 
     def transfer_curve_measurement_function(self):
+        ds_range, fg_range = self.get_meas_ranges()
+
         if self.__exp_settings.use_set_vds_range and self.__exp_settings.use_set_vfg_range:
-            for vds in self.__exp_settings.vds_range:
-                for vfg in self.__exp_settings.vfg_range:
+            
+            for vds in ds_range.get_range_handler():
+                for vfg in fg_range.get_range_handler():
                     self.single_value_measurement(vds, vfg)
            
         elif not self.__exp_settings.use_set_vfg_range:
-            for vds in self.__exp_settings.vds_range:
+            for vds in ds_range.get_range_handler():
                     self.single_value_measurement(vds, self.__exp_settings.front_gate_voltage)
                     
         elif not self.__exp_settings.use_set_vds_range:
-             for vfg in self.__exp_settings.vfg_range:
+             for vfg in fg_range.get_range_handler():
                     self.single_value_measurement(self.__exp_settings.drain_source_voltage, vfg)
         else:
             self.single_value_measurement(self.__exp_settings.drain_source_voltage,self.__exp_settings.front_gate_voltage)
@@ -84,10 +101,10 @@ class Experiment:
         #       single_value_measurement(vds_voltage,vfg_voltage)
     
     def set_front_gate_voltage(self,voltage):
-        pass
+        print("settign front gate voltage: {0}".format(voltage))
 
     def set_drain_source_voltage(self,voltage):
-        pass
+        print("settign drain source voltage: {0}".format(voltage))
 
     def set_voltage(self, voltage):
         pass   
@@ -130,8 +147,6 @@ class Experiment:
         print(self.__exp_settings.meas_characteristic_type)
         print(self.__exp_settings.use_transistor_selector)
        
-
-
         if not self.__exp_settings.meas_gated_structure:# non gated structure measurement
             func = self.non_gated_structure_meaurement_function
         elif self.__exp_settings.meas_characteristic_type == 0: #output curve
@@ -148,9 +163,6 @@ class Experiment:
             return execution_function
 
         return func
-
-
-
 
 
 
@@ -172,7 +184,6 @@ class Experiment:
         #    raise NotImplementedError()
 
         #switch Vfg to Vmain
-
 
         #measure Vmain
         #calculate Isample ,Rsample
@@ -213,16 +224,14 @@ class Experiment:
 
 if __name__ == "__main__":
     cfg = Configuration()
-    settings = cfg.get_node_from_path("Settings.ExperimentSettings")
-    assert isinstance(settings, ExperimentSettings)
-    print(settings)
+    #settings = cfg.get_node_from_path("Settings.ExperimentSettings")
+    #assert isinstance(settings, ExperimentSettings)
+    #print(settings)
 
 
     exp = Experiment()
-    exp.initialize_settings(settings)
+    exp.initialize_settings(cfg)
     exp.perform_experiment()
 
 
-    print(type(settings))
-    print(settings.working_directory)
     pass

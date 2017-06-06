@@ -1,6 +1,6 @@
 import time
 from n_enum import enum
-from CommunicationLayer import VisaInstrument, instrument_await_function
+from communication_layer import VisaInstrument, instrument_await_function
 
 HP35670A_MODES = enum("FFT", "OCT", "ORD", "SINE", "HIST", "CORR")
 HP35670A_INPUTS = enum("INP1","INP2")
