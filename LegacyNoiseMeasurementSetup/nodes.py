@@ -64,6 +64,11 @@ class SettingsModel(QtCore.QAbstractItemModel):
             node = index.internalPointer()
             
             if role == QtCore.Qt.EditRole:
+                d = node.data(index.column()) 
+                if d == value:
+                    return False
+
+                
                 node.setData(index.column(),value)
 
                 self.dataChanged.emit(index, index)
@@ -169,44 +174,44 @@ class SettingsModel(QtCore.QAbstractItemModel):
         return success
 
 
-class ExperimentSettingsViewModel(QtCore.QAbstractListModel):
-    def __init__(self, settings = None, parent = None):
-        super(ExperimentSettingsViewModel,self).__init__(parent)#,parent)
-        self.__settings = settings #ExperimentSettings() #settings
+#class ExperimentSettingsViewModel(QtCore.QAbstractListModel):
+#    def __init__(self, settings = None, parent = None):
+#        super(ExperimentSettingsViewModel,self).__init__(parent)#,parent)
+#        self.__settings = settings #ExperimentSettings() #settings
 
-    def rowCount(self,index):
-        #return 1
-        if self.__settings:# amount of properties in ExperimentSettings class
-            return self.__settings.get_column_count()
+#    def rowCount(self,index):
+#        #return 1
+#        if self.__settings:# amount of properties in ExperimentSettings class
+#            return self.__settings.get_column_count()
 
-    #def columnCount(self, index):
-    #    if self.__settings:# amount of properties in ExperimentSettings class
-    #        return self.__settings.get_column_count()
+#    #def columnCount(self, index):
+#    #    if self.__settings:# amount of properties in ExperimentSettings class
+#    #        return self.__settings.get_column_count()
 
-    """INPUTS: QModelIndex"""
-    """OUTPUT: int (flag)"""
-    def flags(self, index):
-        return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable
+#    """INPUTS: QModelIndex"""
+#    """OUTPUT: int (flag)"""
+#    def flags(self, index):
+#        return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable
 
-    """INPUTS: QModelIndex, int"""
-    """OUTPUT: QVariant, strings are cast to QString which is a QVariant"""
-    def data(self, index, role):
-        if not index.isValid():
-            return None
-        if not self.__settings:
-            return None
+#    """INPUTS: QModelIndex, int"""
+#    """OUTPUT: QVariant, strings are cast to QString which is a QVariant"""
+#    def data(self, index, role):
+#        if not index.isValid():
+#            return None
+#        if not self.__settings:
+#            return None
 
-        if role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole:
-            return self.__settings.data(index.row()) #.column())
+#        if role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole:
+#            return self.__settings.data(index.row()) #.column())
 
-    def setData(self, index, value,role = QtCore.Qt.EditRole):
-        if not index.isValid():
-            return False
+#    def setData(self, index, value,role = QtCore.Qt.EditRole):
+#        if not index.isValid():
+#            return False
 
-        if role == QtCore.Qt.EditRole:
-            self.__settings.setData(index.row(),value)#.column(),value)
-            self.dataChanged.emit(index,index)
-            return True
+#        if role == QtCore.Qt.EditRole:
+#            self.__settings.setData(index.row(),value)#.column(),value)
+#            self.dataChanged.emit(index,index)
+#            return True
 
 
 
@@ -330,7 +335,7 @@ class ExperimentSettings(Node):
         #this settings - separate class. shoy\uld be saved to file
 
         self.__working_directory = None
-        self.__expeiment_name = None
+        self.__experiment_name = None
         self.__measurement_name = None
         self.__measurement_count  = 0
         
@@ -371,7 +376,7 @@ class ExperimentSettings(Node):
         #self.__working_directory = None
         if column is 0: return self.working_directory
         #self.__expeiment_name = None
-        elif column is 1: return self.expeiment_name
+        elif column is 1: return self.experiment_name
         #self.__measurement_name = None
         elif column is 2: return self.measurement_name
         #self.__measurement_count  = 0
@@ -436,11 +441,11 @@ class ExperimentSettings(Node):
          #self.__working_directory = None
         if column is 0: self.working_directory = value
         #self.__expeiment_name = None
-        elif column is 1:  self.expeiment_name= value
+        elif column is 1:  self.experiment_name= value
         #self.__measurement_name = None
-        elif column is 2:  measurement_name= value
+        elif column is 2:  self.measurement_name= value
         #self.__measurement_count  = 0
-        elif column is 3:  measurement_count= value
+        elif column is 3:  self.measurement_count= value
 
         
         #self.__calibrate_before_measurement = False
@@ -544,12 +549,12 @@ class ExperimentSettings(Node):
 
     #self.__expeiment_name = None
     @property
-    def expeiment_name(self):
-        return self.__expeiment_name
+    def experiment_name(self):
+        return self.__experiment_name
 
-    @expeiment_name.setter
-    def expeiment_name(self,value):
-        self.__expeiment_name = value
+    @experiment_name.setter
+    def experiment_name(self,value):
+        self.__experiment_name = value
 
     #self.__measurement_name = None
     @property

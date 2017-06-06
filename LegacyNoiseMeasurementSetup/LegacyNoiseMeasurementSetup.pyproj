@@ -25,7 +25,22 @@
     <Compile Include="binding.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="CommunicationLayer.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="configuration.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="instruments\arduino_controller.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="instruments\hp34401a_multimeter.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="instruments\hp35670a_dsa.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="instruments\motorized_potentiometer.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="LegacyNoiseMeasurementSetup.py" />
@@ -36,6 +51,9 @@
     <Compile Include="xml_serializer.py">
       <SubType>Code</SubType>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="instruments\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

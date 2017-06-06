@@ -4,7 +4,7 @@ from PyQt4 import QtCore
 from nodes import Node, ExperimentSettings
 from xml_serializer import XmlNodeSerializer
 
-configuration_filename = "config.xml"
+configuration_filename = "config.exp"
 
 class Configuration(object):
     
