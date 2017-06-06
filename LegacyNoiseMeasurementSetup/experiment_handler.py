@@ -208,7 +208,7 @@ class Experiment:
 
     def perform_experiment(self):
         function_to_execute = self.generate_experiment_function()
-        function_to_execute(self)
+        function_to_execute()
 
 
 if __name__ == "__main__":

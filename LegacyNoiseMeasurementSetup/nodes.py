@@ -328,6 +328,62 @@ class Node(Observable):
 
     def resource(self):
         return None
+    
+class ValueRange(Node):
+    def __init__(self,name = "range", parent = None):
+        super(ValueRange,self).__init__(name, parent)
+        self.__start_val = 0
+        self.__start_units = 0
+        
+        self.__end_val = 1
+        self.__end_units = 0
+
+        self.__points = 10
+
+        self.__range_mode = 0
+    
+    @property
+    def start_value(self):
+        return self.__start_val
+
+    @start_value.setter
+    def start_value(self,value):
+        self.__start_val = value
+
+    @property
+    def start_units(self):
+        return self.__start_units
+         
+    @start_units.setter
+    def start_units(self,value):
+        self.__start_units = value
+
+    @property
+    def points(self):
+        return self.__points
+
+    
+    @points.setter
+    def points(self,value):
+        self.__points = value
+
+    @property
+    def range_mode(self):
+        return self.__range_mode    
+        
+    @range_mode.setter
+    def range_mode(self,value):
+        self.__range_mode = value
+
+    def typeInfo(self):
+        return "ValueRange"
+
+    @classmethod
+    def typeInfo(cls):
+        return "ValueRange"
+
+
+
 
 class ExperimentSettings(Node):
     def __init__(self, name = "ExperimentSettings", parent = None):
@@ -373,6 +429,8 @@ class ExperimentSettings(Node):
        return 24  # amount of properties in ExperimentSettings class
 
     def data(self,column):
+        #super(ExperimentSettings,self).data
+
         #self.__working_directory = None
         if column is 0: return self.working_directory
         #self.__expeiment_name = None
