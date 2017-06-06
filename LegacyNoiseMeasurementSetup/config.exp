@@ -1,10 +1,6 @@
 <NODE name="Settings">
-<<<<<<< HEAD
-    <ExperimentSettings overload_rejecion="bool:True" experiment_name="" need_measure_temperature="bool:True" front_gate_voltage="i:0" use_set_vds_range="bool:True" load_resistance="i:5000" meas_characteristic_type="i:0" second_amp_coeff="i:100" use_homemade_amplifier="bool:True" use_set_vfg_range="bool:True" use_second_amplifier="bool:True" calibrate_before_measurement="bool:True" measurement_name="" display_refresh="i:10" name="ExperimentSettings" working_directory="" homemade_amp_coeff="i:178" transistor_list="" drain_source_voltage="i:0" averages="i:100" measurement_count="i:0" use_transistor_selector="bool:False" meas_gated_structure="bool:True"/>
-=======
-    <ExperimentSettings second_amp_coeff="i:100" experiment_name="" meas_gated_structure="bool:True" display_refresh="i:10" use_set_vfg_range="bool:True" need_measure_temperature="bool:False" overload_rejecion="bool:True" measurement_name="" use_transistor_selector="bool:False" measurement_count="i:0" use_set_vds_range="bool:True" use_second_amplifier="bool:True" calibrate_before_measurement="bool:True" working_directory="" drain_source_voltage="i:0" meas_characteristic_type="i:0" name="ExperimentSettings" homemade_amp_coeff="i:178" averages="i:100" use_homemade_amplifier="bool:True" transistor_list="" front_gate_voltage="i:0" load_resistance="i:5000">
-        <ValueRange range_mode="i:0" name="drain_source_range" start_units="i:1" points="i:10" end_value="f:6.0" end_units="i:0" start_value="f:8.0"/>
-        <ValueRange range_mode="i:0" name="front_gate_range" start_units="i:0" points="i:10" end_value="f:-3.0" end_units="i:0" start_value="f:-2.0"/>
+    <ExperimentSettings front_gate_voltage="i:0" overload_rejecion="bool:True" second_amp_coeff="i:100" drain_source_voltage="i:0" measurement_name="" need_measure_temperature="bool:False" meas_characteristic_type="i:0" use_set_vds_range="bool:True" transistor_list="" meas_gated_structure="bool:True" display_refresh="i:10" working_directory="" averages="i:100" calibrate_before_measurement="bool:True" use_set_vfg_range="bool:True" load_resistance="i:5000" measurement_count="i:0" experiment_name="" use_homemade_amplifier="bool:True" use_second_amplifier="bool:True" homemade_amp_coeff="i:178" use_transistor_selector="bool:False" name="ExperimentSettings">
+        <ValueRange end_units="i:0" points="i:10" start_units="i:0" name="drain_source_range" start_value="i:0" end_value="i:1" range_mode="i:0"/>
+        <ValueRange end_units="i:0" points="i:10" start_units="i:0" name="front_gate_range" start_value="i:0" end_value="i:1" range_mode="i:0"/>
     </ExperimentSettings>
->>>>>>> origin/master
 </NODE>

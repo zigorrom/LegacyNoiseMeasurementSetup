@@ -339,7 +339,13 @@ class Node(Observable):
 
     def resource(self):
         return None
-    
+ 
+class HardwareSettings(Node):
+    def __init__(self, name = 'hardware_settings', parent = None):
+        super().__init__(name, parent)
+        self.__
+
+       
 class ValueRange(Node):
     def __init__(self,name = "range", parent = None):
         super(ValueRange,self).__init__(name, parent)
