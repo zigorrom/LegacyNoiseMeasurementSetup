@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>9efc1e3d-be9f-46ea-b936-985386cf6bf7</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>arduino_controller.py</StartupFile>
+    <StartupFile>experiment_handler.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
