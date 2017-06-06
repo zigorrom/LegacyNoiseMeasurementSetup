@@ -47,7 +47,7 @@ class ArduinoController():
         
 
 if __name__=="__main__":
-    ard = ArduinoController("COM26", 115200)
+    ard = ArduinoController("COM7", 115200)
     
     var = ard.read_idn()
     print(var)
