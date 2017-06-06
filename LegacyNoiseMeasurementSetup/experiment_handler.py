@@ -1,5 +1,5 @@
-
-from nodes import ExperimentSettings, ValueRange
+﻿
+from nodes import ExperimentSettings, ValueRange, HardwareSettings
 from configuration import Configuration
 
 
@@ -30,12 +30,16 @@ class Experiment:
         self._equivalent_resistance_start = 0;
         self._equivalent_resistance_end = 0;
 
+        self._counter = 0
+
+
     def initialize_settings(self, configuration):
         assert isinstance(configuration, Configuration)
         self.__config = configuration
         self.__exp_settings = configuration.get_node_from_path("Settings.ExperimentSettings")
         assert isinstance(self.__exp_settings, ExperimentSettings)
-        
+        self.__hardware_settings = configuration.get_node_from_path("Settings.HardwareSettings")
+        assert isinstance(self.__exp_settings, HardwareSettings)
 
 
     def initialize_hardware(self):
@@ -194,6 +198,8 @@ class Experiment:
         #calculate resulting spectra
         #write data to measurement file and experiment file
         print("performing perform_non_gated_single_measurement")
+        self._counter+=1
+        print("count: {0}".format(self._counter))
         #pass
         
 
@@ -214,6 +220,8 @@ class Experiment:
         #calculate resulting spectra
         #write data to measurement file and experiment file
         print("performing perform_single_measurement")
+        self._counter+=1
+        print("count: {0}".format(self._counter))
         #pass
 
 

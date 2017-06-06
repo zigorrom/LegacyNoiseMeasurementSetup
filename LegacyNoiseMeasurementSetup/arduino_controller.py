@@ -1,4 +1,4 @@
-import time
+﻿import time
 from n_enum import enum
 import PyCmdMessenger
 
@@ -47,11 +47,15 @@ class ArduinoController():
         
 
 if __name__=="__main__":
+<<<<<<< HEAD
     ard = ArduinoController("COM7", 115200)
+=======
+    ard = ArduinoController("COM27", 115200)
+>>>>>>> origin/master
     
     var = ard.read_idn()
     print(var)
-    time.sleep(2)
+    #time.sleep(2)
     for i in range(1,33,1):
         ard.switch_channel(i,True)
         time.sleep(0.3)
@@ -63,6 +67,6 @@ if __name__=="__main__":
     ard.set_motor_speed(1 ,0)
 
 
-    ard.close()
+   
     
     pass

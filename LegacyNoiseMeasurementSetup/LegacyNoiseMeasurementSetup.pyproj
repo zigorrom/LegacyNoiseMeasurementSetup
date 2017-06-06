@@ -5,7 +5,11 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>9efc1e3d-be9f-46ea-b936-985386cf6bf7</ProjectGuid>
     <ProjectHome>.</ProjectHome>
+<<<<<<< HEAD
     <StartupFile>arduino_controller.py</StartupFile>
+=======
+    <StartupFile>hp35670a_dsa.py</StartupFile>
+>>>>>>> origin/master
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
