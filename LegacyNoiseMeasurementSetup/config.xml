@@ -1,3 +1,0 @@
-<NODE name="Settings">
-    <ExperimentSettings use_set_vfg_range="0" meas_characteristic_type="0" vfg_range="" second_amp_coeff="100" use_second_amplifier="1" drain_source_voltage="0" overload_rejecion="0" transistor_list="" use_homemade_amplifier="0" use_transistor_selector="0" averages="100" meas_gated_structure="1" name="ExperimentSettings" expeiment_name="" display_refresh="123" homemade_amp_coeff="178" working_directory="" measurement_count="0" front_gate_voltage="0" measurement_name="" use_set_vds_range="0" need_measure_temperature="0" calibrate_before_measurement="0" load_resistance="5000" vds_range=""/>
-</NODE>

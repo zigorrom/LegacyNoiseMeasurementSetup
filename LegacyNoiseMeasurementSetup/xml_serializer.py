@@ -1,4 +1,4 @@
-from PyQt4 import QtXml
+﻿from PyQt4 import QtXml
 from nodes import *
 
 class XmlNodeSerializer():
@@ -28,11 +28,17 @@ class XmlNodeSerializer():
         cls, attrs = self.typeDic[key]
         for k, v in attrs.items():
             val = v.fget(node)
-            if type(val) is float:
-                val = "f{0}".format(val)
+            if type(val) is bool:
+                val = "bool:{0}".format("True" if val else "False")
+
+            elif type(val) is int:
+                val = "i:{0}".format(val)
+
+            elif type(val) is float:
+                val = "f:{0}".format(val)
 ##            res = val
             elif type(val) is list:
-                val = "list[{0}]".format(",".join(val))
+                val = "list:[{0}]".format(",".join(val))
             xmlNode.setAttribute(k, val)
         return xmlNode
         
@@ -55,12 +61,25 @@ class XmlNodeSerializer():
             if domElement.hasAttribute(k):
                 if v.fset is not None:
                     val = domElement.attribute(k)
-                    if val.startswith("f"):
-                        val = float(val[1:])
+                    print("name: {0}, val: {1}, type: {2}".format(k,val,type(val)))
+                    
+                    if val.startswith("bool:"):
+                        val = val[5:] #bool(val[6:])
+                        print(val)
+                        print(len(val))
+                        print(val == "True")
+                        val = (True if val == "True" else False)
 
-                    elif val.startswith("list[") and val.endswith("]"):
-                        val = val[5:-1]
+                    elif val.startswith("i:"):
+                        val = int(val[2:])
+
+                    elif val.startswith("f:"):
+                        val = float(val[2:])
+
+                    elif val.startswith("list:[") and val.endswith("]"):
+                        val = val[6:-1]
                         val = val.split(",")
+                    print("converted value: {0}, type:{1}\n".format(val, type(val)))
                     v.fset(node,val)
             counter+=1
         return node

@@ -47,10 +47,10 @@ class ArduinoController():
         
 
 if __name__=="__main__":
-    ard = ArduinoController("COM4", 115200)
+    ard = ArduinoController("COM26", 115200)
     
-    #var = ard.read_idn()
-    #print(var)
+    var = ard.read_idn()
+    print(var)
     time.sleep(2)
     for i in range(1,33,1):
         ard.switch_channel(i,True)

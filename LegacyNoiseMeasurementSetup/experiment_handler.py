@@ -125,11 +125,18 @@ class Experiment:
 
     def generate_experiment_function(self):
         func = None
+        
+        print(self.__exp_settings.meas_gated_structure)
+        print(self.__exp_settings.meas_characteristic_type)
+        print(self.__exp_settings.use_transistor_selector)
+       
+
+
         if not self.__exp_settings.meas_gated_structure:# non gated structure measurement
             func = self.non_gated_structure_meaurement_function
-        elif self.__meas_characteristic_type == 0: #output curve
+        elif self.__exp_settings.meas_characteristic_type == 0: #output curve
             func = self.output_curve_measurement_function
-        elif self.__meas_characteristic_type == 1: #transfer curve
+        elif self.__exp_settings.meas_characteristic_type == 1: #transfer curve
             func = self.transfer_curve_measurement_function
         else: 
             raise AssertionError("function was not selected properly")
@@ -137,7 +144,7 @@ class Experiment:
         if self.__exp_settings.use_transistor_selector:
             def execution_function(self):
                 for transistor in self.__exp_settings.transistor_list:
-                    func()
+                    func(self)
             return execution_function
 
         return func
@@ -201,7 +208,7 @@ class Experiment:
 
     def perform_experiment(self):
         function_to_execute = self.generate_experiment_function()
-        function_to_execute()
+        function_to_execute(self)
 
 
 if __name__ == "__main__":
