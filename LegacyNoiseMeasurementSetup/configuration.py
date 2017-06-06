@@ -1,4 +1,4 @@
-import os
+﻿import os
 from PyQt4 import QtCore
 ##from nXmlNodeSerializer
 from nodes import Node, ExperimentSettings
@@ -18,7 +18,7 @@ class Configuration(object):
         else:
             print("default tree")
             self.rootNode = self._get_default_tree()
-        
+        #self.rootNode = self._get_default_tree()
 
         
     def get_root_node(self):

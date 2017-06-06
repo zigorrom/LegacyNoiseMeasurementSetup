@@ -1,4 +1,4 @@
-from binding import Observable,notifiable_property
+﻿from binding import Observable,notifiable_property
 from PyQt4 import QtCore
 
 class SettingsModel(QtCore.QAbstractItemModel):
@@ -494,6 +494,13 @@ class ExperimentSettings(Node):
         elif column is 22:  self.front_gate_voltage= value
         #self.__drain_source_voltage = 0
         elif column is 23:  self.drain_source_voltage= value
+
+    def typeInfo(self):
+        return "ExperimentSettings"
+
+    @classmethod
+    def typeInfo(cls):
+        return "ExperimentSettings"
 
     @property
     def vds_range(self):
