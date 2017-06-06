@@ -15,6 +15,16 @@ def instrument_await_function(func):
             return result
         return wrapper
 
+def get_available_gpib_resources():
+    rm = visa.ResourceManager()
+    return rm.list_resources()
+
+def get_available_com_resources():
+    import serial.tools.list_ports
+    devs = serial.tools.list_ports.comports()
+    names = list(map(lambda x: x.device ,devs))
+    return names
+
 class SerialInstrument:
     def __init__(self, resource, baud_rate = 9600):
         self.__port = serial.Serial(

@@ -343,11 +343,11 @@ class Node(Observable):
 class HardwareSettings(Node):
     def __init__(self, name = 'hardware_settings', parent = None):
         super().__init__(name, parent)
-        self.__dynamic_signal_analyzer_resource = 0
-        self.__main_voltage_multimeter_resource = 0
-        self.__sample_voltage_multimeter_resource = 0
-        self.__front_gate_voltage_multimeter_resource = 0
-        self.__arduino_controller_resource = 0
+        self.__dynamic_signal_analyzer_resource = ""
+        self.__main_gate_voltage_multimeter_resource = ""
+        self.__sample_voltage_multimeter_resource = ""
+        #self.__front_gate_voltage_multimeter_resource = ""
+        self.__arduino_controller_resource = ""
         self.__sample_potentiometer_channel = 0
         self.__gate_potentiometer_channel = 0
 
@@ -367,12 +367,12 @@ class HardwareSettings(Node):
         self.__dynamic_signal_analyzer_resource = value
 
     @property
-    def main_multimeter_resource(self):
-        return self.__main_voltage_multimeter_resource
+    def main_gate_multimeter_resource(self):
+        return self.__main_gate_voltage_multimeter_resource
 
-    @main_multimeter_resource.setter
-    def main_multimeter_resource(self,value):
-        self.__main_voltage_multimeter_resource = value
+    @main_gate_multimeter_resource.setter
+    def main_gate_multimeter_resource(self,value):
+        self.__main_gate_voltage_multimeter_resource = value
 
     @property
     def sample_multimeter_resource(self):
@@ -382,13 +382,13 @@ class HardwareSettings(Node):
     def sample_multimeter_resource(self,value):
         self.__sample_voltage_multimeter_resource = value
 
-    @property
-    def gate_multimeter_resource(self):
-        return self.__front_gate_voltage_multimeter_resource
+    #@property
+    #def gate_multimeter_resource(self):
+    #    return self.__front_gate_voltage_multimeter_resource
 
-    @gate_multimeter_resource.setter
-    def gate_multimeter_resource(self,value):
-        self.__front_gate_voltage_multimeter_resource = value
+    #@gate_multimeter_resource.setter
+    #def gate_multimeter_resource(self,value):
+    #    self.__front_gate_voltage_multimeter_resource = value
 
     @property
     def arduino_controller_resource(self):
@@ -425,9 +425,9 @@ class HardwareSettings(Node):
     def data(self, column):
         ret = super().data(column)
         if column is 2: ret = self.dsa_resource
-        elif column is 3: ret = self.main_multimeter_resource
+        elif column is 3: ret = self.main_gate_multimeter_resource#.main_multimeter_resource
         elif column is 4: ret = self.sample_multimeter_resource
-        elif column is 5: ret = self.gate_multimeter_resource
+        #elif column is 5: ret = self.gate_multimeter_resource
         elif column is 6: ret = self.arduino_controller_resource
         elif column is 7: ret = self.sample_potentiometer_channel
         elif column is 8: ret = self.gate_potentiometer_channel
@@ -436,9 +436,9 @@ class HardwareSettings(Node):
     def setData(self, column, value):
         super().setData(column, value)
         if column is 2: self.dsa_resource = value
-        elif column is 3: self.main_multimeter_resource = value
+        elif column is 3: self.main_gate_multimeter_resource = value
         elif column is 4: self.sample_multimeter_resource = value
-        elif column is 5: self.gate_multimeter_resource = value
+        #elif column is 5: self.gate_multimeter_resource = value
         elif column is 6: self.arduino_controller_resource = value
         elif column is 7: self.sample_potentiometer_channel = value
         elif column is 8: self.gate_potentiometer_channel = value

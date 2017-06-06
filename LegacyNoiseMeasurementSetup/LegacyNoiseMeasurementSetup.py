@@ -1,10 +1,11 @@
 ﻿import sys
 import time
 
-from PyQt4 import uic, QtGui, QtCore
-from nodes import ExperimentSettings, Node, SettingsModel, ValueRange
-from configuration import Configuration
 
+from PyQt4 import uic, QtGui, QtCore
+from nodes import ExperimentSettings, Node, SettingsModel, ValueRange, HardwareSettings
+from configuration import Configuration
+from communication_layer import get_available_gpib_resources, get_available_com_resources
 
 mainViewBase, mainViewForm = uic.loadUiType("UI_NoiseMeasurement.ui")
 class MainView(mainViewBase,mainViewForm):
@@ -63,6 +64,23 @@ class MainView(mainViewBase,mainViewForm):
         #s = XmlNodeSerializer()
         #xml = s.serialize(self._config.get_root_node())
         self._config.save_config()
+
+
+    @QtCore.pyqtSlot()
+    def on_ui_open_hardware_settings_clicked(self):
+        print("open hardware settings")
+        dialog = HardwareSettingsView()
+        rootNode = self._config.get_root_node()
+        viewModel = SettingsModel(rootNode)
+        hardware_settings = self._config.get_node_from_path("hardware_settings")
+        assert isinstance(hardware_settings,HardwareSettings)
+        idx = QtCore.QModelIndex()
+        if hardware_settings!= rootNode:
+            idx = viewModel.createIndex(hardware_settings.row(),0,hardware_settings)
+        dialog.setModel(viewModel)
+        dialog.setSelection(idx)
+        result = dialog.exec_()
+        print(result)
 
     @QtCore.pyqtSlot()
     def on_startButton_clicked(self):
@@ -147,6 +165,38 @@ class MainView(mainViewBase,mainViewForm):
 
     
 
+HardwareSettingsBase, HardwareSettingsForm = uic.loadUiType("UI_HardwareSettings.ui")
+class HardwareSettingsView(HardwareSettingsBase, HardwareSettingsForm):
+    def __init__(self,parent = None):
+        super(HardwareSettingsBase,self).__init__(parent)
+        self.setupUi(self)
+        gpib_resources = get_available_gpib_resources()
+        com_resources = get_available_com_resources()
+        self.ui_analyzer.addItems(gpib_resources)
+        self.ui_main_gate.addItems(gpib_resources)
+        self.ui_sample.addItems(gpib_resources)
+        self.ui_arduino.addItems(com_resources)
+        self._dataMapper = QtGui.QDataWidgetMapper()
+
+    def setSelection(self, current):
+        parent = current.parent()
+        self._dataMapper.setRootIndex(parent)
+        self._dataMapper.setCurrentModelIndex(current)
+
+    def setModel(self, model):
+        self._viewModel = model
+        self._dataMapper.setModel(self._viewModel)
+        self._dataMapper.addMapping(self.ui_analyzer ,2)
+        self._dataMapper.addMapping(self.ui_main_gate ,3)
+        self._dataMapper.addMapping(self.ui_sample ,4)
+        #5 skipped in Hardware Settings node
+        self._dataMapper.addMapping(self.ui_arduino ,6)
+        self._dataMapper.addMapping(self.ui_sample_channel ,7,"currentIndex")
+        self._dataMapper.addMapping(self.ui_gate_channel ,8,"currentIndex")
+
+
+
+
 
 DUTselectorViewBase, DUTselectorViewForm = uic.loadUiType("UI_TransistorSelector.ui")
 class DUTselectorView(DUTselectorViewBase,DUTselectorViewForm):
@@ -181,7 +231,7 @@ class RangeSelectorView(rangeSelectorBase,rangeSelectorForm):
         #    idx = self._viewModel.createIndex(parent.row(),0,parent)
         #self._viewModel = SettingsModel(self._settings)
 
-        self._dataMapper.setModel(self._viewModel)
+        #self._dataMapper.setModel(self._viewModel)
         self._dataMapper.addMapping(self.ui_start_val ,2)
         self._dataMapper.addMapping(self.ui_start_units ,3,"currentIndex")
         self._dataMapper.addMapping(self.ui_stop_val ,4)
