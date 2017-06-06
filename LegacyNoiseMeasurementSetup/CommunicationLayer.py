@@ -1,13 +1,17 @@
-import serial
+﻿import serial
 import visa
 import PyCmdMessenger
 
 def instrument_await_function(func):
         def wrapper(self,*args,**kwargs):
-            prev_timeout = self.instrument.timeout
-            self.instrument.timeout = None
+            #print (isinstance(self,VisaInstrument))
+            prev_timeout = self._VisaInstrument__instrument.timeout
+            self._VisaInstrument__instrument.timeout = None
+            #self.timeout = None
+            #self.__instrument.timeout = None
             result = func(self,*args,**kwargs)
-            self.instrument.timeout = prev_timeout 
+            self._VisaInstrument__instrument.timeout = prev_timeout
+            #self.__instrument.timeout = prev_timeout 
             return result
         return wrapper
 

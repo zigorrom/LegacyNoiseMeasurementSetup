@@ -1,3 +1,4 @@
+import time
 from n_enum import enum
 import PyCmdMessenger
 
@@ -44,3 +45,24 @@ class ArduinoController():
         print("response: {0}, value: {1}".format(ARDUINO_FUNCTIONS[cmd], val))
         assert cmd !=  ARDUINO_FUNCTIONS.Error, "Error while handling request on the controller"
         
+
+if __name__=="__main__":
+    ard = ArduinoController("COM4", 115200)
+    
+    #var = ard.read_idn()
+    #print(var)
+    time.sleep(2)
+    for i in range(1,33,1):
+        ard.switch_channel(i,True)
+        time.sleep(0.3)
+        ard.switch_channel(i,False)
+    var = ard.read_idn()
+    print(var)
+
+    ard.set_motor_speed(1,200)
+    ard.set_motor_speed(1 ,0)
+
+
+    ard.close()
+    
+    pass

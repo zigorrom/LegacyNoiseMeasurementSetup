@@ -1,5 +1,5 @@
 from n_enum import enum
-from CommunicationLayer import VisaInstrument
+from CommunicationLayer import VisaInstrument, instrument_await_function
 
 HP34401A_FUNCTIONS = enum("AVER")
 
@@ -52,3 +52,22 @@ class HP34401A(VisaInstrument):
     def read_average(self):
         return float(self.query("CALC:AVER:AVER?"))
 
+
+if __name__ == "__main__":
+    m1 = HP34401A("GPIB0::23::INSTR")
+    m1.clear_status()
+    m1.reset()
+    
+    m1.switch_beeper(False)
+    m1.set_nplc(0.1)
+    m1.set_trigger_count(10)
+    m1.switch_high_ohmic_mode(False)
+    m1.set_function(HP34401A_FUNCTIONS.AVER)
+    
+    m1.switch_stat(True)
+    m1.switch_autorange(True)
+    m1.init_instrument()
+    print(m1.read_average())
+    m1.switch_stat(False)
+    print(m1.read_voltage())
+    pass

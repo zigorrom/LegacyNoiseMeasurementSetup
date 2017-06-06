@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>9efc1e3d-be9f-46ea-b936-985386cf6bf7</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>LegacyNoiseMeasurementSetup.py</StartupFile>
+    <StartupFile>experiment_handler.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -31,16 +31,19 @@
     <Compile Include="configuration.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="instruments\arduino_controller.py">
+    <Compile Include="experiment_handler.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="instruments\hp34401a_multimeter.py">
+    <Compile Include="arduino_controller.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="instruments\hp35670a_dsa.py">
+    <Compile Include="hp34401a_multimeter.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="instruments\motorized_potentiometer.py">
+    <Compile Include="hp35670a_dsa.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="motorized_potentiometer.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="LegacyNoiseMeasurementSetup.py" />
@@ -51,9 +54,9 @@
     <Compile Include="xml_serializer.py">
       <SubType>Code</SubType>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="instruments\" />
+    <Compile Include="__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

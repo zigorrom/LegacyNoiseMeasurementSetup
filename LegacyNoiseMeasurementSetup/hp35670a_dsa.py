@@ -1,5 +1,6 @@
+import time
 from n_enum import enum
-from CommunicationLayer import VisaInstrument
+from CommunicationLayer import VisaInstrument, instrument_await_function
 
 HP35670A_MODES = enum("FFT", "OCT", "ORD", "SINE", "HIST", "CORR")
 HP35670A_INPUTS = enum("INP1","INP2")
@@ -108,3 +109,38 @@ class HP3567A(VisaInstrument):
     @instrument_await_function
     def wait_operation_complete(self):
         self.write("*WAI")
+
+
+if __name__=="__main__":
+    
+    res = "GPIB0::6::INSTR"
+    dev = HP3567A(res)
+    dev.abort()
+    dev.calibrate()
+    dev.set_source_voltage(6.6)
+    dev.output_state(True)
+    time.sleep(2)
+    dev.output_state(False)
+    print(HP35670A_MODES.FFT)
+    dev.select_instrument_mode(HP35670A_MODES.FFT)
+    dev.switch_input(HP35670A_INPUTS.INP2, False)
+    dev.select_active_traces(HP35670A_CALC.CALC1, HP35670A_TRACES.A)
+    #dev.select_real_format(64)
+    dev.select_ascii_format()
+    dev.select_power_spectrum_function(HP35670A_CALC.CALC1)
+    dev.select_voltage_unit(HP35670A_CALC.CALC1)
+    dev.switch_calibration(False)
+    dev.set_average_count(10)
+    dev.set_display_update_rate(2)
+    dev.set_frequency_resolution(1600)
+    dev.set_frequency_start(64.0)
+    dev.set_frequency_stop(102.4e3)
+
+    print(dev.get_points_number(HP35670A_CALC.CALC1))
+
+
+    dev.init_instrument()
+    dev.wait_operation_complete()
+
+    print(dev.get_data(HP35670A_CALC.CALC1))
+    pass
