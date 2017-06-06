@@ -116,6 +116,12 @@ class HP3567A(VisaInstrument):
     def wait_operation_complete(self):
         self.write("*WAI")
 
+    def operation_completed(self):
+        self.write("*OPC")
+
+    def operation_completed_query(self):
+        self.query("*OPC?")
+
 
 if __name__=="__main__":
     

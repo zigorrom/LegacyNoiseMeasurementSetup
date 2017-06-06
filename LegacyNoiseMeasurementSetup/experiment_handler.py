@@ -257,8 +257,9 @@ class Experiment:
         #measure spectra 
         print(analyzer.get_points_number(HP35670A_CALC.CALC1))
         analyzer.init_instrument()
-        analyzer.wait_operation_complete()
 
+        analyzer.wait_operation_complete()
+        
         print(analyzer.get_data(HP35670A_CALC.CALC1))
         #measure Vds, Vfg
         #switch Vfg to Vmain
