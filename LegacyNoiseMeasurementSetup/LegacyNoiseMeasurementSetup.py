@@ -72,7 +72,7 @@ class MainView(mainViewBase,mainViewForm):
         dialog = HardwareSettingsView()
         rootNode = self._config.get_root_node()
         viewModel = SettingsModel(rootNode)
-        hardware_settings = self._config.get_node_from_path("hardware_settings")
+        hardware_settings = self._config.get_node_from_path("HardwareSettings")
         assert isinstance(hardware_settings,HardwareSettings)
         idx = QtCore.QModelIndex()
         if hardware_settings!= rootNode:

@@ -1,6 +1,9 @@
 ﻿
 from nodes import ExperimentSettings, ValueRange, HardwareSettings
 from configuration import Configuration
+from hp34401a_multimeter import HP34401A,HP34401A_FUNCTIONS
+from hp35670a_dsa import HP3567A, HP35670A_MODES,HP35670A_CALC, HP35670A_TRACES,HP35670A_INPUTS
+from arduino_controller import ArduinoController
 
 
 class Experiment:
@@ -39,15 +42,15 @@ class Experiment:
         self.__exp_settings = configuration.get_node_from_path("Settings.ExperimentSettings")
         assert isinstance(self.__exp_settings, ExperimentSettings)
         self.__hardware_settings = configuration.get_node_from_path("Settings.HardwareSettings")
-        assert isinstance(self.__exp_settings, HardwareSettings)
+        assert isinstance(self.__hardware_settings, HardwareSettings)
+        self.__initialize_hardware();
 
-
-    def initialize_hardware(self):
-        #self.__dynamic_signal_analyzer = HP3567A(self.__hardware_settings["analyzer"])
-        #self.__arduino_controller = ArduinoController(self.__hardware_settings["arduino_controller"])
-        #self.__drain_multimeter = HP34401A(self.__hardware_settings["drain_multimeter"])
-        #self.__main_gate_multimeter = HP34401A(self.__hardware_settings["main_gate_multimeter"])
-        pass
+    def __initialize_hardware(self):
+        self.__dynamic_signal_analyzer = HP3567A(self.__hardware_settings.dsa_resource)
+        self.__arduino_controller = ArduinoController(self.__hardware_settings.arduino_controller_resource)
+        self.__sample_multimeter = HP34401A(self.__hardware_settings.sample_multimeter_resource)
+        self.__main_gate_multimeter = HP34401A(self.__hardware_settings.main_gate_multimeter_resource)
+        
 
     def get_meas_ranges(self):
         fg_range = self.__config.get_node_from_path("front_gate_range")
@@ -61,7 +64,11 @@ class Experiment:
     def output_curve_measurement_function(self):
         ds_range, fg_range = self.get_meas_ranges()
         
-        if self.__exp_settings.use_set_vds_range and self.__exp_settings.use_set_vfg_range:
+        if not ( self.__exp_settings.use_set_vfg_range and self.__exp_settings.use_set_vds_range):
+            self.single_value_measurement(self.__exp_settings.drain_source_voltage,self.__exp_settings.front_gate_voltage)
+
+
+        elif self.__exp_settings.use_set_vds_range and self.__exp_settings.use_set_vfg_range:
             for vfg in fg_range.get_range_handler():
                 for vds in ds_range.get_range_handler():
                     self.single_value_measurement(vds, vfg)
@@ -74,7 +81,8 @@ class Experiment:
             for vfg in fg_range.get_range_handler():
                    self.single_value_measurement(self.__exp_settings.drain_source_voltage, vfg)
         else:
-            self.single_value_measurement(self.__exp_settings.drain_source_voltage,self.__exp_settings.front_gate_voltage)
+            raise ValueError("range handlers are not properly defined")
+        #    self.single_value_measurement(self.__exp_settings.drain_source_voltage,self.__exp_settings.front_gate_voltage)
 
         #foreach vfg_voltage in Vfg_range 
         #    foreach vds_voltage in Vds_range
@@ -83,8 +91,10 @@ class Experiment:
 
     def transfer_curve_measurement_function(self):
         ds_range, fg_range = self.get_meas_ranges()
+        if not(self.__exp_settings.use_set_vds_range and self.__exp_settings.use_set_vfg_range):
+             self.single_value_measurement(self.__exp_settings.drain_source_voltage,self.__exp_settings.front_gate_voltage)
 
-        if self.__exp_settings.use_set_vds_range and self.__exp_settings.use_set_vfg_range:
+        elif self.__exp_settings.use_set_vds_range and self.__exp_settings.use_set_vfg_range:
             
             for vds in ds_range.get_range_handler():
                 for vfg in fg_range.get_range_handler():
@@ -98,12 +108,15 @@ class Experiment:
              for vfg in fg_range.get_range_handler():
                     self.single_value_measurement(self.__exp_settings.drain_source_voltage, vfg)
         else:
-            self.single_value_measurement(self.__exp_settings.drain_source_voltage,self.__exp_settings.front_gate_voltage)
+            raise ValueError("range handlers are not properly defined")
+        #    self.single_value_measurement(self.__exp_settings.drain_source_voltage,self.__exp_settings.front_gate_voltage)
 
         # foreach vds_voltage in Vds_range
         #     foreach vfg_voltage in Vfg_range 
         #       single_value_measurement(vds_voltage,vfg_voltage)
-    
+    def switch_transistor(self,transistor):
+        pass
+
     def set_front_gate_voltage(self,voltage):
         print("settign front gate voltage: {0}".format(voltage))
 
@@ -163,6 +176,7 @@ class Experiment:
         if self.__exp_settings.use_transistor_selector:
             def execution_function(self):
                 for transistor in self.__exp_settings.transistor_list:
+                    self.switch_transistor(transistor)
                     func(self)
             return execution_function
 
@@ -204,15 +218,48 @@ class Experiment:
         
 
     def perform_single_measurement(self):
+        analyzer = self.__dynamic_signal_analyzer
+        analyzer.remove_time_capture_data()
+        analyzer.clear_status()
+
+        #set mode
+        analyzer.select_instrument_mode(HP35670A_MODES.FFT)
+        analyzer.switch_input(HP35670A_INPUTS.INP2, False)
+        analyzer.select_active_traces(HP35670A_CALC.CALC1, HP35670A_TRACES.A)
+        analyzer.select_real_format(64)
+        analyzer.select_ascii_format()
+        analyzer.select_power_spectrum_function(HP35670A_CALC.CALC1)
+        analyzer.select_voltage_unit(HP35670A_CALC.CALC1)
+        analyzer.switch_calibration(False)
+        analyzer.set_frequency_resolution(1600)
+        analyzer.set_source_voltage(5)
         #calibrate
-        #set overload_rejection
+        analyzer.calibrate()
+        
         #set averaging
+        analyzer.switch_averaging(True)
+        analyzer.set_average_count(self.__exp_settings.averages)
+        analyzer.set_display_update_rate(self.__exp_settings.display_refresh)
+        #set overload_rejection
+        analyzer.switch_overload_rejection(self.__exp_settings.overload_rejecion)
+        
+        
+        analyzer.set_frequency_start(0)
+        analyzer.set_frequency_stop(1600)
+
+
+
         #measure_temperature
         #measure Vds, Vfg
         #switch Vfg to Vmain
         #measure Vmain
         #calculate Isample ,Rsample
         #measure spectra 
+        print(analyzer.get_points_number(HP35670A_CALC.CALC1))
+        analyzer.init_instrument()
+        analyzer.wait_operation_complete()
+
+        print(analyzer.get_data(HP35670A_CALC.CALC1))
         #measure Vds, Vfg
         #switch Vfg to Vmain
         #measure Vmain

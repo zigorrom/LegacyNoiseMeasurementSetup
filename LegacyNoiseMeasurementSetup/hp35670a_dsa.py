@@ -79,13 +79,19 @@ class HP3567A(VisaInstrument):
         assert calc in HP35670A_CALC.indexes
         return self.query("{0}:DATA:HEAD:POIN?".format(HP35670A_CALC[calc]))
 
-    def set_frequency_start(self, value):
+    def set_frequency_start(self, value, units = None):
         assert isinstance(value, float) or isinstance(value,int)
-        self.write("SENS:FREQ:STAR {0}".format(value))
+        request = "SENS:FREQ:STAR {0}".format(value)
+        if units:
+            request = "{0} {1}".format(request, units)
+        self.write(request)#"SENS:FREQ:STAR {0}".format(value))
 
-    def set_frequency_stop(self,value):
+    def set_frequency_stop(self,value, units = None):
         assert isinstance(value, float) or isinstance(value, int)
-        self.write("SENS:FREQ:STOP {0}".format(value))
+        request = "SENS:FREQ:STOP {0}".format(value)
+        if units:
+            request = "{0} {1}".format(request, units)
+        self.write(request)#"SENS:FREQ:STOP {0}".format(value))
 
     @instrument_await_function
     def get_data(self,calc):

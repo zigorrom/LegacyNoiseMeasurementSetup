@@ -15,7 +15,9 @@ class ArduinoController():
             [ARDUINO_FUNCTIONS.MotorCommand,"ii"]
             ]
         self.__messenger = PyCmdMessenger.CmdMessenger(self.__arduino, self.__commands)
-        self.read_idn()
+        print("waiting for idn")
+        result = self.read_idn()
+        print(result)
 
         
     def read_idn(self):

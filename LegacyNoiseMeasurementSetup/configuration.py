@@ -113,11 +113,11 @@ class Configuration(object):
     def _get_default_tree(self):
         rootNode = Node("Settings")
         ##Settings
-        settings = ExperimentSettings(parent = rootNode)
+        settings = ExperimentSettings("ExperimentSettings",parent = rootNode)
         drain_source_range = ValueRange("drain_source_range",settings)
         gate_source_range = ValueRange("front_gate_range",settings)
 
-        hardware_settings = HardwareSettings(parent = rootNode)
+        hardware_settings = HardwareSettings("HardwareSettings", parent = rootNode)
 
         return rootNode
 
