@@ -50,7 +50,8 @@ class Experiment:
         self.__arduino_controller = ArduinoController(self.__hardware_settings.arduino_controller_resource)
         self.__sample_multimeter = HP34401A(self.__hardware_settings.sample_multimeter_resource)
         self.__main_gate_multimeter = HP34401A(self.__hardware_settings.main_gate_multimeter_resource)
-        
+        assert self.__dynamic_signal_analyzer and self.__arduino_controller and self.__sample_multimeter and self.__main_gate_multimeter
+
 
     def get_meas_ranges(self):
         fg_range = self.__config.get_node_from_path("front_gate_range")
@@ -64,7 +65,7 @@ class Experiment:
     def output_curve_measurement_function(self):
         ds_range, fg_range = self.get_meas_ranges()
         
-        if not ( self.__exp_settings.use_set_vfg_range and self.__exp_settings.use_set_vds_range):
+        if (not self.__exp_settings.use_set_vfg_range) and (not self.__exp_settings.use_set_vds_range):
             self.single_value_measurement(self.__exp_settings.drain_source_voltage,self.__exp_settings.front_gate_voltage)
 
 
@@ -91,7 +92,7 @@ class Experiment:
 
     def transfer_curve_measurement_function(self):
         ds_range, fg_range = self.get_meas_ranges()
-        if not(self.__exp_settings.use_set_vds_range and self.__exp_settings.use_set_vfg_range):
+        if (not self.__exp_settings.use_set_vds_range) and (not self.__exp_settings.use_set_vfg_range):
              self.single_value_measurement(self.__exp_settings.drain_source_voltage,self.__exp_settings.front_gate_voltage)
 
         elif self.__exp_settings.use_set_vds_range and self.__exp_settings.use_set_vfg_range:
@@ -216,9 +217,8 @@ class Experiment:
         print("count: {0}".format(self._counter))
         #pass
         
-
-    def perform_single_measurement(self):
-        analyzer = self.__dynamic_signal_analyzer
+    def __initialize_analyzer(self,analyzer):
+        #analyzer = self.__dynamic_signal_analyzer
         analyzer.remove_time_capture_data()
         analyzer.clear_status()
 
@@ -234,7 +234,8 @@ class Experiment:
         analyzer.set_frequency_resolution(1600)
         analyzer.set_source_voltage(5)
         #calibrate
-        analyzer.calibrate()
+        if self.__exp_settings.calibrate_before_measurement:
+            analyzer.calibrate()
         
         #set averaging
         analyzer.switch_averaging(True)
@@ -246,6 +247,10 @@ class Experiment:
         
         analyzer.set_frequency_start(0)
         analyzer.set_frequency_stop(1600)
+        return analyzer
+
+    def perform_single_measurement(self):
+        analyzer = self.__initialize_analyzer(self.__dynamic_signal_analyzer)
 
 
 
