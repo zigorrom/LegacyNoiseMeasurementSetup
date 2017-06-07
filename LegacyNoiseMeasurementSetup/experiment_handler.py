@@ -4,6 +4,7 @@ from configuration import Configuration
 from hp34401a_multimeter import HP34401A,HP34401A_FUNCTIONS
 from hp35670a_dsa import HP3567A, HP35670A_MODES,HP35670A_CALC, HP35670A_TRACES,HP35670A_INPUTS
 from arduino_controller import ArduinoController
+from motorized_potentiometer import MotorizedPotentiometer
 
 
 class Experiment:
@@ -120,12 +121,20 @@ class Experiment:
 
     def set_front_gate_voltage(self,voltage):
         print("settign front gate voltage: {0}".format(voltage))
+        channel = self.__hardware_settings.gate_potentiometer_channel
+        potentiometer = MotorizedPotentiometer(self.__arduino_controller, channel, self.__main_gate_multimeter)
+        potentiometer.set_voltage(voltage)
+
+
 
     def set_drain_source_voltage(self,voltage):
         print("settign drain source voltage: {0}".format(voltage))
-
-    def set_voltage(self, voltage):
-        pass   
+        print("settign front gate voltage: {0}".format(voltage))
+        channel = self.__hardware_settings.sample_potentiometer_channel
+        potentiometer = MotorizedPotentiometer(self.__arduino_controller, channel, self.__sample_multimeter)
+        potentiometer.set_voltage(voltage)
+    #def set_voltage(self, voltage):
+    #    pass   
 
     def single_value_measurement(self, drain_source_voltage, gate_voltage):
         self.set_drain_source_voltage(drain_source_voltage)

@@ -12,7 +12,7 @@ ZERO_VOLTAGE_INTERVAL = 0.02
 VOLTAGE_SET_ERROR = 0.005
 VOLTAGE_FINE_TUNING_INTERVAL  = 5*VOLTAGE_SET_ERROR
 
-A1 = 0.01#0.006
+A1 = 0.05#0.006
 A2 = 0.002
 X0 = 0.01
 p = 3
@@ -102,8 +102,8 @@ class MotorizedPotentiometer():
                 counts_to_trust = 5
                 current_counts = 0
                 ## stabilize
-                while current_counts < counts_to_trust:
-                    if current5
+                #while current_counts < counts_to_trust:
+                #    if current5
 
                 return True
             
@@ -131,18 +131,22 @@ if __name__ == "__main__":
     m1.clear_status()
     m1.reset()
     
-    m1.switch_beeper(False)
-    m1.set_nplc(0.1)
-    m1.set_trigger_count(1)
-    m1.switch_high_ohmic_mode(False)
+    m2 = HP34401A("GPIB0::22::INSTR")
+    m2.clear_status()
+    m2.reset()
+    #m1.switch_beeper(False)
+    #m1.set_nplc(0.1)
+    #m1.set_trigger_count(1)
+    #m1.switch_high_ohmic_mode(False)
     #m1.set_function(HP34401A_FUNCTIONS.AVER)
 
-    ch = 1
-
-    potenz = MotorizedPotentiometer(ard,ch,m1)
-    potenz.set_voltage(-0.5)
-
-
+    ch1 = 1
+    ch2 = 2
+    potenz1 = MotorizedPotentiometer(ard,ch1,m1)
+    potenz1.set_voltage(-0.5)
+    
+    potenz2 = MotorizedPotentiometer(ard,ch2,m2)
+    potenz2.set_voltage(-0.5)
     pass
 
 
