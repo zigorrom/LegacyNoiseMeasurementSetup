@@ -5,7 +5,7 @@ from hp34401a_multimeter import HP34401A,HP34401A_FUNCTIONS
 from hp35670a_dsa import HP3567A, HP35670A_MODES,HP35670A_CALC, HP35670A_TRACES,HP35670A_INPUTS
 from arduino_controller import ArduinoController
 from motorized_potentiometer import MotorizedPotentiometer
-
+import numpy as np
 
 class Experiment:
     def __init__(self):
@@ -195,6 +195,7 @@ class Experiment:
 
 
     def perform_non_gated_single_measurement(self):
+        raise NotImplementedError()
         #set overload_rejection
         #self.__dynamic_signal_analyzer.switch_overload_rejection(self.__exp_settings.overload_rejecion)
         #calibrate
@@ -274,7 +275,10 @@ class Experiment:
 
         analyzer.wait_operation_complete()
         
-        print(analyzer.get_data(HP35670A_CALC.CALC1))
+        str_data = analyzer.get_data(HP35670A_CALC.CALC1)
+        data = np.fromstring(str_data, sep = ',')
+
+
         #measure Vds, Vfg
         #switch Vfg to Vmain
         #measure Vmain

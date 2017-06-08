@@ -17,6 +17,8 @@ class ArduinoController():
         self.__messenger = PyCmdMessenger.CmdMessenger(self.__arduino, self.__commands)
         print("waiting for idn")
         result = self.read_idn()
+        if result is None:
+            raise IOError("cannot connect to arduino")
         print(result)
 
         
