@@ -29,10 +29,13 @@ class SpectrumPlotWidget:
         self.create_plot()
         self.create_curves()
 
+        
+
     def create_curves(self):
         for rang in self.spectrum_ranges:
             curve = self.plot.plot(pen=self.main_curve_color)
             curve.setZValue(900)
+            curve.setVisible(True)
             self.curves[rang] = curve
 
     def clear_curves(self):
@@ -70,6 +73,7 @@ class SpectrumPlotWidget:
     def update_spectrum(self, range, data, force = False):
         curve = self.curves[range]
         curve.setData(data['f'],data['d'])
+        
         #if self.curves[range] or force:
             
         

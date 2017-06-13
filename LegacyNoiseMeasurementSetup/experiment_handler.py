@@ -17,6 +17,7 @@ import pyqtgraph as pg
 from multiprocessing.queues import JoinableQueue
 from multiprocessing.context import Process
 from multiprocessing import Event
+from collections import deque
  
 
 
@@ -39,13 +40,13 @@ class DataHandler:  #(QtCore.QObject):
             result[k] = np.linspace(start,stop, nlines, True)
         return result
 
-    def __init__(self, working_directory, measurement_type = MeasurementTypes.spectrum, spectrum_ranges = {0: (0,1600,1),1:(0,102400,64)}, parent = None, visualization_queue = None):
+    def __init__(self, working_directory, measurement_type = MeasurementTypes.spectrum, spectrum_ranges = {0: (0,1600,1),1:(0,102400,64)}, parent = None, input_data_queue = None):
         #super().__init__(parent)
         #assert isinstance(measurement_type, type(MeasurementTypes))
-        self._visualization_queue = None
-        if visualization_queue:
-            assert isinstance(visualization_queue, JoinableQueue)
-            self._visualization_queue = visualization_queue
+        self._input_data_queue = None
+        if input_data_queue:
+            assert isinstance(input_data_queue, JoinableQueue)
+            self._input_data_queue = input_data_queue
     
         assert isinstance(working_directory, str)
         self._working_directory = working_directory
@@ -133,7 +134,7 @@ class DataHandler:  #(QtCore.QObject):
         #range numeration from 0:   0 - 0 to 1600HZ
         #                           1 - 0 to 102,4KHZ
         self._spectrum_data[range] = data
-        q = self._visualization_queue
+        q = self._input_data_queue
         if q:
             q.put_nowait(range, {'f':self._frequencies[range],'d':data})
         
@@ -152,17 +153,48 @@ class DataHandler:  #(QtCore.QObject):
     def reset(self):
         raise NotImplementedError()
 
-class VisualizationThread(QtCore.QThread):
-    def __init__(self, **kwargs):
-        return super().__init__(**kwargs)
+class ProcessingThread(QtCore.QThread):
+    threadStarted = QtCore.pyqtSignal()
+    threadStopped = QtCore.pyqtSignal()
+
+    def __init__(self, input_data_queue = None,visualization_queue = None, parent = None):
+        super().__init__(parent)
+        self.alive = False
+        assert isinstance(visualization_queue, deque)
+        self._visualization_queue = visualization_queue
+        assert isinstance(input_data_queue, JoinableQueue)
+        self._input_data_queue = input_data_queue
+
+
+    def stop(self):
+        self.alive = False
+        self.wait()
+
+    def run(self):
+        self.alive = True
+        #while self.alive
+        while self.alive or (not self._input_data_queue.empty()):
+            try:
+                data = self._input_data_queue.get(timeout = 1)
+                self._input_data_queue.task_done()
+                self._visualization_queue.appendleft(data)
+            except EOFError as e:
+                print(str(e))
+                break
+            except:
+                pass
+
+        self.alive = False
 
 
 class Experiment(Process):
-    def __init__(self, visualization_queue = None):
+    def __init__(self, input_data_queue = None, simulate = True):
         #self.__hardware_settings = None
         #self.__exp_settings = ExperimentSettings()
         #self.__initialize_hardware()
         super().__init__()
+
+        self._simulate = simulate
 
         self.exit = Event()
 
@@ -189,7 +221,7 @@ class Experiment(Process):
 
         self._counter = 0
 
-        self._data_handler = DataHandler(working_directory = "", visualization_queue = visualization_queue)
+        self._data_handler = DataHandler(working_directory = "",input_data_queue = input_data_queue)
 
 
     def initialize_settings(self, configuration):
@@ -199,7 +231,9 @@ class Experiment(Process):
         assert isinstance(self.__exp_settings, ExperimentSettings)
         self.__hardware_settings = configuration.get_node_from_path("Settings.HardwareSettings")
         assert isinstance(self.__hardware_settings, HardwareSettings)
-        self.__initialize_hardware();
+        
+        if not self._simulate:
+            self.__initialize_hardware();
 
     def __initialize_hardware(self):
         self.__dynamic_signal_analyzer = HP3567A(self.__hardware_settings.dsa_resource)
@@ -272,9 +306,16 @@ class Experiment(Process):
         #     foreach vfg_voltage in Vfg_range 
         #       single_value_measurement(vds_voltage,vfg_voltage)
     def switch_transistor(self,transistor):
+        if self._simulate:
+            print("simulating switching transistor to {0}".format (transistor))
+            return
         pass
 
     def set_front_gate_voltage(self,voltage):
+        if self._simulate:
+            print("simulate settign front gate voltage: {0}".format(voltage))
+            return 
+
         print("settign front gate voltage: {0}".format(voltage))
         channel = self.__hardware_settings.gate_potentiometer_channel
         potentiometer = MotorizedPotentiometer(self.__arduino_controller, channel, self.__main_gate_multimeter)
@@ -283,6 +324,10 @@ class Experiment(Process):
 
 
     def set_drain_source_voltage(self,voltage):
+        if self._simulate:
+            print("simulating settign drain source voltage: {0}".format(voltage))
+            return
+        
         print("settign drain source voltage: {0}".format(voltage))
         print("settign front gate voltage: {0}".format(voltage))
         channel = self.__hardware_settings.sample_potentiometer_channel
@@ -415,6 +460,12 @@ class Experiment(Process):
         return analyzer
 
     def perform_single_measurement(self):
+        if self._simulate:
+            print("simulating experiment")
+            data = 10**-9 * np.random.random(1600)
+            self._data_handler.update_spectrum(data,0)
+            return
+
         analyzer = self.__initialize_analyzer(self.__dynamic_signal_analyzer)
 
 
