@@ -6,6 +6,7 @@ from PyQt4 import uic, QtGui, QtCore
 from nodes import ExperimentSettings, Node, SettingsModel, ValueRange, HardwareSettings
 from configuration import Configuration
 from communication_layer import get_available_gpib_resources, get_available_com_resources
+from plot import SpectrumPlotWidget
 
 mainViewBase, mainViewForm = uic.loadUiType("UI_NoiseMeasurement.ui")
 class MainView(mainViewBase,mainViewForm):
@@ -16,12 +17,18 @@ class MainView(mainViewBase,mainViewForm):
        
        rootNode = self._config.get_node_from_path("Settings")#Node("settings")
        self.setSettings(rootNode)
+       
+       self.setupPlots()
        #self._settings = ExperimentSettings(parent = rootNode)
        
        #self._settings = ExperimentSettings()#parent = rootNode)
        #self.setModel(ExperimentSettingsViewModel(self._settings))
        #self._viewModel = ExperimentSettingsViewModel(self._settings)
        #self._dataMapper = QtGui.QDataWidgetMapper()
+
+    def setupPlots(self):
+        self._spectrumPlotWidget =  SpectrumPlotWidget(self.ui_plot,0)
+
 
     def setSettings(self, rootNode):
        
