@@ -12,7 +12,8 @@ from PyQt4 import QtCore
 
 MeasurementTypes = enum("spectrum", "timetrace", "time_spectrum")
 
-class DataHandler:
+class DataHandler(QtCore.QObject):
+    spectrum_updated = QtCore.pyqtSignal(object)
     # should gether data and 
     # 1 - save to file
     # 2 - notify visualization
@@ -31,7 +32,7 @@ class DataHandler:
 
         self._spectrum_ranges = spectrum_ranges
         self._frequencies = self._get_frequencies(spectrum_ranges)
-            
+        self._spectrum_data = {}   
 
 
         self._measured_temp_start = 0;
@@ -110,10 +111,10 @@ class DataHandler:
     def update_spectrum(self, data,range = 0):
         #range numeration from 0:   0 - 0 to 1600HZ
         #                           1 - 0 to 102,4KHZ
-        start, stop, step = self._spectrum_ranges[range]
+        self._spectrum_data[range] = data
+
+
         
-        #result = {'f': }
-        pass
 
     def update_timetrace(self,data):
         pass
