@@ -3,5 +3,5 @@
         <ValueRange name="drain_source_range" start_units="i:0" start_value="i:0" end_units="i:0" points="i:10" range_mode="i:0" end_value="i:1"/>
         <ValueRange name="front_gate_range" start_units="i:0" start_value="i:0" end_units="i:0" points="i:10" range_mode="i:0" end_value="i:1"/>
     </ExperimentSettings>
-    <HardwareSettings name="HardwareSettings" arduino_controller_resource="COM27" sample_multimeter_resource="GPIB0::23::INSTR" gate_potentiometer_channel="i:1" main_gate_multimeter_resource="GPIB0::22::INSTR" dsa_resource="GPIB0::6::INSTR" sample_potentiometer_channel="i:0"/>
+    <HardwareSettings name="HardwareSettings" arduino_controller_resource="COM27" sample_multimeter_resource="GPIB0::23::INSTR" gate_potentiometer_channel="i:2" main_gate_multimeter_resource="GPIB0::22::INSTR" dsa_resource="GPIB0::6::INSTR" sample_potentiometer_channel="i:1"/>
 </NODE>

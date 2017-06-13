@@ -1,4 +1,4 @@
-﻿
+﻿import sys
 from nodes import ExperimentSettings, ValueRange, HardwareSettings
 from configuration import Configuration
 from hp34401a_multimeter import HP34401A,HP34401A_FUNCTIONS
@@ -10,10 +10,22 @@ from n_enum import enum
 from PyQt4 import QtCore
 
 
+
+
+
+import pyqtgraph as pg
+from multiprocessing.queues import JoinableQueue
+from multiprocessing.context import Process
+from multiprocessing import Event
+ 
+
+
 MeasurementTypes = enum("spectrum", "timetrace", "time_spectrum")
 
-class DataHandler(QtCore.QObject):
-    spectrum_updated = QtCore.pyqtSignal(object)
+class DataHandler:  #(QtCore.QObject):
+    #spectrum_updated_signal = QtCore.pyqtSignal(int, dict) # int - range, dict - data{f:frequency, d:data}
+    #resulting_spectrum_updated_signal = QtCore.pyqtSignal(dict)
+    #timetrace_updated_signal = QtCore.pyqtSignal(object)
     # should gether data and 
     # 1 - save to file
     # 2 - notify visualization
@@ -27,8 +39,17 @@ class DataHandler(QtCore.QObject):
             result[k] = np.linspace(start,stop, nlines, True)
         return result
 
-    def __init__(self, measurement_type = MeasurementTypes.spectrum, spectrum_ranges = {0: (0,1600,1),1:(0,102400,64)}):
+    def __init__(self, working_directory, measurement_type = MeasurementTypes.spectrum, spectrum_ranges = {0: (0,1600,1),1:(0,102400,64)}, parent = None, visualization_queue = None):
+        #super().__init__(parent)
         #assert isinstance(measurement_type, type(MeasurementTypes))
+        self._visualization_queue = None
+        if visualization_queue:
+            assert isinstance(visualization_queue, JoinableQueue)
+            self._visualization_queue = visualization_queue
+    
+        assert isinstance(working_directory, str)
+        self._working_directory = working_directory
+
 
         self._spectrum_ranges = spectrum_ranges
         self._frequencies = self._get_frequencies(spectrum_ranges)
@@ -112,23 +133,38 @@ class DataHandler(QtCore.QObject):
         #range numeration from 0:   0 - 0 to 1600HZ
         #                           1 - 0 to 102,4KHZ
         self._spectrum_data[range] = data
-
-
+        q = self._visualization_queue
+        if q:
+            q.put_nowait(range, {'f':self._frequencies[range],'d':data})
         
+            
+        #emit(range, {'f':self._frequencies[range],'d':data})
+        
+    def update_resulting_spectrum(self):
+        
+              
+        pass
+
 
     def update_timetrace(self,data):
-        pass
+        raise NotImplementedError()
 
     def reset(self):
-        pass
+        raise NotImplementedError()
+
+class VisualizationThread(QtCore.QThread):
+    def __init__(self, **kwargs):
+        return super().__init__(**kwargs)
 
 
-
-class Experiment:
-    def __init__(self):
+class Experiment(Process):
+    def __init__(self, visualization_queue = None):
         #self.__hardware_settings = None
         #self.__exp_settings = ExperimentSettings()
         #self.__initialize_hardware()
+        super().__init__()
+
+        self.exit = Event()
 
         self._measured_temp_start = 0;
         self._measured_temp_end = 0;
@@ -153,7 +189,7 @@ class Experiment:
 
         self._counter = 0
 
-        self._data_handler = DataHandler()
+        self._data_handler = DataHandler(working_directory = "", visualization_queue = visualization_queue)
 
 
     def initialize_settings(self, configuration):
@@ -396,7 +432,7 @@ class Experiment:
         
         str_data = analyzer.get_data(HP35670A_CALC.CALC1)
         data = np.fromstring(str_data, sep = ',')
-
+        self._data_handler.update_spectrum(data)
 
         #measure Vds, Vfg
         #switch Vfg to Vmain
@@ -415,20 +451,40 @@ class Experiment:
         function_to_execute()
 
 
+    def stop(self):
+        self.exit.set()
+
+    def run(self):
+        sys.stdout = open("log.txt", "w")
+        cfg = Configuration()
+        self.initialize_settings(cfg)
+        self.perform_experiment()
+
+
 if __name__ == "__main__":
     
     #settings = cfg.get_node_from_path("Settings.ExperimentSettings")
     #assert isinstance(settings, ExperimentSettings)
     #print(settings)
 
-    #cfg = Configuration()
-    #exp = Experiment()
-    #exp.initialize_settings(cfg)
-    #exp.perform_experiment()
+    cfg = Configuration()
+    exp = Experiment()
+    exp.initialize_settings(cfg)
+    exp.perform_experiment()
+    #exp.start()
 
-    h = DataHandler(MeasurementTypes.spectrum)
-    data = np.random.random(1601)
-    h.update_spectrum(data,0)
+    #exp.join()
 
+
+
+    #h = DataHandler(MeasurementTypes.spectrum)
+    #data = np.random.random(1601)
+    #h.update_spectrum(data,0)
+
+   
+
+    #visual = pg.GraphicsLayoutWidget()
+    #s = SpectrumPlotWidget(visual)
+    #visual.show()
 
     pass

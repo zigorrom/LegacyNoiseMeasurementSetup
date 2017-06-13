@@ -1,4 +1,4 @@
-import collections, math
+﻿import collections, math
 
 from PyQt4 import QtCore
 import pyqtgraph as pg
@@ -11,29 +11,34 @@ pg.setConfigOption('foreground','k')
 
 class SpectrumPlotWidget:
     """Main spectrum plot"""
-    def __init__(self, layout, visualize_index = None):
+    def __init__(self, layout, spectrum_ranges):
         if not isinstance(layout, pg.GraphicsLayoutWidget):
             raise ValueError("layout must be instance of pyqtgraph.GraphicsLayoutWidget")
 
+        
         self.layout = layout
-        self.__visualize_index = visualize_index
+        
+        assert isinstance(spectrum_ranges, dict), "Spectrum ranges must be a dictionary of parameters"
+        self.spectrum_ranges = spectrum_ranges
 
-        self.main_curve = True
-        self.main_color = pg.mkColor("b")
-        self.persistence = False
-        self.persistence_length = 5
-        self.persistence_decay = "exponential"
-        self.persistence_color = pg.mkColor("g")
-        self.persistence_data = None
-        self.persistence_curves = None
-        self.peak_hold_max = False#True
-        self.peak_hold_max_color = pg.mkColor("r")
-        self.peak_hold_min = False#True
-        self.peak_hold_min_color = pg.mkColor("b")
-        self.average = True
-        self.average_color = pg.mkColor("c")
+        
+        self.main_curve_color = pg.mkColor("b")
+        self.resulting_curve_color = pg.mkColor("c")
+        self.curves = {}
 
         self.create_plot()
+        self.create_curves()
+
+    def create_curves(self):
+        for rang in self.spectrum_ranges:
+            curve = self.plot.plot(pen=self.main_curve_color)
+            curve.setZValue(900)
+            self.curves[rang] = curve
+
+    def clear_curves(self):
+        for rang, curve in self.curves.items():
+            curve.clear()
+
 
     def create_plot(self):
         """Create main spectrum plot"""
@@ -47,16 +52,8 @@ class SpectrumPlotWidget:
         self.plot.setXRange(0.1,5)
         self.plot.setYRange(-20,-1)
 
-        #self.plot.setXRange(0.1,1000000)
-        #self.plot.setXRange(0.1,250000)
-        #self.plot.setXRange(0.1,150000)
+        
         self.plot.showButtons()
-
-        self.create_persistence_curves()
-        self.create_average_curve()
-        self.create_peak_hold_min_curve()
-        self.create_peak_hold_max_curve()
-        self.create_main_curve()
 
         # Create crosshair
         self.vLine = pg.InfiniteLine(angle=90, movable=False)
@@ -68,147 +65,36 @@ class SpectrumPlotWidget:
         self.mouseProxy = pg.SignalProxy(self.plot.scene().sigMouseMoved,
                                          rateLimit=60, slot=self.mouse_moved)
 
-    def create_main_curve(self):
-        """Create main spectrum curve"""
-        self.curve = self.plot.plot(pen=self.main_color)
-        self.curve.setZValue(900)
+   
 
-    def create_peak_hold_max_curve(self):
-        """Create max. peak hold curve"""
-        self.curve_peak_hold_max = self.plot.plot(pen=self.peak_hold_max_color)
-        self.curve_peak_hold_max.setZValue(800)
+    def update_spectrum(self, range, data, force = False):
+        curve = self.curves[range]
+        curve.setData(data['f'],data['d'])
+        #if self.curves[range] or force:
+            
+        
+   
+    #def update_plot(self, data_storage, force=False):
+    #    """Update main spectrum curve"""
+    #    if data_storage.frequency_bins is None:
+    #        return
 
-    def create_peak_hold_min_curve(self):
-        """Create min. peak hold curve"""
-        self.curve_peak_hold_min = self.plot.plot(pen=self.peak_hold_min_color)
-        self.curve_peak_hold_min.setZValue(800)
+    #    if self.main_curve or force:
+    #        self.curve.setData(data_storage.frequency_bins, data_storage.psd_data[self.__visualize_index])
+    #        if force:
+    #            print("forced plot")
+    #            self.curve.setVisible(self.main_curve)
 
-    def create_average_curve(self):
-        """Create average curve"""
-        self.curve_average = self.plot.plot(pen=self.average_color)
-        self.curve_average.setZValue(1000)
+    
 
-    def create_persistence_curves(self):
-        """Create spectrum persistence curves"""
-        z_index_base = 600
-        decay = self.get_decay()
-        self.persistence_curves = []
-        for i in range(self.persistence_length):
-            alpha = 255 * decay(i + 1, self.persistence_length + 1)
-            color = self.persistence_color
-            curve = self.plot.plot(pen=(color.red(), color.green(), color.blue(), alpha))
-            curve.setZValue(z_index_base - i)
-            self.persistence_curves.append(curve)
-
-    def set_colors(self):
-        """Set colors of all curves"""
-        self.curve.setPen(self.main_color)
-        self.curve_peak_hold_max.setPen(self.peak_hold_max_color)
-        self.curve_peak_hold_min.setPen(self.peak_hold_min_color)
-        self.curve_average.setPen(self.average_color)
-
-        decay = self.get_decay()
-        for i, curve in enumerate(self.persistence_curves):
-            alpha = 255 * decay(i + 1, self.persistence_length + 1)
-            color = self.persistence_color
-            curve.setPen((color.red(), color.green(), color.blue(), alpha))
-
-    def decay_linear(self, x, length):
-        """Get alpha value for persistence curve (linear decay)"""
-        return (-x / length) + 1
-
-    def decay_exponential(self, x, length, const=1/3):
-        """Get alpha value for persistence curve (exponential decay)"""
-        return math.e**(-x / (length * const))
-
-    def get_decay(self):
-        """Get decay function"""
-        if self.persistence_decay == 'exponential':
-            return self.decay_exponential
-        else:
-            return self.decay_linear
-
-    def update_plot(self, data_storage, force=False):
-        """Update main spectrum curve"""
-        if data_storage.frequency_bins is None:
-            return
-
-        if self.main_curve or force:
-            self.curve.setData(data_storage.frequency_bins, data_storage.psd_data[self.__visualize_index])
-            if force:
-                print("forced plot")
-                self.curve.setVisible(self.main_curve)
-
-    def update_peak_hold_max(self, data_storage, force=False):
-        """Update max. peak hold curve"""
-        if data_storage.frequency_bins is None:
-            return
-
-        if self.peak_hold_max or force:
-            self.curve_peak_hold_max.setData(data_storage.frequency_bins, data_storage.peak_hold_max[self.__visualize_index])
-            if force:
-                self.curve_peak_hold_max.setVisible(self.peak_hold_max)
-
-    def update_peak_hold_min(self, data_storage, force=False):
-        """Update min. peak hold curve"""
-        if data_storage.frequency_bins is None:
-            return
-
-        if self.peak_hold_min or force:
-            self.curve_peak_hold_min.setData(data_storage.frequency_bins, data_storage.peak_hold_min[self.__visualize_index])
-            if force:
-                self.curve_peak_hold_min.setVisible(self.peak_hold_min)
-
-    def update_average(self, data_storage, force=False):
-        """Update average curve"""
-        if data_storage.frequency_bins is None:
-            return
-
-        if self.average or force:
-            self.curve_average.setData(data_storage.frequency_bins, data_storage.average[self.__visualize_index])
-            if force:
-                print("forced average")
-                self.curve_average.setVisible(self.average)
-
-    def update_persistence(self, data_storage, force=False):
-        """Update persistence curves"""
-        if data_storage.x is None:
-            return
-
-        if self.persistence or force:
-            if self.persistence_data is None:
-                self.persistence_data = collections.deque(maxlen=self.persistence_length)
-            else:
-                for i, y in enumerate(self.persistence_data):
-                    curve = self.persistence_curves[i]
-                    curve.setData(data_storage.x, y)
-                    if force:
-                        curve.setVisible(self.persistence)
-            self.persistence_data.appendleft(data_storage.y)
-
-    def recalculate_plot(self, data_storage):
-        """Recalculate plot from history"""
-        if data_storage.x is None:
-            return
-
-        QtCore.QTimer.singleShot(0, lambda: self.update_plot(data_storage, force=True))
-        QtCore.QTimer.singleShot(0, lambda: self.update_average(data_storage, force=True))
-        QtCore.QTimer.singleShot(0, lambda: self.update_peak_hold_max(data_storage, force=True))
-        QtCore.QTimer.singleShot(0, lambda: self.update_peak_hold_min(data_storage, force=True))
-
-    def recalculate_persistence(self, data_storage):
-        """Recalculate persistence data and update persistence curves"""
-        if data_storage.x is None:
-            return
-
-        self.clear_persistence()
-        self.persistence_data = collections.deque(maxlen=self.persistence_length)
-        for i in range(min(self.persistence_length, data_storage.history.history_size - 1)):
-            data = data_storage.history[-i - 2]
-            if data_storage.smooth:
-                data = data_storage.smooth_data(data)
-            self.persistence_data.append(data)
-        QtCore.QTimer.singleShot(0, lambda: self.update_persistence(data_storage, force=True))
+    #    self.clear_persistence()
+    #    self.persistence_data = collections.deque(maxlen=self.persistence_length)
+    #    for i in range(min(self.persistence_length, data_storage.history.history_size - 1)):
+    #        data = data_storage.history[-i - 2]
+    #        if data_storage.smooth:
+    #            data = data_storage.smooth_data(data)
+    #        self.persistence_data.append(data)
+    #    QtCore.QTimer.singleShot(0, lambda: self.update_persistence(data_storage, force=True))
 
     def mouse_moved(self, evt):
         """Update crosshair when mouse is moved"""
@@ -224,26 +110,4 @@ class SpectrumPlotWidget:
             self.vLine.setPos(mousePoint.x())
             self.hLine.setPos(mousePoint.y())
 
-    def clear_plot(self):
-        """Clear main spectrum curve"""
-        self.curve.clear()
-
-    def clear_peak_hold_max(self):
-        """Clear max. peak hold curve"""
-        self.curve_peak_hold_max.clear()
-
-    def clear_peak_hold_min(self):
-        """Clear min. peak hold curve"""
-        self.curve_peak_hold_min.clear()
-
-    def clear_average(self):
-        """Clear average curve"""
-        self.curve_average.clear()
-
-    def clear_persistence(self):
-        """Clear spectrum persistence curves"""
-        self.persistence_data = None
-        for curve in self.persistence_curves:
-            curve.clear()
-            self.plot.removeItem(curve)
-        self.create_persistence_curves()
+    
