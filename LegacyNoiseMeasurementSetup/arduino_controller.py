@@ -5,7 +5,7 @@ import PyCmdMessenger
 ARDUINO_FUNCTIONS = enum("Watchdog","Acknowledge","SwitchChannel", "Error", "MotorCommand")
 
 class ArduinoController():
-    def __init__(self, resource, baud_rate = 9600):
+    def __init__(self, resource, baud_rate = 115200):
         self.__arduino = PyCmdMessenger.ArduinoBoard(resource, baud_rate,10)
         self.__commands = [
             [ARDUINO_FUNCTIONS.Watchdog,"s"],
@@ -57,22 +57,26 @@ if __name__=="__main__":
     
     var = ard.read_idn()
     print(var)
-    time.sleep(2)
-    for i in range(1,33,1):
-        ard.switch_channel(i,True)
-        time.sleep(1)
-        ard.switch_channel(i,False)
-    var = ard.read_idn()
-    print(var)
+    #time.sleep(2)
+    #for i in range(1,33,1):
+    #    ard.switch_channel(i,True)
+    #    time.sleep(1)
+    #    ard.switch_channel(i,False)
+    #var = ard.read_idn()
+    #print(var)
 
     #ard.set_motor_speed(1,255)
-    #time.sleep(4)
+    ard.set_motor_speed(2,255)
+    time.sleep(4)
     #ard.set_motor_speed(1,0)
-    #time.sleep(4)
-    ##ard.set_motor_speed(1 ,-255)
-    #time.sleep(4)
+    ard.set_motor_speed(2,0)
+    time.sleep(4)
+    #ard.set_motor_speed(1 ,-255)
+    ard.set_motor_speed(2,-255)
+    time.sleep(4)
 
     #ard.set_motor_speed(1,0)
+    ard.set_motor_speed(2,0)
     #time.sleep(4)
     
     #ard.set_motor_speed(2,0)

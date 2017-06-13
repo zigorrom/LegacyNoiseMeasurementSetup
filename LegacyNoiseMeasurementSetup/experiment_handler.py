@@ -6,6 +6,122 @@ from hp35670a_dsa import HP3567A, HP35670A_MODES,HP35670A_CALC, HP35670A_TRACES,
 from arduino_controller import ArduinoController
 from motorized_potentiometer import MotorizedPotentiometer
 import numpy as np
+from n_enum import enum
+from PyQt4 import QtCore
+
+
+MeasurementTypes = enum("spectrum", "timetrace", "time_spectrum")
+
+class DataHandler:
+    # should gether data and 
+    # 1 - save to file
+    # 2 - notify visualization
+    #meas_ranges:
+    #{0 - range number: (0 - start freq, 1600- end freq, 1 - freq step) - list of params }
+    def _get_frequencies(self, spectrum_ranges):
+        result = {}
+        for k,v in spectrum_ranges.items():
+            start,stop,step = v
+            nlines = 1+(stop-start)/step
+            result[k] = np.linspace(start,stop, nlines, True)
+        return result
+
+    def __init__(self, measurement_type = MeasurementTypes.spectrum, spectrum_ranges = {0: (0,1600,1),1:(0,102400,64)}):
+        #assert isinstance(measurement_type, type(MeasurementTypes))
+
+        self._spectrum_ranges = spectrum_ranges
+        self._frequencies = self._get_frequencies(spectrum_ranges)
+            
+
+
+        self._measured_temp_start = 0;
+        self._measured_temp_end = 0;
+
+        self._measured_main_voltage_start = 0;
+        self._measured_main_voltage_end = 0;
+
+        self._measured_sample_voltage_start = 0;
+        self._measured_sample_voltage_end = 0;
+        
+        self._measured_gate_voltage_start = 0;
+        self._measured_gate_voltage_end = 0;
+
+        self._sample_current_start = 0;
+        self._sample_current_end = 0;
+
+        self._sample_resistance_start = 0;
+        self._sample_resistance_end = 0;
+
+        self._equivalent_resistance_start = 0;
+        self._equivalent_resistance_end = 0;
+        
+
+
+
+    @property
+    def start_temperature(self):
+        return self._measured_temp_start
+    
+    @start_temperature.setter
+    def start_temperature(self, value):
+        self._measured_temp_start = value
+
+    @property
+    def end_temperature(self):
+        return self._measured_temp_end
+    
+    @end_temperature.setter
+    def end_temperature(self, value):
+        self._measured_temp_end = value
+
+    @property
+    def start_main_voltage(self):
+        return self._measured_main_voltage_start
+    
+    @start_main_voltage.setter
+    def start_main_voltage(self, value):
+        self._measured_main_voltage_start = value
+
+    @property
+    def end_main_voltage(self):
+        return self._measured_main_voltage_end
+    
+    @end_main_voltage.setter
+    def end_main_voltage(self, value):
+        self._measured_main_voltage_end = value
+
+    @property
+    def start_sample_voltage(self):
+        return self._measured_sample_voltage_start
+    
+    @start_sample_voltage.setter
+    def start_sample_voltage(self, value):
+        self._measured_sample_voltage_start = value
+
+    @property
+    def end_sample_voltage(self):
+        return self._measured_sample_voltage_start
+    
+    @end_sample_voltage.setter
+    def end_sample_voltage(self, value):
+        self._measured_sample_voltage_start = value
+
+
+    def update_spectrum(self, data,range = 0):
+        #range numeration from 0:   0 - 0 to 1600HZ
+        #                           1 - 0 to 102,4KHZ
+        start, stop, step = self._spectrum_ranges[range]
+        
+        #result = {'f': }
+        pass
+
+    def update_timetrace(self,data):
+        pass
+
+    def reset(self):
+        pass
+
+
 
 class Experiment:
     def __init__(self):
@@ -35,6 +151,8 @@ class Experiment:
         self._equivalent_resistance_end = 0;
 
         self._counter = 0
+
+        self._data_handler = DataHandler()
 
 
     def initialize_settings(self, configuration):
@@ -297,15 +415,19 @@ class Experiment:
 
 
 if __name__ == "__main__":
-    cfg = Configuration()
+    
     #settings = cfg.get_node_from_path("Settings.ExperimentSettings")
     #assert isinstance(settings, ExperimentSettings)
     #print(settings)
 
+    #cfg = Configuration()
+    #exp = Experiment()
+    #exp.initialize_settings(cfg)
+    #exp.perform_experiment()
 
-    exp = Experiment()
-    exp.initialize_settings(cfg)
-    exp.perform_experiment()
+    h = DataHandler(MeasurementTypes.spectrum)
+    data = np.random.random(1601)
+    h.update_spectrum(data,0)
 
 
     pass

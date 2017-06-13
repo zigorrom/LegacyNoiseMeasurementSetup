@@ -145,8 +145,8 @@ if __name__=="__main__":
     dev.set_average_count(50)
     dev.set_display_update_rate(1)
     dev.set_frequency_resolution(1600)
-    dev.set_frequency_start(1)
-    dev.set_frequency_stop(1600)
+    dev.set_frequency_start(0)
+    dev.set_frequency_stop(102.4,"KHZ")
 
     print(dev.get_points_number(HP35670A_CALC.CALC1))
 
