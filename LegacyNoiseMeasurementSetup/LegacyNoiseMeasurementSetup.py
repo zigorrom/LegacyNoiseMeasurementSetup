@@ -34,23 +34,24 @@ class ExperimentController(QtCore.QObject):
         self._counter = 0
 
 
-
-
-
     def _update_gui(self):
         try:
             print("refreshing: {0}".format(self._counter))
             self._counter+=1
             data = self._visualization_deque.popleft()
+            
+
+            range = data['r']
             dataX = data['f']
+            print(len(dataX))
             dataY = data['d']
+            print(len(dataY))
             #dataX = np.linspace(1,1600,1600,True)
             #dataY = 10**-9 * np.random.random(1600)
-            self._spectrum_plot.update_spectrum(1,{'f':dataX, 'd': dataY})
+            self._spectrum_plot.update_spectrum(range ,{'f':dataX, 'd': dataY})
             
         except Exception as e:
-            raise e
-            #print(str(e))
+            print(str(e))
 
 
     def start(self):

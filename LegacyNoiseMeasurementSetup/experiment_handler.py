@@ -135,8 +135,14 @@ class DataHandler:  #(QtCore.QObject):
         #                           1 - 0 to 102,4KHZ
         self._spectrum_data[range] = data
         q = self._input_data_queue
+        freq = self._frequencies[range]
+        print(range)
+        print(len(freq))
+        print(len(data))
+
+        result = {'r': range, 'f': freq, 'd':data}
         if q:
-            q.put_nowait(range, {'f':self._frequencies[range],'d':data})
+            q.put_nowait(result) #{'f':self._frequencies[range],'d':data})
         
             
         #emit(range, {'f':self._frequencies[range],'d':data})
@@ -176,6 +182,7 @@ class ProcessingThread(QtCore.QThread):
         while self.alive or (not self._input_data_queue.empty()):
             try:
                 data = self._input_data_queue.get(timeout = 1)
+                print
                 self._input_data_queue.task_done()
                 self._visualization_queue.appendleft(data)
             except EOFError as e:
@@ -462,8 +469,13 @@ class Experiment(Process):
     def perform_single_measurement(self):
         if self._simulate:
             print("simulating experiment")
-            data = 10**-9 * np.random.random(1600)
-            self._data_handler.update_spectrum(data,0)
+            range = 0 #np.random.choice([0,1])
+            max_counter = 1000
+            counter = 0
+            while counter < max_counter:
+                data = 10**-9 * np.random.random(1601)
+                self._data_handler.update_spectrum(data,range)
+
             return
 
         analyzer = self.__initialize_analyzer(self.__dynamic_signal_analyzer)
@@ -483,7 +495,11 @@ class Experiment(Process):
         
         str_data = analyzer.get_data(HP35670A_CALC.CALC1)
         data = np.fromstring(str_data, sep = ',')
-        self._data_handler.update_spectrum(data)
+
+        
+
+        range = 0
+        self._data_handler.update_spectrum(data,range)
 
         #measure Vds, Vfg
         #switch Vfg to Vmain
