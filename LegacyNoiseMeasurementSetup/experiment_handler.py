@@ -14,15 +14,112 @@ from PyQt4 import QtCore
 
 
 import pyqtgraph as pg
-from multiprocessing.queues import JoinableQueue
-from multiprocessing.context import Process
+from multiprocessing import JoinableQueue
+from multiprocessing import Process
 from multiprocessing import Event
+import multiprocessing
 from collections import deque
- 
+from plot import SpectrumPlotWidget
 
 
+
+
+class ExperimentController(QtCore.QObject):
+    def __init__(self, spectrum_plot=None, timetrace_plot=None,parent = None):
+        super().__init__(parent)
+        if spectrum_plot:
+            assert isinstance(spectrum_plot, SpectrumPlotWidget)
+        self._spectrum_plot = spectrum_plot
+
+        self._visualization_deque = deque(maxlen = 10)
+        self._input_data_queue = JoinableQueue()
+
+        self._processing_thread = ProcessingThread(self._input_data_queue, self._visualization_deque)
+        self._experiment_thread = Experiment(self._input_data_queue)
+
+        #assert isinstance(timetrace_plot, TimetracePlotWidget)
+        #self._timetrace_plot = timetrace_plot
+
+        self._refresh_timer = QtCore.QTimer(self)
+        self._refresh_timer.setInterval(100)
+        self._refresh_timer.timeout.connect(self._update_gui)
+        self._counter = 0
+
+
+    def _update_gui(self):
+        try:
+            print("refreshing: {0}".format(self._counter))
+            self._counter+=1
+            data = self._visualization_deque.popleft()
+            
+
+            cmd = data['c']
+            print("command received: {0}".format(cmd))
+            range = data['r']
+            dataX = data['f']
+            print(len(dataX))
+            dataY = data['d']
+            print(len(dataY))
+            #dataX = np.linspace(1,1600,1600,True)
+            #dataY = 10**-9 * np.random.random(1600)
+            self._spectrum_plot.update_spectrum(range ,{'f':dataX, 'd': dataY})
+            
+        except Exception as e:
+            print(str(e))
+
+
+    def start(self):
+        self._refresh_timer.start()
+        self._experiment_thread.start()
+        self._processing_thread.start()
+
+    def stop(self):
+        self._refresh_timer.stop()
+        self._experiment_thread.stop()
+        self._experiment_thread.join()
+        
+        self._input_data_queue.join()
+        self._processing_thread.stop()
+
+
+class ProcessingThread(QtCore.QThread):
+    threadStarted = QtCore.pyqtSignal()
+    threadStopped = QtCore.pyqtSignal()
+
+    def __init__(self, input_data_queue = None,visualization_queue = None, parent = None):
+        super().__init__(parent)
+        self.alive = False
+        assert isinstance(visualization_queue, deque)
+        self._visualization_queue = visualization_queue
+        #assert isinstance(input_data_queue, JoinableQueue)
+        self._input_data_queue = input_data_queue
+
+
+    def stop(self):
+        self.alive = False
+        self.wait()
+
+    def run(self):
+        self.alive = True
+        #while self.alive
+        while self.alive or (not self._input_data_queue.empty()):
+            try:
+                data = self._input_data_queue.get(timeout = 1)
+                print
+                self._input_data_queue.task_done()
+                self._visualization_queue.appendleft(data)
+            except EOFError as e:
+                print(str(e))
+                break
+            except:
+                pass
+
+        self.alive = False
+
+
+
+ExperimentCommands = enum("START","STOP","DATA","MESSAGE")
 MeasurementTypes = enum("spectrum", "timetrace", "time_spectrum")
-
 class DataHandler:  #(QtCore.QObject):
     #spectrum_updated_signal = QtCore.pyqtSignal(int, dict) # int - range, dict - data{f:frequency, d:data}
     #resulting_spectrum_updated_signal = QtCore.pyqtSignal(dict)
@@ -45,7 +142,7 @@ class DataHandler:  #(QtCore.QObject):
         #assert isinstance(measurement_type, type(MeasurementTypes))
         self._input_data_queue = None
         if input_data_queue:
-            assert isinstance(input_data_queue, JoinableQueue)
+            #assert isinstance(input_data_queue, JoinableQueue)
             self._input_data_queue = input_data_queue
     
         assert isinstance(working_directory, str)
@@ -128,7 +225,21 @@ class DataHandler:  #(QtCore.QObject):
     @end_sample_voltage.setter
     def end_sample_voltage(self, value):
         self._measured_sample_voltage_start = value
+####
+# ExperimentCommands = enum("START","STOP","DATA","MESSAGE")
+####
 
+    def _send_command(self,command):
+        q = self._input_data_queue
+        if q:
+            q.put_nowait({'c': command})
+
+    def send_process_start_command(self):
+        self._send_command(ExperimentCommands.START)
+
+    def send_process_end_command(self):
+        self._send_command(ExperimentCommands.STOP)
+    
 
     def update_spectrum(self, data,range = 0):
         #range numeration from 0:   0 - 0 to 1600HZ
@@ -140,7 +251,7 @@ class DataHandler:  #(QtCore.QObject):
         print(len(freq))
         print(len(data))
 
-        result = {'r': range, 'f': freq, 'd':data}
+        result = {'c': ExperimentCommands.DATA, 'r': range, 'f': freq, 'd':data}
         if q:
             q.put_nowait(result) #{'f':self._frequencies[range],'d':data})
         
@@ -158,41 +269,6 @@ class DataHandler:  #(QtCore.QObject):
 
     def reset(self):
         raise NotImplementedError()
-
-class ProcessingThread(QtCore.QThread):
-    threadStarted = QtCore.pyqtSignal()
-    threadStopped = QtCore.pyqtSignal()
-
-    def __init__(self, input_data_queue = None,visualization_queue = None, parent = None):
-        super().__init__(parent)
-        self.alive = False
-        assert isinstance(visualization_queue, deque)
-        self._visualization_queue = visualization_queue
-        assert isinstance(input_data_queue, JoinableQueue)
-        self._input_data_queue = input_data_queue
-
-
-    def stop(self):
-        self.alive = False
-        self.wait()
-
-    def run(self):
-        self.alive = True
-        #while self.alive
-        while self.alive or (not self._input_data_queue.empty()):
-            try:
-                data = self._input_data_queue.get(timeout = 1)
-                print
-                self._input_data_queue.task_done()
-                self._visualization_queue.appendleft(data)
-            except EOFError as e:
-                print(str(e))
-                break
-            except:
-                pass
-
-        self.alive = False
-
 
 class Experiment(Process):
     def __init__(self, input_data_queue = None, simulate = True):
@@ -472,7 +548,8 @@ class Experiment(Process):
             range = 0 #np.random.choice([0,1])
             max_counter = 1000
             counter = 0
-            while counter < max_counter:
+            need_exit = self.exit.is_set
+            while (not need_exit()) and counter < max_counter:
                 data = 10**-9 * np.random.random(1601)
                 self._data_handler.update_spectrum(data,range)
 

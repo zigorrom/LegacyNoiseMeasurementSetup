@@ -10,62 +10,9 @@ from nodes import ExperimentSettings, Node, SettingsModel, ValueRange, HardwareS
 from configuration import Configuration
 from communication_layer import get_available_gpib_resources, get_available_com_resources
 from plot import SpectrumPlotWidget
-from experiment_handler import ProcessingThread, Experiment
-
-class ExperimentController(QtCore.QObject):
-    def __init__(self, spectrum_plot=None, timetrace_plot=None,parent = None):
-        super().__init__(parent)
-        if spectrum_plot:
-            assert isinstance(spectrum_plot, SpectrumPlotWidget)
-        self._spectrum_plot = spectrum_plot
-
-        self._visualization_deque = deque(maxlen = 10)
-        self._input_data_queue = JoinableQueue()
-
-        self._processing_thread = ProcessingThread(self._input_data_queue, self._visualization_deque)
-        self._experiment_thread = Experiment(self._input_data_queue)
-
-        #assert isinstance(timetrace_plot, TimetracePlotWidget)
-        #self._timetrace_plot = timetrace_plot
-
-        self._refresh_timer = QtCore.QTimer(self)
-        self._refresh_timer.setInterval(100)
-        self._refresh_timer.timeout.connect(self._update_gui)
-        self._counter = 0
+from experiment_handler import ProcessingThread, Experiment, ExperimentController
 
 
-    def _update_gui(self):
-        try:
-            print("refreshing: {0}".format(self._counter))
-            self._counter+=1
-            data = self._visualization_deque.popleft()
-            
-
-            range = data['r']
-            dataX = data['f']
-            print(len(dataX))
-            dataY = data['d']
-            print(len(dataY))
-            #dataX = np.linspace(1,1600,1600,True)
-            #dataY = 10**-9 * np.random.random(1600)
-            self._spectrum_plot.update_spectrum(range ,{'f':dataX, 'd': dataY})
-            
-        except Exception as e:
-            print(str(e))
-
-
-    def start(self):
-        self._refresh_timer.start()
-        self._experiment_thread.start()
-        self._processing_thread.start()
-
-    def stop(self):
-        self._refresh_timer.stop()
-        self._experiment_thread.stop()
-        self._experiment_thread.join()
-        
-        self._input_data_queue.join()
-        self._processing_thread.stop()
     
 
 mainViewBase, mainViewForm = uic.loadUiType("UI_NoiseMeasurement.ui")
