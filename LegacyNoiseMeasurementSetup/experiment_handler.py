@@ -20,6 +20,7 @@ from multiprocessing import Event
 import multiprocessing
 from collections import deque
 from plot import SpectrumPlotWidget
+import time
 
 
 
@@ -41,7 +42,7 @@ class ExperimentController(QtCore.QObject):
         #self._timetrace_plot = timetrace_plot
 
         self._refresh_timer = QtCore.QTimer(self)
-        self._refresh_timer.setInterval(100)
+        self._refresh_timer.setInterval(200)
         self._refresh_timer.timeout.connect(self._update_gui)
         self._counter = 0
 
@@ -51,18 +52,21 @@ class ExperimentController(QtCore.QObject):
             print("refreshing: {0}".format(self._counter))
             self._counter+=1
             data = self._visualization_deque.popleft()
-            
+            cmd_format = "{0} command received"
 
-            cmd = data['c']
-            print("command received: {0}".format(cmd))
-            range = data['r']
-            dataX = data['f']
-            print(len(dataX))
-            dataY = data['d']
-            print(len(dataY))
-            #dataX = np.linspace(1,1600,1600,True)
-            #dataY = 10**-9 * np.random.random(1600)
-            self._spectrum_plot.update_spectrum(range ,{'f':dataX, 'd': dataY})
+            cmd = data.get('c')
+            print(cmd_format.format(ExperimentCommands[cmd]))
+            if cmd is None:
+                return
+            elif cmd is ExperimentCommands.START:
+                pass
+            elif cmd is ExperimentCommands.STOP:
+                pass
+            elif cmd is ExperimentCommands.DATA:
+                index = data['i']
+                rang = data['r']
+                print("visualized data index: {0}".format(index))
+                self._spectrum_plot.update_spectrum(rang ,data)
             
         except Exception as e:
             print(str(e))
@@ -86,6 +90,8 @@ class ProcessingThread(QtCore.QThread):
     threadStarted = QtCore.pyqtSignal()
     threadStopped = QtCore.pyqtSignal()
 
+    commandReceived = QtCore.pyqtSignal(int)
+
     def __init__(self, input_data_queue = None,visualization_queue = None, parent = None):
         super().__init__(parent)
         self.alive = False
@@ -105,9 +111,27 @@ class ProcessingThread(QtCore.QThread):
         while self.alive or (not self._input_data_queue.empty()):
             try:
                 data = self._input_data_queue.get(timeout = 1)
-                print
                 self._input_data_queue.task_done()
-                self._visualization_queue.appendleft(data)
+                cmd_format = "{0} command received"
+                cmd = data.get('c')
+                
+                print(cmd_format.format(ExperimentCommands[cmd]))
+                if cmd is None:
+                    continue
+                elif cmd is ExperimentCommands.START:
+                    self.commandReceived.emit(ExperimentCommands.START)
+                    continue
+
+                elif cmd is ExperimentCommands.STOP:
+                    self.alive = False
+                    self.commandReceived.emit(ExperimentCommands.STOP)
+                    break
+
+                elif cmd is ExperimentCommands.DATA:
+                    self._visualization_queue.appendleft(data)    
+
+                
+
             except EOFError as e:
                 print(str(e))
                 break
@@ -153,27 +177,28 @@ class DataHandler:  #(QtCore.QObject):
         self._frequencies = self._get_frequencies(spectrum_ranges)
         self._spectrum_data = {}   
 
+        self._counter = 0
 
-        self._measured_temp_start = 0;
-        self._measured_temp_end = 0;
+        self._measured_temp_start = 0
+        self._measured_temp_end = 0
 
-        self._measured_main_voltage_start = 0;
-        self._measured_main_voltage_end = 0;
+        self._measured_main_voltage_start = 0
+        self._measured_main_voltage_end = 0
 
-        self._measured_sample_voltage_start = 0;
-        self._measured_sample_voltage_end = 0;
+        self._measured_sample_voltage_start = 0
+        self._measured_sample_voltage_end = 0
         
-        self._measured_gate_voltage_start = 0;
-        self._measured_gate_voltage_end = 0;
+        self._measured_gate_voltage_start = 0
+        self._measured_gate_voltage_end = 0
 
-        self._sample_current_start = 0;
-        self._sample_current_end = 0;
+        self._sample_current_start = 0
+        self._sample_current_end = 0
 
-        self._sample_resistance_start = 0;
-        self._sample_resistance_end = 0;
+        self._sample_resistance_start = 0
+        self._sample_resistance_end = 0
 
-        self._equivalent_resistance_start = 0;
-        self._equivalent_resistance_end = 0;
+        self._equivalent_resistance_start = 0
+        self._equivalent_resistance_end = 0
         
 
 
@@ -241,17 +266,18 @@ class DataHandler:  #(QtCore.QObject):
         self._send_command(ExperimentCommands.STOP)
     
 
-    def update_spectrum(self, data,range = 0):
+    def update_spectrum(self, data,rang = 0):
         #range numeration from 0:   0 - 0 to 1600HZ
         #                           1 - 0 to 102,4KHZ
-        self._spectrum_data[range] = data
+        self._spectrum_data[rang] = data
         q = self._input_data_queue
-        freq = self._frequencies[range]
-        print(range)
+        freq = self._frequencies[rang]
+        print(rang)
         print(len(freq))
         print(len(data))
 
-        result = {'c': ExperimentCommands.DATA, 'r': range, 'f': freq, 'd':data}
+        result = {'c': ExperimentCommands.DATA, 'r': rang, 'f': freq, 'd':data, 'i': self._counter}
+        self._counter+=1
         if q:
             q.put_nowait(result) #{'f':self._frequencies[range],'d':data})
         
@@ -549,10 +575,13 @@ class Experiment(Process):
             max_counter = 1000
             counter = 0
             need_exit = self.exit.is_set
+            self._data_handler.send_process_start_command()
             while (not need_exit()) and counter < max_counter:
                 data = 10**-9 * np.random.random(1601)
                 self._data_handler.update_spectrum(data,range)
-
+                counter+=1
+                #time.sleep(0.1)
+            self._data_handler.send_process_end_command()
             return
 
         analyzer = self.__initialize_analyzer(self.__dynamic_signal_analyzer)

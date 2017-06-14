@@ -70,8 +70,8 @@ class SpectrumPlotWidget:
 
    
 
-    def update_spectrum(self, range, data, force = False):
-        curve = self.curves[range]
+    def update_spectrum(self, rang, data, force = False):
+        curve = self.curves[rang]
         curve.setData(data['f'],data['d'])
         
         #if self.curves[range] or force:
