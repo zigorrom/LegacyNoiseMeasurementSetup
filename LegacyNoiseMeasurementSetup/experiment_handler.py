@@ -142,7 +142,7 @@ class ProcessingThread(QtCore.QThread):
 
 
 
-ExperimentCommands = enum("START","STOP","DATA","MESSAGE")
+ExperimentCommands = enum("START","STOP","DATA","MESSAGE", "MEASUREMENT_STARTED", "MEASUREMENT_FINISHED", "SPECTRUM_DATA", "TIMETRACE_DATA","EXPERIMENT_DATA")
 MeasurementTypes = enum("spectrum", "timetrace", "time_spectrum")
 class DataHandler:  #(QtCore.QObject):
     #spectrum_updated_signal = QtCore.pyqtSignal(int, dict) # int - range, dict - data{f:frequency, d:data}
