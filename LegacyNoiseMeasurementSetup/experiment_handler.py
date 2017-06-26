@@ -37,7 +37,12 @@ class ExperimentController(QtCore.QObject):
 
         self._processing_thread = ProcessingThread(self._input_data_queue, self._visualization_deque)
         self._experiment_thread = Experiment(self._input_data_queue)
-        self._processing_thread.commandReceived.connect(self._command_received)
+
+        self._processing_thread.experimentStarted.connect(self._on_experiment_started)
+        self._processing_thread.experimentFinished.connect(self._on_experiment_finished)
+        self._processing_thread.measurementStarted.connect(self._on_measurement_started)
+        self._processing_thread.measurementFinished.connect(self._on_measurement_finished)
+        #self._processing_thread.commandReceived.connect(self._command_received)
         #assert isinstance(timetrace_plot, TimetracePlotWidget)
         #self._timetrace_plot = timetrace_plot
 
@@ -45,6 +50,19 @@ class ExperimentController(QtCore.QObject):
         self._refresh_timer.setInterval(200)
         self._refresh_timer.timeout.connect(self._update_gui)
         self._counter = 0
+
+    def _on_experiment_started(self):
+        print("Experiment started succesfully")
+
+    def _on_experiment_finished(self):
+        print("Experiment finished")
+
+    def _on_measurement_started(self):
+        print("New measurement started")
+
+    def _on_measurement_finished(self):
+        print("New measurement finished")
+
 
     def _command_received(self,cmd):
         print("IN UI thread command received: {0}".format(ExperimentCommands[cmd]))
@@ -63,13 +81,13 @@ class ExperimentController(QtCore.QObject):
 
             cmd = data.get('c')
             print(cmd_format.format(ExperimentCommands[cmd]))
-            if cmd is None:
-                return
-            elif cmd is ExperimentCommands.START:
-                pass
-            elif cmd is ExperimentCommands.STOP:
-                pass
-            elif cmd is ExperimentCommands.DATA:
+            #if cmd is None:
+            #    return
+            #elif cmd is ExperimentCommands.START:
+            #    pass
+            #elif cmd is ExperimentCommands.STOP:
+            #    pass
+            if cmd is ExperimentCommands.DATA:
                 index = data['i']
                 rang = data['r']
                 print("visualized data index: {0}".format(index))
@@ -137,19 +155,23 @@ class ProcessingThread(QtCore.QThread):
                     continue
                 elif cmd is ExperimentCommands.START:
                     self.commandReceived.emit(ExperimentCommands.START)
+                    self.experimentStarted.emit()
                     continue
 
                 elif cmd is ExperimentCommands.STOP:
                     self.alive = False
                     self.commandReceived.emit(ExperimentCommands.STOP)
+                    self.experimentFinished.emit()
                     break
 
                 elif cmd is ExperimentCommands.MEASUREMENT_STARTED:
                     self.commandReceived.emit(ExperimentCommands.MEASUREMENT_STARTED)
+                    self.measurementStarted.emit()
                     continue
 
                 elif cmd is ExperimentCommands.MEASUREMENT_FINISHED:
                     self.commandReceived.emit(ExperimentCommands.MEASUREMENT_FINISHED)
+                    self.measurementFinished.emit()
                     continue
 
                 elif cmd is ExperimentCommands.DATA:
@@ -611,7 +633,7 @@ class Experiment(Process):
                 data = 10**-9 * np.random.random(1601)
                 self._data_handler.update_spectrum(data,range)
                 counter+=1
-                #time.sleep(0.1)
+                time.sleep(0.5)
             self._data_handler.send_measurement_finished_command()#send_process_end_command()
             return
 

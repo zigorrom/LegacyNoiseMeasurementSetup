@@ -13,7 +13,7 @@ from plot import SpectrumPlotWidget
 from experiment_handler import ProcessingThread, Experiment, ExperimentController
 
 
-    
+
 
 mainViewBase, mainViewForm = uic.loadUiType("UI_NoiseMeasurement.ui")
 class MainView(mainViewBase,mainViewForm):
