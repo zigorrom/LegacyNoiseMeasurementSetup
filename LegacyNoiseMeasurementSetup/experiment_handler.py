@@ -37,7 +37,7 @@ class ExperimentController(QtCore.QObject):
 
         self._processing_thread = ProcessingThread(self._input_data_queue, self._visualization_deque)
         self._experiment_thread = Experiment(self._input_data_queue)
-
+        self._processing_thread.commandReceived.connect(self._command_received)
         #assert isinstance(timetrace_plot, TimetracePlotWidget)
         #self._timetrace_plot = timetrace_plot
 
@@ -45,6 +45,13 @@ class ExperimentController(QtCore.QObject):
         self._refresh_timer.setInterval(200)
         self._refresh_timer.timeout.connect(self._update_gui)
         self._counter = 0
+
+    def _command_received(self,cmd):
+        print("IN UI thread command received: {0}".format(ExperimentCommands[cmd]))
+        if cmd is ExperimentCommands.START:
+            pass
+        elif cmd is ExperimentCommands.STOP:
+            self.stop()
 
 
     def _update_gui(self):
@@ -92,6 +99,14 @@ class ProcessingThread(QtCore.QThread):
 
     commandReceived = QtCore.pyqtSignal(int)
 
+    experimentStarted = QtCore.pyqtSignal()
+    experimentFinished = QtCore.pyqtSignal()
+
+    measurementStarted = QtCore.pyqtSignal()
+    measurementFinished = QtCore.pyqtSignal()
+
+
+
     def __init__(self, input_data_queue = None,visualization_queue = None, parent = None):
         super().__init__(parent)
         self.alive = False
@@ -104,6 +119,8 @@ class ProcessingThread(QtCore.QThread):
     def stop(self):
         self.alive = False
         self.wait()
+
+    #ExperimentCommands -> ("START","STOP","DATA","MESSAGE", "MEASUREMENT_STARTED", "MEASUREMENT_FINISHED", "SPECTRUM_DATA", "TIMETRACE_DATA","EXPERIMENT_DATA")
 
     def run(self):
         self.alive = True
@@ -127,8 +144,16 @@ class ProcessingThread(QtCore.QThread):
                     self.commandReceived.emit(ExperimentCommands.STOP)
                     break
 
+                elif cmd is ExperimentCommands.MEASUREMENT_STARTED:
+                    self.commandReceived.emit(ExperimentCommands.MEASUREMENT_STARTED)
+                    continue
+
+                elif cmd is ExperimentCommands.MEASUREMENT_FINISHED:
+                    self.commandReceived.emit(ExperimentCommands.MEASUREMENT_FINISHED)
+                    continue
+
                 elif cmd is ExperimentCommands.DATA:
-                    self._visualization_queue.appendleft(data)    
+                    self._visualization_queue.append(data)    
 
                 
 
@@ -581,13 +606,13 @@ class Experiment(Process):
             max_counter = 1000
             counter = 0
             need_exit = self.exit.is_set
-            self._data_handler.send_process_start_command()
+            self._data_handler.send_measurement_start_command()#.send_process_start_command()
             while (not need_exit()) and counter < max_counter:
                 data = 10**-9 * np.random.random(1601)
                 self._data_handler.update_spectrum(data,range)
                 counter+=1
                 #time.sleep(0.1)
-            self._data_handler.send_process_end_command()
+            self._data_handler.send_measurement_finished_command()#send_process_end_command()
             return
 
         analyzer = self.__initialize_analyzer(self.__dynamic_signal_analyzer)
@@ -627,7 +652,9 @@ class Experiment(Process):
 
     def perform_experiment(self):
         function_to_execute = self.generate_experiment_function()
+        self._data_handler.send_process_start_command()
         function_to_execute()
+        self._data_handler.send_process_end_command()
 
 
     def stop(self):

@@ -13,9 +13,6 @@
   <property name="windowTitle">
    <string>Noise Measurement</string>
   </property>
-  <property name="styleSheet">
-   <string notr="true">background-color: rgb(255, 255, 255);</string>
-  </property>
   <layout class="QGridLayout" name="gridLayout_3">
    <item row="0" column="0">
     <widget class="GraphicsLayoutWidget" name="ui_plot"/>
