@@ -406,6 +406,8 @@ class DataHandler:  #(QtCore.QObject):
     def send_measurement_finished_command(self):
         self._send_command(ExperimentCommands.MEASUREMENT_FINISHED)
 
+    def send_experiment_data(self):
+        pass
 
     def update_spectrum(self, data,rang = 0):
         #range numeration from 0:   0 - 0 to 1600HZ
