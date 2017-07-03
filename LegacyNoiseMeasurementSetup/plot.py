@@ -106,9 +106,9 @@ class SpectrumPlotWidget:
         if self.plot.sceneBoundingRect().contains(pos):
             mousePoint = self.plot.vb.mapSceneToView(pos)
             self.posLabel.setText(
-                "<span style='font-size: 12pt'>f=10^{:0.3f} Hz, P={:0.3f} V^2/Hz</span>".format(
-                    mousePoint.x() ,
-                    mousePoint.y()
+                "<span style='font-size: 12pt'>f={} Hz, P={} V^2/Hz</span>".format( #:0.3f
+                    int(10**mousePoint.x()) ,
+                    10**mousePoint.y()
                 )
             )
             self.vLine.setPos(mousePoint.x())
