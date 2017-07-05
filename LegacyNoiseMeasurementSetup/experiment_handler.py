@@ -58,7 +58,7 @@ class ExperimentController(QtCore.QObject):
         self._processing_thread.commandReceived.connect(self._command_received)
 
     def __init_experiment_thread(self):
-        self._experiment_thread = ExperimentProcess(self._input_data_queue)
+        self._experiment_thread = ExperimentProcess(self._input_data_queue,False)
 
     def _command_received(self,cmd):
         self._status_object.send_message("Command received: {0}".format(ExperimentCommands[cmd]))
