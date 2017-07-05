@@ -485,9 +485,9 @@ class ExperimentProcess(Process):
     #    pass   
 
     def single_value_measurement(self, drain_source_voltage, gate_voltage):
-        self.set_drain_source_voltage(drain_source_voltage)
-        self.set_front_gate_voltage(gate_voltage)
-        self.set_drain_source_voltage(drain_source_voltage) ## specifics of the circuit!!! to correct the value of dropped voltage on opened channel
+        #self.set_drain_source_voltage(drain_source_voltage)
+        #self.set_front_gate_voltage(gate_voltage)
+        #self.set_drain_source_voltage(drain_source_voltage) ## specifics of the circuit!!! to correct the value of dropped voltage on opened channel
         self.perform_single_measurement()
         #set vds_voltage
         # set vfg voltage
@@ -506,7 +506,7 @@ class ExperimentProcess(Process):
         #  non_gated_single_value_measurement(vds)
 
     def non_gated_single_value_measurement(self, drain_source_voltage):
-        self.set_drain_source_voltage(drain_source_voltage)
+        #self.set_drain_source_voltage(drain_source_voltage)
         self.perform_non_gated_single_measurement()
         #set vds_voltage
         # stabilize voltage
@@ -690,7 +690,7 @@ if __name__ == "__main__":
     #print(settings)
 
     cfg = Configuration()
-    exp = ExperimentProcess()
+    exp = ExperimentProcess(simulate = False)
     exp.initialize_settings(cfg)
     exp.perform_experiment()
     #exp.start()
