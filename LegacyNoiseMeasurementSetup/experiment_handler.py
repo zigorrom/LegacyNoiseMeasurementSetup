@@ -80,11 +80,12 @@ class ExperimentController(QtCore.QObject):
     def _on_measurement_finished(self):
         print("New measurement finished")
 
-    def _on_measurement_info_arrived(self,data_dict):
+    def _on_measurement_info_arrived(self,measurement_info):
         print("measurement_info_arrived")
-        if isinstance(data_dict, dict):
-            for k,v in data_dict.items():
-                self._status_object.send_value_changed(k,v)
+        self._status_object.send_measurement_info_changed(measurement_info)
+        #if isinstance(data_dict, dict):
+        #    for k,v in data_dict.items():
+                #self._status_object.send_value_changed(k,v)
 
     def _update_gui(self):
         try:
@@ -130,7 +131,7 @@ class ProcessingThread(QtCore.QThread):
     experimentFinished = QtCore.pyqtSignal()
     measurementStarted = QtCore.pyqtSignal(str)
     measurementFinished = QtCore.pyqtSignal()
-    measurementDataArrived = QtCore.pyqtSignal(dict)
+    measurementDataArrived = QtCore.pyqtSignal(MeasurementInfo)
 
     def __init__(self, input_data_queue = None,visualization_queue = None, parent = None):
         super().__init__(parent)

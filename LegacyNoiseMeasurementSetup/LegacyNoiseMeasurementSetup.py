@@ -11,11 +11,12 @@ from configuration import Configuration
 from communication_layer import get_available_gpib_resources, get_available_com_resources
 from plot import SpectrumPlotWidget
 from experiment_handler import ProcessingThread, ExperimentProcess, ExperimentController
-
+from measurement_data_structures import MeasurementInfo
 
 class StatusObject(QtCore.QObject):
     message_arrived = QtCore.pyqtSignal(str)
     value_changed = QtCore.pyqtSignal(str,object)
+    measurement_info_changed = QtCore.pyqtSignal(MeasurementInfo)
 
     def __init__(self):
         super().__init__()
@@ -25,6 +26,11 @@ class StatusObject(QtCore.QObject):
 
     def send_value_changed(self, parameter, value):
         self.value_changed.emit(parameter,value)
+
+    def send_measurement_info_changed(self, measurement_info):
+        self.measurement_info_changed.emit(measurement_info)
+
+
 
 mainViewBase, mainViewForm = uic.loadUiType("UI_NoiseMeasurement_v2.ui")
 class MainView(mainViewBase,mainViewForm):
