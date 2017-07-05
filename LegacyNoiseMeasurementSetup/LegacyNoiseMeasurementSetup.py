@@ -63,14 +63,11 @@ class MainView(mainViewBase,mainViewForm):
         self.front_gate_voltage_end.setText(str(measurement_info.end_gate_voltage))
 
         
-
-
     def _on_measurement_info_changed(self, measurement_info):
         print("measurement info changed")
         if isinstance(measurement_info, MeasurementInfo):
             print("measurement_info :{0}".format(measurement_info))
             self.__ui_set_measurement_info(measurement_info)
-
 
 
     def _on_parameter_changed(self,parameter, value):
@@ -79,8 +76,6 @@ class MainView(mainViewBase,mainViewForm):
             return
 
         
-
-
     def _on_message_arrived(self,message):
         #assert isinstance(self.statusbar, QtGui.QStatusBar)
         self.statusbar.showMessage(message, 1000)
