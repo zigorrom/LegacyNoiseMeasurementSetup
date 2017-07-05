@@ -31,6 +31,9 @@
     <Compile Include="configuration.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="experiment_writer.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="experiment_handler.py">
       <SubType>Code</SubType>
     </Compile>

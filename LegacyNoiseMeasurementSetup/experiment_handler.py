@@ -23,73 +23,6 @@ from plot import SpectrumPlotWidget
 import time
 
 
-
-class ExperimentWriter(QtCore.QObject):
-    def __init__(self, working_directory, experiment_name = None, measurement_name = None, measurement_counter = 0, parent = None):
-        super().__init__(parent)
-        self._working_directory = working_directory
-        self._experiment_name = experiment_name
-        self._measurement_name = measurement_name
-        self._measurement_counter = measurement_counter
-        self.__experiment_file_extension = "dat"
-        self.__measurement_file_extension = "dat"
-        self._experiment_file = None
-        self._measurement_file = None
-
-    @property
-    def working_directory(self):
-        return self._working_directory
-
-    @working_directory.setter
-    def working_directory(self,value):
-        self._working_directory = value
-
-
-    def open_experiment(self, experiment_name):
-        if self._experiment_file: 
-            self.close_experiment()
-        
-        self._experiment_name = experiment_name
-        filepath = join(self._working_directory, "{0}.{1}".format(self._experiment_name,self.__experiment_file_extension))
-        self._experiment_file = open(filepath, 'wb')
-        self._write_experiment_header()
-
-
-    def close_experiment(self):
-        if self._experiment_file and not self._experiment_file.closed:
-            self._experiment_file.close()
-            
-
-
-    def open_measurement(self, measurement_name, measurement_counter):
-        if self._measurement_file:
-            self.close_measurement()
-
-        self._measurement_name = measurement_name
-        self._measurement_counter = measurement_counter
-        filepath = join(self._working_directory, "{0}_{1}.{2}".format(self._measurement_name,self._measurement_counter, self.__measurement_file_extension))
-        self._measurement_file = open(filepath,"wb")
-        self._write_measurement_header()
-
-    def _write_experiment_header(self):
-        pass
-
-    def _write_measurement_header(self):
-        pass
-
-    def close_measurement(self):
-        if self._measurement_file and not self._measurement_file.closed:
-            self._measurement_file.close()
-
-    def write_experiment_info(self,info):
-        pass
-
-    def write_measurement(self,data):
-        pass
-
-    
-
-
 class ExperimentController(QtCore.QObject):
     def __init__(self, spectrum_plot=None, timetrace_plot=None,parent = None):
         super().__init__(parent)
@@ -124,10 +57,10 @@ class ExperimentController(QtCore.QObject):
         self._processing_thread.experimentFinished.connect(self._on_experiment_finished)
         self._processing_thread.measurementStarted.connect(self._on_measurement_started)
         self._processing_thread.measurementFinished.connect(self._on_measurement_finished)
-        self._processing_thread.measurementDataArrived.connect(self._on_measurement_data_arrived)
+        self._processing_thread.measurementDataArrived.connect(self._on_measurement_info_arrived)
 
     def __init_experiment_thread(self):
-        self._experiment_thread = Experiment(self._input_data_queue)
+        self._experiment_thread = ExperimentProcess(self._input_data_queue)
 
     def _on_experiment_started(self):
         print("Experiment started succesfully")
@@ -150,8 +83,8 @@ class ExperimentController(QtCore.QObject):
         elif cmd is ExperimentCommands.STOP:
             self.stop()
 
-    def _on_measurement_data_arrived(self,data_dict):
-        print("measurement_data_arrived")
+    def _on_measurement_info_arrived(self,data_dict):
+        print("measurement_info_arrived")
 
 
     def _update_gui(self):
@@ -223,7 +156,7 @@ class ProcessingThread(QtCore.QThread):
         self.alive = False
         self.wait()
 
-    #ExperimentCommands -> ("START","STOP","DATA","MESSAGE", "MEASUREMENT_STARTED", "MEASUREMENT_FINISHED", "SPECTRUM_DATA", "TIMETRACE_DATA","EXPERIMENT_DATA")
+   
 
     def run(self):
         self.alive = True
@@ -259,7 +192,7 @@ class ProcessingThread(QtCore.QThread):
                     self.measurementFinished.emit()
                     continue
 
-                elif cmd is ExperimentCommands.MEASUREMENT_DATA:
+                elif cmd is ExperimentCommands.MEASUREMENT_INFO:
                     self.measurementDataArrived.emit(data)
 
                 elif cmd is ExperimentCommands.DATA:
@@ -277,7 +210,7 @@ class ProcessingThread(QtCore.QThread):
 
 
 
-ExperimentCommands = enum("START","STOP","DATA","MESSAGE", "MEASUREMENT_STARTED", "MEASUREMENT_FINISHED", "SPECTRUM_DATA", "TIMETRACE_DATA","EXPERIMENT_DATA", "MEASUREMENT_DATA")
+ExperimentCommands = enum("START","STOP","DATA","MESSAGE", "MEASUREMENT_STARTED", "MEASUREMENT_FINISHED", "SPECTRUM_DATA", "TIMETRACE_DATA","EXPERIMENT_INFO", "MEASUREMENT_INFO")
 MeasurementTypes = enum("spectrum", "timetrace", "time_spectrum")
 class DataHandler:  #(QtCore.QObject):
     #spectrum_updated_signal = QtCore.pyqtSignal(int, dict) # int - range, dict - data{f:frequency, d:data}
@@ -406,7 +339,7 @@ class DataHandler:  #(QtCore.QObject):
     def send_measurement_finished_command(self):
         self._send_command(ExperimentCommands.MEASUREMENT_FINISHED)
 
-    def send_experiment_data(self):
+    def send_experiment_info(self,info):
         pass
 
     def update_spectrum(self, data,rang = 0):
@@ -439,7 +372,7 @@ class DataHandler:  #(QtCore.QObject):
 
 
 
-class Experiment(Process):
+class ExperimentProcess(Process):
     def __init__(self, input_data_queue = None, simulate = True):
         #self.__hardware_settings = None
         #self.__exp_settings = ExperimentSettings()
@@ -787,7 +720,7 @@ if __name__ == "__main__":
     #print(settings)
 
     cfg = Configuration()
-    exp = Experiment()
+    exp = ExperimentProcess()
     exp.initialize_settings(cfg)
     exp.perform_experiment()
     #exp.start()
