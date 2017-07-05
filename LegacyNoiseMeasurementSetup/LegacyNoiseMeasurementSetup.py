@@ -52,8 +52,18 @@ class MainView(mainViewBase,mainViewForm):
     #    self.statusBar = QtGui.QStatusBar()
     #    self.
     def __ui_set_measurement_info(self, measurement_info):
-        self.sample_voltage_start.text = measurement_info.start_sample_voltage
-        self.sample_voltage_start.text = measurement_info.end_sample_voltage
+        print("updating ui")
+        print(measurement_info.start_sample_voltage)
+        print(measurement_info.end_sample_voltage)
+
+        self.sample_voltage_start.setText(str(measurement_info.start_sample_voltage))
+        self.sample_voltage_end.setText(str(measurement_info.end_sample_voltage))
+        
+        self.front_gate_voltage_start.setText(str(measurement_info.start_gate_voltage))
+        self.front_gate_voltage_end.setText(str(measurement_info.end_gate_voltage))
+
+        
+
 
     def _on_measurement_info_changed(self, measurement_info):
         print("measurement info changed")
