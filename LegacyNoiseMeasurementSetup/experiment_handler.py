@@ -24,7 +24,7 @@ import time
 
 
 class ExperimentController(QtCore.QObject):
-    def __init__(self, spectrum_plot=None, timetrace_plot=None, measurement_ranges = {0: (0,1600,1),1:(0,102400,64)},  parent = None):
+    def __init__(self, spectrum_plot=None, timetrace_plot=None, status_object = None, measurement_ranges = {0: (0,1600,1),1:(0,102400,64)},  parent = None):
         super().__init__(parent)
         if spectrum_plot:
             assert isinstance(spectrum_plot, SpectrumPlotWidget)
@@ -33,6 +33,9 @@ class ExperimentController(QtCore.QObject):
 
         self._visualization_deque = deque(maxlen = 50)
         self._input_data_queue = JoinableQueue()
+
+
+        self._status_object = status_object
 
         ## pass configuration to threads
 
@@ -51,6 +54,7 @@ class ExperimentController(QtCore.QObject):
         self._processing_thread.measurementStarted.connect(self._on_measurement_started)
         self._processing_thread.measurementFinished.connect(self._on_measurement_finished)
         self._processing_thread.measurementDataArrived.connect(self._on_measurement_info_arrived)
+        self._processing_thread.commandReceived.connect(self._command_received)
 
     def __init_experiment_thread(self):
         self._experiment_thread = ExperimentProcess(self._input_data_queue)
@@ -71,6 +75,7 @@ class ExperimentController(QtCore.QObject):
 
     def _command_received(self,cmd):
         print("IN UI thread command received: {0}".format(ExperimentCommands[cmd]))
+        self._status_object.send_message("Command received: {0}".format(ExperimentCommands[cmd]))
         if cmd is ExperimentCommands.START:
             pass
         elif cmd is ExperimentCommands.STOP:

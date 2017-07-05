@@ -13,9 +13,20 @@ from plot import SpectrumPlotWidget
 from experiment_handler import ProcessingThread, ExperimentProcess, ExperimentController
 
 
+class StatusObject(QtCore.QObject):
+    message_arrived = QtCore.pyqtSignal(str)
+    value_changed = QtCore.pyqtSignal(str,object)
 
+    def __init__(self):
+        super().__init__()
 
-mainViewBase, mainViewForm = uic.loadUiType("UI_NoiseMeasurement.ui")
+    def send_message(self, message):
+        self.message_arrived.emit(message)
+
+    def send_value_changed(self, parameter, value):
+        self.value_changed.emit(parameter,value)
+
+mainViewBase, mainViewForm = uic.loadUiType("UI_NoiseMeasurement_v2.ui")
 class MainView(mainViewBase,mainViewForm):
     def __init__(self, parent = None):
        super(mainViewBase,self).__init__(parent)
@@ -24,8 +35,26 @@ class MainView(mainViewBase,mainViewForm):
        rootNode = self._config.get_node_from_path("Settings")#Node("settings")
        self.setSettings(rootNode)
        self.setupPlots()
-       self._experiment_controller = ExperimentController(self._spectrumPlotWidget)
+       self._status_object = StatusObject()
+       self._status_object.message_arrived.connect(self._on_message_arrived)
+       self._status_object.value_changed.connect(self._on_parameter_changed)
+
+       self._experiment_controller = ExperimentController(self._spectrumPlotWidget, status_object = self._status_object)
        
+
+    #def _init_status_bar(self):
+    #    self.statusBar = QtGui.QStatusBar()
+    #    self.
+
+
+    def _on_parameter_changed(self,parameter, value):
+        print("parameter_changed")
+
+    def _on_message_arrived(self,message):
+        #assert isinstance(self.statusbar, QtGui.QStatusBar)
+        self.statusbar.showMessage(message, 1000)
+        #print("message_arrived")
+
 
     def setupPlots(self):
         self._spectrumPlotWidget =  SpectrumPlotWidget(self.ui_plot,{0:(0,1600,1),1:(0,102400,64)})
