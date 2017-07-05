@@ -44,7 +44,7 @@ class MainView(mainViewBase,mainViewForm):
        self._status_object = StatusObject()
        self._status_object.message_arrived.connect(self._on_message_arrived)
        self._status_object.value_changed.connect(self._on_parameter_changed)
-
+       self._status_object.measurement_info_changed.connect(self._on_measurement_info_changed)
        self._experiment_controller = ExperimentController(self._spectrumPlotWidget, status_object = self._status_object)
        
 
@@ -52,6 +52,10 @@ class MainView(mainViewBase,mainViewForm):
     #    self.statusBar = QtGui.QStatusBar()
     #    self.
 
+    def _on_measurement_info_changed(self, measurement_info):
+        print("measurement info changed")
+        if isinstance(measurement_info, MeasurementInfo):
+            print("measurement_info :{0}".format(measurement_info))
 
     def _on_parameter_changed(self,parameter, value):
         print("parameter_changed")

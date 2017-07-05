@@ -181,7 +181,7 @@ class ProcessingThread(QtCore.QThread):
                     continue
 
                 elif cmd is ExperimentCommands.MEASUREMENT_INFO:
-                    self.measurementDataArrived.emit(data)
+                    self.measurementDataArrived.emit(param)
 
                 elif cmd is ExperimentCommands.DATA:
                     self._visualization_queue.append(data)    
@@ -307,8 +307,8 @@ class DataHandler:  #(QtCore.QObject):
     def close_measurement(self):
         self._send_command(ExperimentCommands.MEASUREMENT_FINISHED)
 
-    def send_experiment_info(self):
-        self._send_command_with_param(MEASUREMENT_INFO, self._current_measurement_info)
+    def send_measurement_info(self):
+        self._send_command_with_param(ExperimentCommands.MEASUREMENT_INFO, self._current_measurement_info)
 
     def update_spectrum(self, data,rang = 0):
         #range numeration from 0:   0 - 0 to 1600HZ
@@ -616,12 +616,14 @@ class ExperimentProcess(Process):
                 counter = 0
                 need_exit = self.exit.is_set
                 self._data_handler.open_measurement("MyMeas{0}".format(i))#.send_process_start_command()
+                self._data_handler.send_measurement_info()
                 while (not need_exit()) and counter < max_counter:
                     data = 10**-9 * np.random.random(1600)
                     self._data_handler.update_spectrum(data,0)
                     self._data_handler.update_spectrum(data,1)
                     counter+=1
                     time.sleep(0.5)
+                self._data_handler.send_measurement_info()
                 self._data_handler.close_measurement()
                 if need_exit():
                     return
