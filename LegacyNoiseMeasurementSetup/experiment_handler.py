@@ -22,6 +22,8 @@ from collections import deque
 from plot import SpectrumPlotWidget
 import time
 
+from measurement_data_structures import MeasurementInfo
+
 
 class ExperimentController(QtCore.QObject):
     def __init__(self, spectrum_plot=None, timetrace_plot=None, status_object = None, measurement_ranges = {0: (0,1600,1),1:(0,102400,64)},  parent = None):
@@ -75,11 +77,8 @@ class ExperimentController(QtCore.QObject):
     def _on_measurement_finished(self):
         print("New measurement finished")
 
-   
-        
     def _on_measurement_info_arrived(self,data_dict):
         print("measurement_info_arrived")
-
 
     def _update_gui(self):
         try:
@@ -100,7 +99,6 @@ class ExperimentController(QtCore.QObject):
         except Exception as e:
             print(str(e))
 
-
     def start(self):
         self.__init_process_thread()
         self.__init_experiment_thread()
@@ -112,17 +110,9 @@ class ExperimentController(QtCore.QObject):
         self._refresh_timer.stop()
         self._experiment_thread.stop()
         self._experiment_thread.join()
-        
         self._input_data_queue.join()
         self._processing_thread.stop()
 
-
-
-class Experiment:
-    def __init__(self):
-        super().__init__()
-
-    
 
 
 class ProcessingThread(QtCore.QThread):
@@ -164,14 +154,14 @@ class ProcessingThread(QtCore.QThread):
                 print(cmd_format.format(ExperimentCommands[cmd]))
                 if cmd is None:
                     continue
-                elif cmd is ExperimentCommands.START:
-                    self.commandReceived.emit(ExperimentCommands.START)
+                elif cmd is ExperimentCommands.EXPERIMENT_STARTED:
+                    self.commandReceived.emit(ExperimentCommands.EXPERIMENT_STARTED)
                     self.experimentStarted.emit()
                     continue
 
-                elif cmd is ExperimentCommands.STOP:
+                elif cmd is ExperimentCommands.EXPERIMENT_STOPPED:
                     self.alive = False
-                    self.commandReceived.emit(ExperimentCommands.STOP)
+                    self.commandReceived.emit(ExperimentCommands.EXPERIMENT_STOPPED)
                     self.experimentFinished.emit()
                     break
 
@@ -203,7 +193,9 @@ class ProcessingThread(QtCore.QThread):
 
 
 
-ExperimentCommands = enum("START","STOP","DATA","MESSAGE", "MEASUREMENT_STARTED", "MEASUREMENT_FINISHED", "SPECTRUM_DATA", "TIMETRACE_DATA","EXPERIMENT_INFO", "MEASUREMENT_INFO")
+
+
+ExperimentCommands = enum("EXPERIMENT_STARTED","EXPERIMENT_STOPPED","DATA","MESSAGE", "MEASUREMENT_STARTED", "MEASUREMENT_FINISHED", "SPECTRUM_DATA", "TIMETRACE_DATA","EXPERIMENT_INFO", "MEASUREMENT_INFO")
 MeasurementTypes = enum("spectrum", "timetrace", "time_spectrum")
 class DataHandler:  #(QtCore.QObject):
     #spectrum_updated_signal = QtCore.pyqtSignal(int, dict) # int - range, dict - data{f:frequency, d:data}
@@ -238,7 +230,12 @@ class DataHandler:  #(QtCore.QObject):
         self._frequencies = self._get_frequencies(spectrum_ranges)
         self._spectrum_data = {}   
 
+        self._current_measurement_info = None
+        assert isinstance(self._current_measurement_info,MeasurementInfo)
         self._counter = 0
+
+    def set_measured_start_temparature(self,value):
+        
 
         self._measured_temp_start = 0
         self._measured_temp_end = 0
@@ -315,16 +312,24 @@ class DataHandler:  #(QtCore.QObject):
 # ExperimentCommands = enum("START","STOP","DATA","MESSAGE")
 ####
 
+
+
+
     def _send_command(self,command):
         q = self._input_data_queue
         if q:
             q.put_nowait({'c': command})
 
+    def _send_command_with_param(self,command,param):
+        q = self._input_data_queue
+        if q:
+            q.put_nowait({'c':command, 'p':param})
+
     def send_process_start_command(self):
-        self._send_command(ExperimentCommands.START)
+        self._send_command(ExperimentCommands.EXPERIMENT_STARTED)
 
     def send_process_end_command(self):
-        self._send_command(ExperimentCommands.STOP)
+        self._send_command(ExperimentCommands.EXPERIMENT_STOPPED)
     
     def send_measurement_start_command(self):
         self._send_command(ExperimentCommands.MEASUREMENT_STARTED)
@@ -332,8 +337,22 @@ class DataHandler:  #(QtCore.QObject):
     def send_measurement_finished_command(self):
         self._send_command(ExperimentCommands.MEASUREMENT_FINISHED)
 
-    def send_experiment_info(self,info):
-        pass
+    def open_experiment(self,experiment_name):
+        self._send_command_with_param(ExperimentCommands.EXPERIMENT_STARTED,experiment_name)    
+
+    def close_experiment(self):
+        self._send_command(ExperimentCommands.EXPERIMENT_STOPPED)
+
+    def open_measurement(self,measurement_name):
+        self._current_measurement_info = MeasurementInfo(measurement_name)
+        self._send_command_with_param(ExperimentCommands.MEASUREMENT_STARTED,measurement_name) 
+
+    def close_measurement(self):
+        self._send_command(ExperimentCommands.MEASUREMENT_FINISHED)
+
+    def send_experiment_info(self):
+        self._send_command_with_param(MEASUREMENT_INFO, self._current_measurement_info)
+
 
     def update_spectrum(self, data,rang = 0):
         #range numeration from 0:   0 - 0 to 1600HZ

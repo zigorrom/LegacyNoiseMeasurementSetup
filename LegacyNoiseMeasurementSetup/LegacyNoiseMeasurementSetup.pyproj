@@ -46,6 +46,9 @@
     <Compile Include="hp35670a_dsa.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="measurement_data_structures.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="motorized_potentiometer.py">
       <SubType>Code</SubType>
     </Compile>
