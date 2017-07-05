@@ -58,7 +58,7 @@ class ExperimentController(QtCore.QObject):
         self._processing_thread.commandReceived.connect(self._command_received)
 
     def __init_experiment_thread(self):
-        self._experiment_thread = ExperimentProcess(self._input_data_queue,False)
+        self._experiment_thread = ExperimentProcess(self._input_data_queue,True)
 
     def _command_received(self,cmd):
         self._status_object.send_message("Command received: {0}".format(ExperimentCommands[cmd]))
@@ -198,7 +198,7 @@ class ProcessingThread(QtCore.QThread):
 
 
 
-ExperimentCommands = enum("EXPERIMENT_STARTED","EXPERIMENT_STOPPED","DATA","MESSAGE", "MEASUREMENT_STARTED", "MEASUREMENT_FINISHED", "SPECTRUM_DATA", "TIMETRACE_DATA","EXPERIMENT_INFO", "MEASUREMENT_INFO")
+ExperimentCommands = enum("EXPERIMENT_STARTED","EXPERIMENT_STOPPED","DATA","MESSAGE", "MEASUREMENT_STARTED", "MEASUREMENT_FINISHED", "SPECTRUM_DATA", "TIMETRACE_DATA","EXPERIMENT_INFO", "MEASUREMENT_INFO", "ABORT", "ERROR")
 MeasurementTypes = enum("spectrum", "timetrace", "time_spectrum")
 class DataHandler:  #(QtCore.QObject):
     #spectrum_updated_signal = QtCore.pyqtSignal(int, dict) # int - range, dict - data{f:frequency, d:data}
