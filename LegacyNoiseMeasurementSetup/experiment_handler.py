@@ -126,19 +126,15 @@ class Experiment:
 
 
 class ProcessingThread(QtCore.QThread):
+    
     threadStarted = QtCore.pyqtSignal()
     threadStopped = QtCore.pyqtSignal()
-
     commandReceived = QtCore.pyqtSignal(int)
-
     experimentStarted = QtCore.pyqtSignal()
     experimentFinished = QtCore.pyqtSignal()
-
     measurementStarted = QtCore.pyqtSignal()
     measurementFinished = QtCore.pyqtSignal()
-
     measurementDataArrived = QtCore.pyqtSignal(dict)
-
 
     def __init__(self, input_data_queue = None,visualization_queue = None, parent = None):
         super().__init__(parent)
