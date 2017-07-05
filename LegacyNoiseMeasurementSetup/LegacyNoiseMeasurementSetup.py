@@ -294,7 +294,7 @@ def update():
 if __name__== "__main__":
     app = QtGui.QApplication(sys.argv)
     app.setApplicationName("LegacyNoiseMeasurementSetup")
-    app.setStyle("cleanlooks")
+    #app.setStyle("cleanlooks")
 
     wnd = MainView()
     wnd.show()

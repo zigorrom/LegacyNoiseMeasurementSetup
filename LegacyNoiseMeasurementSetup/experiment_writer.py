@@ -1,9 +1,8 @@
-from PyQt4 import QtCore
+from os.path import join
 
 
-class ExperimentWriter(QtCore.QObject):
-    def __init__(self, working_directory, experiment_name = None, measurement_name = None, measurement_counter = 0, parent = None):
-        super().__init__(parent)
+class ExperimentWriter():
+    def __init__(self, working_directory, experiment_name = None, measurement_name = None, measurement_counter = 0):
         self._working_directory = working_directory
         self._experiment_name = experiment_name
         self._measurement_name = measurement_name
@@ -12,6 +11,8 @@ class ExperimentWriter(QtCore.QObject):
         self.__measurement_file_extension = "dat"
         self._experiment_file = None
         self._measurement_file = None
+        
+
 
     @property
     def working_directory(self):
@@ -20,6 +21,7 @@ class ExperimentWriter(QtCore.QObject):
     @working_directory.setter
     def working_directory(self,value):
         self._working_directory = value
+
 
 
     def open_experiment(self, experiment_name):
@@ -59,10 +61,10 @@ class ExperimentWriter(QtCore.QObject):
             self._measurement_file.close()
 
     def write_experiment_info(self,info):
-        pass
+        print(info)
 
     def write_measurement(self,data):
-        pass
+        print(data)
 
 
 class TestClass:
@@ -71,5 +73,10 @@ class TestClass:
     
 
 if __name__=="__main__":
-    a = TestClass()
-    print(a)
+   w = ExperimentWriter("D:\\Testdata")
+   w.open_experiment("test_exp")
+   for i in range(10):
+       w.open_measurement("meas".format(i),i)
+       w.write_measurement([1,2,3,4,5])
+       w.close_measurement()
+   w.close_experiment()
