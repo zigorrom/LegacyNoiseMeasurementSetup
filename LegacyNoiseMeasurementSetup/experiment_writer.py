@@ -1,4 +1,15 @@
 from os.path import join
+import numpy as np
+
+#class MeasurementProperty:
+#    def __init__(self):
+#        pass
+
+    
+
+
+#class MeasurementInfo():
+
 
 
 class ExperimentWriter():
@@ -11,7 +22,18 @@ class ExperimentWriter():
         self.__measurement_file_extension = "dat"
         self._experiment_file = None
         self._measurement_file = None
-        
+        #self._experiment_info_data = [
+        #    ["U\_sample","V"],
+        #    ["Current", "A"],
+        #    ["R\_equivalent", "Ohm"],
+        #    ["Filename","str"],
+        #    ["R\_load","Ohm"],
+        #    ["U\_whole","V"],
+        #    ["U\_0sample", "V"],
+        #    ["U\_0whole","V"],
+
+
+        #    ]
 
 
     @property
@@ -61,10 +83,12 @@ class ExperimentWriter():
             self._measurement_file.close()
 
     def write_experiment_info(self,info):
-        print(info)
+        if self._experiment_file:
+            np.savetxt(self._experiment_file,info)
 
     def write_measurement(self,data):
-        print(data)
+        if self._measurement_file:
+            np.savetxt(self._measurement_file,data)
 
 
 class TestClass:

@@ -59,6 +59,9 @@ class ExperimentController(QtCore.QObject):
     def __init_experiment_thread(self):
         self._experiment_thread = ExperimentProcess(self._input_data_queue)
 
+    def _command_received(self,cmd):
+        self._status_object.send_message("Command received: {0}".format(ExperimentCommands[cmd]))
+
     def _on_experiment_started(self):
         print("Experiment started succesfully")
 
@@ -72,15 +75,8 @@ class ExperimentController(QtCore.QObject):
     def _on_measurement_finished(self):
         print("New measurement finished")
 
-
-    def _command_received(self,cmd):
-        print("IN UI thread command received: {0}".format(ExperimentCommands[cmd]))
-        self._status_object.send_message("Command received: {0}".format(ExperimentCommands[cmd]))
-        if cmd is ExperimentCommands.START:
-            pass
-        elif cmd is ExperimentCommands.STOP:
-            self.stop()
-
+   
+        
     def _on_measurement_info_arrived(self,data_dict):
         print("measurement_info_arrived")
 
