@@ -74,11 +74,11 @@ class MeasurementInfo:
 
     @property
     def end_sample_voltage(self):
-        return self._measured_sample_voltage_start
+        return self._measured_sample_voltage_end
     
     @end_sample_voltage.setter
     def end_sample_voltage(self, value):
-        self._measured_sample_voltage_start = value
+        self._measured_sample_voltage_end = value
         
     @property
     def start_gate_voltage(self):
@@ -90,7 +90,7 @@ class MeasurementInfo:
 
     @property
     def end_gate_voltage(self):
-        return self._measured_gate_voltage_start
+        return self._measured_gate_voltage_end
     
     @end_gate_voltage.setter
     def end_gate_voltage(self,value):

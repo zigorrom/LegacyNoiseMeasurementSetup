@@ -270,19 +270,19 @@ class DataHandler:  #(QtCore.QObject):
 
     @property
     def start_sample_voltage(self):
-        return self._current_measurement_info._measured_sample_voltage_start
+        return self._current_measurement_info.start_sample_voltage
     
     @start_sample_voltage.setter
     def start_sample_voltage(self, value):
-        self._current_measurement_info._measured_sample_voltage_start = value
+        self._current_measurement_info.start_sample_voltage = value
 
     @property
     def end_sample_voltage(self):
-        return self._current_measurement_info._measured_sample_voltage_start
+        return self._current_measurement_info.end_sample_voltage
     
     @end_sample_voltage.setter
     def end_sample_voltage(self, value):
-        self._current_measurement_info._measured_sample_voltage_start = value
+        self._current_measurement_info.end_sample_voltage = value
 
     def _send_command(self,command):
         q = self._input_data_queue
@@ -615,7 +615,9 @@ class ExperimentProcess(Process):
                 max_counter = 10
                 counter = 0
                 need_exit = self.exit.is_set
+                
                 self._data_handler.open_measurement("MyMeas{0}".format(i))#.send_process_start_command()
+                self._data_handler.start_sample_voltage = np.random.random_sample()
                 self._data_handler.send_measurement_info()
                 while (not need_exit()) and counter < max_counter:
                     data = 10**-9 * np.random.random(1600)
@@ -623,6 +625,7 @@ class ExperimentProcess(Process):
                     self._data_handler.update_spectrum(data,1)
                     counter+=1
                     time.sleep(0.5)
+                self._data_handler.end_sample_voltage = np.random.random_sample()
                 self._data_handler.send_measurement_info()
                 self._data_handler.close_measurement()
                 if need_exit():
