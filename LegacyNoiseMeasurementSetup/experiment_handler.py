@@ -225,7 +225,6 @@ class DataHandler:  #(QtCore.QObject):
         assert isinstance(working_directory, str)
         self._working_directory = working_directory
 
-
         self._spectrum_ranges = spectrum_ranges
         self._frequencies = self._get_frequencies(spectrum_ranges)
         self._spectrum_data = {}   
@@ -295,17 +294,17 @@ class DataHandler:  #(QtCore.QObject):
         if q:
             q.put_nowait({'c':command, 'p':param})
 
-    def send_process_start_command(self):
-        self._send_command(ExperimentCommands.EXPERIMENT_STARTED)
+    #def send_process_start_command(self):
+    #    self._send_command(ExperimentCommands.EXPERIMENT_STARTED)
 
-    def send_process_end_command(self):
-        self._send_command(ExperimentCommands.EXPERIMENT_STOPPED)
+    #def send_process_end_command(self):
+    #    self._send_command(ExperimentCommands.EXPERIMENT_STOPPED)
     
-    def send_measurement_start_command(self):
-        self._send_command(ExperimentCommands.MEASUREMENT_STARTED)
+    #def send_measurement_start_command(self):
+    #    self._send_command(ExperimentCommands.MEASUREMENT_STARTED)
 
-    def send_measurement_finished_command(self):
-        self._send_command(ExperimentCommands.MEASUREMENT_FINISHED)
+    #def send_measurement_finished_command(self):
+    #    self._send_command(ExperimentCommands.MEASUREMENT_FINISHED)
 
     def open_experiment(self,experiment_name):
         self._send_command_with_param(ExperimentCommands.EXPERIMENT_STARTED,experiment_name)    
@@ -628,19 +627,21 @@ class ExperimentProcess(Process):
 
     def perform_single_measurement(self):
         if self._simulate:
-            print("simulating experiment")
-            range = 0 #np.random.choice([0,1])
-            max_counter = 10
-            counter = 0
-            need_exit = self.exit.is_set
-            self._data_handler.send_measurement_start_command()#.send_process_start_command()
-            while (not need_exit()) and counter < max_counter:
-                data = 10**-9 * np.random.random(1601)
-                self._data_handler.update_spectrum(data,0)
-                self._data_handler.update_spectrum(data,1)
-                counter+=1
-                time.sleep(0.5)
-            self._data_handler.send_measurement_finished_command()#send_process_end_command()
+            for i in range(5):
+                print("simulating experiment")
+                rang = 0 #np.random.choice([0,1])
+                max_counter = 10
+                counter = 0
+                need_exit = self.exit.is_set
+                self._data_handler.open_measurement("MyMeas{0}".format(i))#.send_process_start_command()
+                while (not need_exit()) and counter < max_counter:
+                    data = 10**-9 * np.random.random(1601)
+                    self._data_handler.update_spectrum(data,0)
+                    self._data_handler.update_spectrum(data,1)
+                    counter+=1
+                    time.sleep(0.5)
+                self._data_handler.close_measurement()
+                #self._data_handler.send_measurement_finished_command()#send_process_end_command()
             return
 
         analyzer = self.__initialize_analyzer(self.__dynamic_signal_analyzer)
@@ -663,8 +664,8 @@ class ExperimentProcess(Process):
 
         
 
-        range = 0
-        self._data_handler.update_spectrum(data,range)
+        rang = 0
+        self._data_handler.update_spectrum(data,rang)
 
         #measure Vds, Vfg
         #switch Vfg to Vmain
@@ -680,9 +681,10 @@ class ExperimentProcess(Process):
 
     def perform_experiment(self):
         function_to_execute = self.generate_experiment_function()
-        self._data_handler.send_process_start_command()
+        self._data_handler.open_experiment(self.__exp_settings.experiment_name)
+        #self._data_handler.send_process_start_command()
         function_to_execute()
-        self._data_handler.send_process_end_command()
+        self._data_handler.close_experiment()
 
 
     def stop(self):
