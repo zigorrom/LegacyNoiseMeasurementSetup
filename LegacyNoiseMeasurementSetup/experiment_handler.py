@@ -82,6 +82,9 @@ class ExperimentController(QtCore.QObject):
 
     def _on_measurement_info_arrived(self,data_dict):
         print("measurement_info_arrived")
+        if isinstance(data_dict, dict):
+            for k,v in data_dict.items():
+                self._status_object.send_value_changed(k,v)
 
     def _update_gui(self):
         try:
