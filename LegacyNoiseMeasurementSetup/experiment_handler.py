@@ -213,7 +213,7 @@ class DataHandler:  #(QtCore.QObject):
             result[k] = np.linspace(start,stop, nlines, True)
         return result
 
-    def __init__(self, working_directory, measurement_type = MeasurementTypes.spectrum, spectrum_ranges = {0: (0,1600,1),1:(0,102400,64)}, parent = None, input_data_queue = None):
+    def __init__(self, working_directory, measurement_type = MeasurementTypes.spectrum, spectrum_ranges = {0: (1,1600,1),1:(64,102400,64)}, parent = None, input_data_queue = None):
         #super().__init__(parent)
         #assert isinstance(measurement_type, type(MeasurementTypes))
         self._input_data_queue = None
@@ -613,7 +613,7 @@ class ExperimentProcess(Process):
                 need_exit = self.exit.is_set
                 self._data_handler.open_measurement("MyMeas{0}".format(i))#.send_process_start_command()
                 while (not need_exit()) and counter < max_counter:
-                    data = 10**-9 * np.random.random(1601)
+                    data = 10**-9 * np.random.random(1600)
                     self._data_handler.update_spectrum(data,0)
                     self._data_handler.update_spectrum(data,1)
                     counter+=1

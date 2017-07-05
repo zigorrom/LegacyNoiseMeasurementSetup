@@ -49,6 +49,11 @@ class MainView(mainViewBase,mainViewForm):
 
     def _on_parameter_changed(self,parameter, value):
         print("parameter_changed")
+        if not parameter:
+            return
+
+        
+
 
     def _on_message_arrived(self,message):
         #assert isinstance(self.statusbar, QtGui.QStatusBar)

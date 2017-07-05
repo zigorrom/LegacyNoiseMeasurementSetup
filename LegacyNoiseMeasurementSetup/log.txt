@@ -2,11 +2,14 @@ reading file
 name: name, val: Settings, type: <class 'str'>
 converted value: Settings, type:<class 'str'>
 
-name: second_amp_coeff, val: i:100, type: <class 'str'>
-converted value: 100, type:<class 'int'>
+name: homemade_amp_coeff, val: i:178, type: <class 'str'>
+converted value: 178, type:<class 'int'>
 
-name: experiment_name, val: hggccfvfvggbghnh, type: <class 'str'>
-converted value: hggccfvfvggbghnh, type:<class 'str'>
+name: use_set_vds_range, val: bool:False, type: <class 'str'>
+False
+5
+False
+converted value: False, type:<class 'bool'>
 
 name: use_homemade_amplifier, val: bool:True, type: <class 'str'>
 True
@@ -14,31 +17,16 @@ True
 True
 converted value: True, type:<class 'bool'>
 
-name: need_measure_temperature, val: bool:False, type: <class 'str'>
-False
-5
-False
-converted value: False, type:<class 'bool'>
-
-name: averages, val: i:100, type: <class 'str'>
-converted value: 100, type:<class 'int'>
-
-name: use_set_vfg_range, val: bool:False, type: <class 'str'>
-False
-5
-False
-converted value: False, type:<class 'bool'>
+name: use_second_amplifier, val: bool:True, type: <class 'str'>
+True
+4
+True
+converted value: True, type:<class 'bool'>
 
 name: working_directory, val: , type: <class 'str'>
 converted value: , type:<class 'str'>
 
-name: homemade_amp_coeff, val: i:178, type: <class 'str'>
-converted value: 178, type:<class 'int'>
-
-name: measurement_name, val: , type: <class 'str'>
-converted value: , type:<class 'str'>
-
-name: calibrate_before_measurement, val: bool:False, type: <class 'str'>
+name: use_transistor_selector, val: bool:False, type: <class 'str'>
 False
 5
 False
@@ -47,34 +35,22 @@ converted value: False, type:<class 'bool'>
 name: drain_source_voltage, val: i:0, type: <class 'str'>
 converted value: 0, type:<class 'int'>
 
+name: use_set_vfg_range, val: bool:False, type: <class 'str'>
+False
+5
+False
+converted value: False, type:<class 'bool'>
+
+name: load_resistance, val: i:5000, type: <class 'str'>
+converted value: 5000, type:<class 'int'>
+
 name: meas_gated_structure, val: bool:True, type: <class 'str'>
 True
 4
 True
 converted value: True, type:<class 'bool'>
 
-name: display_refresh, val: i:10, type: <class 'str'>
-converted value: 10, type:<class 'int'>
-
-name: use_set_vds_range, val: bool:False, type: <class 'str'>
-False
-5
-False
-converted value: False, type:<class 'bool'>
-
-name: use_second_amplifier, val: bool:True, type: <class 'str'>
-True
-4
-True
-converted value: True, type:<class 'bool'>
-
-name: transistor_list, val: , type: <class 'str'>
-converted value: , type:<class 'str'>
-
-name: load_resistance, val: i:5000, type: <class 'str'>
-converted value: 5000, type:<class 'int'>
-
-name: use_transistor_selector, val: bool:False, type: <class 'str'>
+name: overload_rejecion, val: bool:False, type: <class 'str'>
 False
 5
 False
@@ -83,14 +59,14 @@ converted value: False, type:<class 'bool'>
 name: measurement_count, val: i:0, type: <class 'str'>
 converted value: 0, type:<class 'int'>
 
-name: overload_rejecion, val: bool:False, type: <class 'str'>
+name: transistor_list, val: , type: <class 'str'>
+converted value: , type:<class 'str'>
+
+name: need_measure_temperature, val: bool:False, type: <class 'str'>
 False
 5
 False
 converted value: False, type:<class 'bool'>
-
-name: name, val: ExperimentSettings, type: <class 'str'>
-converted value: ExperimentSettings, type:<class 'str'>
 
 name: front_gate_voltage, val: i:0, type: <class 'str'>
 converted value: 0, type:<class 'int'>
@@ -98,8 +74,29 @@ converted value: 0, type:<class 'int'>
 name: meas_characteristic_type, val: i:0, type: <class 'str'>
 converted value: 0, type:<class 'int'>
 
-name: name, val: drain_source_range, type: <class 'str'>
-converted value: drain_source_range, type:<class 'str'>
+name: name, val: ExperimentSettings, type: <class 'str'>
+converted value: ExperimentSettings, type:<class 'str'>
+
+name: calibrate_before_measurement, val: bool:False, type: <class 'str'>
+False
+5
+False
+converted value: False, type:<class 'bool'>
+
+name: experiment_name, val: hggccfvfvggbghnh, type: <class 'str'>
+converted value: hggccfvfvggbghnh, type:<class 'str'>
+
+name: averages, val: i:100, type: <class 'str'>
+converted value: 100, type:<class 'int'>
+
+name: measurement_name, val: , type: <class 'str'>
+converted value: , type:<class 'str'>
+
+name: second_amp_coeff, val: i:100, type: <class 'str'>
+converted value: 100, type:<class 'int'>
+
+name: display_refresh, val: i:10, type: <class 'str'>
+converted value: 10, type:<class 'int'>
 
 name: start_value, val: i:0, type: <class 'str'>
 converted value: 0, type:<class 'int'>
@@ -107,14 +104,26 @@ converted value: 0, type:<class 'int'>
 name: end_value, val: i:1, type: <class 'str'>
 converted value: 1, type:<class 'int'>
 
+name: start_units, val: i:0, type: <class 'str'>
+converted value: 0, type:<class 'int'>
+
+name: name, val: drain_source_range, type: <class 'str'>
+converted value: drain_source_range, type:<class 'str'>
+
+name: range_mode, val: i:0, type: <class 'str'>
+converted value: 0, type:<class 'int'>
+
 name: end_units, val: i:0, type: <class 'str'>
 converted value: 0, type:<class 'int'>
 
 name: points, val: i:10, type: <class 'str'>
 converted value: 10, type:<class 'int'>
 
-name: range_mode, val: i:0, type: <class 'str'>
+name: start_value, val: i:0, type: <class 'str'>
 converted value: 0, type:<class 'int'>
+
+name: end_value, val: i:1, type: <class 'str'>
+converted value: 1, type:<class 'int'>
 
 name: start_units, val: i:0, type: <class 'str'>
 converted value: 0, type:<class 'int'>
@@ -122,11 +131,8 @@ converted value: 0, type:<class 'int'>
 name: name, val: front_gate_range, type: <class 'str'>
 converted value: front_gate_range, type:<class 'str'>
 
-name: start_value, val: i:0, type: <class 'str'>
+name: range_mode, val: i:0, type: <class 'str'>
 converted value: 0, type:<class 'int'>
-
-name: end_value, val: i:1, type: <class 'str'>
-converted value: 1, type:<class 'int'>
 
 name: end_units, val: i:0, type: <class 'str'>
 converted value: 0, type:<class 'int'>
@@ -134,32 +140,26 @@ converted value: 0, type:<class 'int'>
 name: points, val: i:10, type: <class 'str'>
 converted value: 10, type:<class 'int'>
 
-name: range_mode, val: i:0, type: <class 'str'>
-converted value: 0, type:<class 'int'>
-
-name: start_units, val: i:0, type: <class 'str'>
-converted value: 0, type:<class 'int'>
-
-name: name, val: HardwareSettings, type: <class 'str'>
-converted value: HardwareSettings, type:<class 'str'>
-
-name: arduino_controller_resource, val: , type: <class 'str'>
+name: main_gate_multimeter_resource, val: , type: <class 'str'>
 converted value: , type:<class 'str'>
 
 name: sample_multimeter_resource, val: , type: <class 'str'>
 converted value: , type:<class 'str'>
 
-name: gate_potentiometer_channel, val: i:0, type: <class 'str'>
-converted value: 0, type:<class 'int'>
-
 name: sample_potentiometer_channel, val: i:0, type: <class 'str'>
 converted value: 0, type:<class 'int'>
 
-name: main_gate_multimeter_resource, val: , type: <class 'str'>
+name: arduino_controller_resource, val: , type: <class 'str'>
 converted value: , type:<class 'str'>
 
 name: dsa_resource, val: , type: <class 'str'>
 converted value: , type:<class 'str'>
+
+name: name, val: HardwareSettings, type: <class 'str'>
+converted value: HardwareSettings, type:<class 'str'>
+
+name: gate_potentiometer_channel, val: i:0, type: <class 'str'>
+converted value: 0, type:<class 'int'>
 
 ['Settings', 'ExperimentSettings']
 ['Settings', 'HardwareSettings']
@@ -173,306 +173,306 @@ simulate settign front gate voltage: 0
 simulating settign drain source voltage: 0
 simulating experiment
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 simulating experiment
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 simulating experiment
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 simulating experiment
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 simulating experiment
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
 0
-1601
-1601
+1600
+1600
 1
-1601
-1601
+1600
+1600
