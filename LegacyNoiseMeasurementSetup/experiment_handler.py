@@ -337,6 +337,11 @@ class DataHandler:  #(QtCore.QObject):
 class ExperimentHandler(Process):
     def __init__(self, simulate = False):
         super().__init__()
+
+        self.__config = None
+        self.__exp_settings = None
+        self.__hardware_settings = None
+
         self._exit = Event()
         self._simulate = simulate
 
@@ -347,7 +352,15 @@ class ExperimentHandler(Process):
         raise NotImplementedError()
 
     def initialize_settings(self, configuration):
-        raise NotImplementedError()
+        assert isinstance(configuration, Configuration)
+        self.__config = configuration
+        self.__exp_settings = configuration.get_node_from_path("Settings.ExperimentSettings")
+        assert isinstance(self.__exp_settings, ExperimentSettings)
+        self.__hardware_settings = configuration.get_node_from_path("Settings.HardwareSettings")
+        assert isinstance(self.__hardware_settings, HardwareSettings)
+
+
+        #raise NotImplementedError()
 
     def initialize_hardware(self):
         raise NotImplementedError()
@@ -377,6 +390,9 @@ class ExperimentHandler(Process):
         raise NotImplementedError()
 
     def non_gated_single_value_measurement(self, drain_source_voltage):
+        raise NotImplementedError()
+
+    def generate_experiment_function(self):
         raise NotImplementedError()
 
     def perform_experiment(self):
