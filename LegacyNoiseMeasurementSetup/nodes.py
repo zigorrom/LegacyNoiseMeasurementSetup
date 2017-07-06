@@ -578,6 +578,7 @@ class ExperimentSettings(Node):
         self.__meas_gated_structure = True
         self.__meas_characteristic_type = 0; # 0 is output 1 is transfer
 
+        self.__use_automated_voltage_control = False
 
         self.__use_transistor_selector = False
         self.__transistor_list = None
@@ -660,6 +661,8 @@ class ExperimentSettings(Node):
         elif column is 22: return self.front_gate_voltage
         #self.__drain_source_voltage = 0
         elif column is 23: return self.drain_source_voltage
+        
+        elif column is 24: return self.use_automated_voltage_control
         else:
             return None
 
@@ -725,6 +728,8 @@ class ExperimentSettings(Node):
         elif column is 22:  self.front_gate_voltage= value
         #self.__drain_source_voltage = 0
         elif column is 23:  self.drain_source_voltage= value
+        elif column is 24: self.use_automated_voltage_control = value
+
 
     def typeInfo(self):
         return "ExperimentSettings"
@@ -748,6 +753,15 @@ class ExperimentSettings(Node):
     #@vfg_range.setter
     #def vfg_range(self,value):
     #    self.__vfg_range = value
+
+    @property 
+    def use_automated_voltage_control(self):
+        return self.__use_automated_voltage_control
+
+    @use_automated_voltage_control.setter
+    def use_automated_voltage_control(self, value):
+        self.__use_automated_voltage_control = value
+
 
     @property
     def front_gate_voltage(self):
