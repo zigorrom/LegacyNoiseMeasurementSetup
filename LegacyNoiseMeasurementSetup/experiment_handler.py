@@ -334,6 +334,56 @@ class DataHandler:  #(QtCore.QObject):
     def reset(self):
         raise NotImplementedError()
 
+class ExperimentHandler(Process):
+    def __init__(self, simulate = False):
+        super().__init__()
+        self._exit = Event()
+        self._simulate = simulate
+
+    def stop(self):
+        self._exit.set()
+
+    def run(self):
+        raise NotImplementedError()
+
+    def initialize_settings(self, configuration):
+        raise NotImplementedError()
+
+    def initialize_hardware(self):
+        raise NotImplementedError()
+
+    def get_meas_ranges(self):
+        raise NotImplementedError()
+
+    def output_curve_measurement_function(self):
+        raise NotImplementedError()
+
+    def transfer_curve_measurement_function(self):
+        raise NotImplementedError()
+
+    def non_gated_structure_meaurement_function(self):
+        raise NotImplementedError()
+    
+    def switch_transistor(self,transistor):
+        raise NotImplementedError()
+
+    def set_front_gate_voltage(self,voltage):
+        raise NotImplementedError()
+
+    def set_drain_source_voltage(self,voltage):
+        raise NotImplementedError()
+
+    def single_value_measurement(self, drain_source_voltage, gate_voltage):
+        raise NotImplementedError()
+
+    def non_gated_single_value_measurement(self, drain_source_voltage):
+        raise NotImplementedError()
+
+    def perform_experiment(self):
+        raise NotImplementedError()
+
+    
+
 
 class ExperimentProcess(Process):
     def __init__(self, input_data_queue = None, simulate = True):
@@ -693,7 +743,7 @@ if __name__ == "__main__":
     #print(settings)
 
     cfg = Configuration()
-    exp = ExperimentProcess(simulate = False)
+    exp = ExperimentProcess(simulate = True)
     exp.initialize_settings(cfg)
     exp.perform_experiment()
     #exp.start()
