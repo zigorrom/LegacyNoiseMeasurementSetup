@@ -191,139 +191,7 @@ class ProcessingThread(QtCore.QThread):
 ExperimentCommands = enum("EXPERIMENT_STARTED","EXPERIMENT_STOPPED","DATA","MESSAGE", "MEASUREMENT_STARTED", "MEASUREMENT_FINISHED", "SPECTRUM_DATA", "TIMETRACE_DATA","EXPERIMENT_INFO", "MEASUREMENT_INFO", "ABORT", "ERROR")
 MeasurementTypes = enum("spectrum", "timetrace", "time_spectrum")
 
-class DataHandler:  #(QtCore.QObject):
-    #spectrum_updated_signal = QtCore.pyqtSignal(int, dict) # int - range, dict - data{f:frequency, d:data}
-    #resulting_spectrum_updated_signal = QtCore.pyqtSignal(dict)
-    #timetrace_updated_signal = QtCore.pyqtSignal(object)
-    # should gether data and 
-    # 1 - save to file
-    # 2 - notify visualization
-    #meas_ranges:
-    #{0 - range number: (0 - start freq, 1600- end freq, 1 - freq step) - list of params }
-    def _get_frequencies(self, spectrum_ranges):
-        result = {}
-        for k,v in spectrum_ranges.items():
-            start,stop,step = v
-            nlines = 1+(stop-start)/step
-            result[k] = np.linspace(start,stop, nlines, True)
-        return result
 
-    def __init__(self, working_directory, measurement_type = MeasurementTypes.spectrum, spectrum_ranges = {0: (1,1600,1),1:(64,102400,64)}, parent = None, input_data_queue = None):
-        #super().__init__(parent)
-        #assert isinstance(measurement_type, type(MeasurementTypes))
-        self._input_data_queue = None
-        if input_data_queue:
-            #assert isinstance(input_data_queue, JoinableQueue)
-            self._input_data_queue = input_data_queue
-    
-        assert isinstance(working_directory, str)
-        self._working_directory = working_directory
-
-        self._spectrum_ranges = spectrum_ranges
-        self._frequencies = self._get_frequencies(spectrum_ranges)
-        self._spectrum_data = {}   
-
-        self._current_measurement_info = None
-        #assert isinstance(self._current_measurement_info,MeasurementInfo)
-        self._counter = 0
-    
-    @property
-    def start_temperature(self):
-        return self._current_measurement_info._measured_temp_start
-    
-    @start_temperature.setter
-    def start_temperature(self, value):
-        self._current_measurement_info._measured_temp_start = value
-
-    @property
-    def end_temperature(self):
-        return self._current_measurement_info._measured_temp_end
-    
-    @end_temperature.setter
-    def end_temperature(self, value):
-        self._current_measurement_info._measured_temp_end = value
-
-    @property
-    def start_main_voltage(self):
-        return self._current_measurement_info._measured_main_voltage_start
-    
-    @start_main_voltage.setter
-    def start_main_voltage(self, value):
-        self._current_measurement_info._measured_main_voltage_start = value
-
-    @property
-    def end_main_voltage(self):
-        return self._current_measurement_info._measured_main_voltage_end
-    
-    @end_main_voltage.setter
-    def end_main_voltage(self, value):
-        self._current_measurement_info._measured_main_voltage_end = value
-
-    @property
-    def start_sample_voltage(self):
-        return self._current_measurement_info.start_sample_voltage
-    
-    @start_sample_voltage.setter
-    def start_sample_voltage(self, value):
-        self._current_measurement_info.start_sample_voltage = value
-
-    @property
-    def end_sample_voltage(self):
-        return self._current_measurement_info.end_sample_voltage
-    
-    @end_sample_voltage.setter
-    def end_sample_voltage(self, value):
-        self._current_measurement_info.end_sample_voltage = value
-
-    def _send_command(self,command):
-        q = self._input_data_queue
-        if q:
-            q.put_nowait({'c': command})
-
-    def _send_command_with_param(self,command,param):
-        q = self._input_data_queue
-        if q:
-            q.put_nowait({'c':command, 'p':param})
-
-    def open_experiment(self,experiment_name):
-        self._send_command_with_param(ExperimentCommands.EXPERIMENT_STARTED,experiment_name)    
-
-    def close_experiment(self):
-        self._send_command(ExperimentCommands.EXPERIMENT_STOPPED)
-
-    def open_measurement(self,measurement_name):
-        self._current_measurement_info = MeasurementInfo(measurement_name)
-        self._send_command_with_param(ExperimentCommands.MEASUREMENT_STARTED,measurement_name) 
-
-    def close_measurement(self):
-        self._send_command(ExperimentCommands.MEASUREMENT_FINISHED)
-
-    def send_measurement_info(self):
-        self._send_command_with_param(ExperimentCommands.MEASUREMENT_INFO, self._current_measurement_info)
-
-    def update_spectrum(self, data,rang = 0):
-        #range numeration from 0:   0 - 0 to 1600HZ
-        #                           1 - 0 to 102,4KHZ
-        self._spectrum_data[rang] = data
-        q = self._input_data_queue
-        freq = self._frequencies[rang]
-        print(rang)
-        print(len(freq))
-        print(len(data))
-
-        result = {'c': ExperimentCommands.DATA, 'r': rang, 'f': freq, 'd':data, 'i': self._counter}
-        self._counter+=1
-        if q:
-            q.put_nowait(result) 
-        
-    def update_resulting_spectrum(self):
-        pass
-
-    def update_timetrace(self,data):
-        raise NotImplementedError()
-
-    def reset(self):
-        raise NotImplementedError()
 
 class ExperimentHandler(Process):
     def __init__(self, input_data_queue = None):
@@ -368,6 +236,12 @@ class Experiment:
         self._spectrum_data = {}
 
         self._measurement_counter = 0
+    
+    @property
+    def need_exit(self):
+        if self._stop_event:
+            return self._stop_event.is_set()
+        return False
 
     @property
     def configuration(self):
@@ -431,50 +305,67 @@ class Experiment:
     def output_curve_measurement_function(self):
         ds_range, fg_range = self.get_meas_ranges()
         
-        if (not self.__exp_settings.use_set_vfg_range) and (not self.__exp_settings.use_set_vds_range):
+        if (not self.__exp_settings.use_set_vfg_range) and (not self.__exp_settings.use_set_vds_range) and not self.need_exit:
             self.single_value_measurement(self.__exp_settings.drain_source_voltage,self.__exp_settings.front_gate_voltage)
 
-        elif self.__exp_settings.use_set_vds_range and self.__exp_settings.use_set_vfg_range:
+        elif self.__exp_settings.use_set_vds_range and self.__exp_settings.use_set_vfg_range and not self.need_exit:
             for vfg in fg_range.get_range_handler():
+                if self.need_exit:
+                    return
                 for vds in ds_range.get_range_handler():
+                    if self.need_exit:
+                        return
                     self.single_value_measurement(vds, vfg)
            
         elif not self.__exp_settings.use_set_vfg_range:
             for vds in ds_range.get_range_handler():
-                    self.single_value_measurement(vds, self.__exp_settings.front_gate_voltage)
+                if self.need_exit:
+                    return
+                self.single_value_measurement(vds, self.__exp_settings.front_gate_voltage)
                     
         elif not self.__exp_settings.use_set_vds_range:
             for vfg in fg_range.get_range_handler():
-                   self.single_value_measurement(self.__exp_settings.drain_source_voltage, vfg)
+                if self.need_exit:
+                    return
+                self.single_value_measurement(self.__exp_settings.drain_source_voltage, vfg)
         else:
             raise ValueError("range handlers are not properly defined")
 
 
     def transfer_curve_measurement_function(self):
         ds_range, fg_range = self.get_meas_ranges()
-        if (not self.__exp_settings.use_set_vds_range) and (not self.__exp_settings.use_set_vfg_range):
+        if (not self.__exp_settings.use_set_vds_range) and (not self.__exp_settings.use_set_vfg_range) and not self.need_exit:
              self.single_value_measurement(self.__exp_settings.drain_source_voltage,self.__exp_settings.front_gate_voltage)
 
         elif self.__exp_settings.use_set_vds_range and self.__exp_settings.use_set_vfg_range:
-            
             for vds in ds_range.get_range_handler():
+                if self.need_exit:
+                    return
                 for vfg in fg_range.get_range_handler():
+                    if self.need_exit:
+                        return
                     self.single_value_measurement(vds, vfg)
            
         elif not self.__exp_settings.use_set_vfg_range:
             for vds in ds_range.get_range_handler():
-                    self.single_value_measurement(vds, self.__exp_settings.front_gate_voltage)
+                if self.need_exit:
+                    return
+                self.single_value_measurement(vds, self.__exp_settings.front_gate_voltage)
                     
         elif not self.__exp_settings.use_set_vds_range:
              for vfg in fg_range.get_range_handler():
-                    self.single_value_measurement(self.__exp_settings.drain_source_voltage, vfg)
+                 if self.need_exit:
+                    return
+                 self.single_value_measurement(self.__exp_settings.drain_source_voltage, vfg)
         else:
             raise ValueError("range handlers are not properly defined")
 
     def non_gated_structure_meaurement_function(self):
         if self.__exp_settings.use_set_vds_range:
              for vds in self.__exp_settings.vds_range:
-                    self.non_gated_single_value_measurement(vds)
+                 if self.need_exit:
+                    return
+                 self.non_gated_single_value_measurement(vds)
         else:
             self.non_gated_single_value_measurement(self.__exp_settings.drain_source_voltage)
 
@@ -595,9 +486,8 @@ class SimulateExperiment(Experiment):
             self.update_spectrum(data,0)
             self.update_spectrum(data,1)
             counter+=1
-            time.sleep(0.5)
-       
-    #   
+            time.sleep(0.02)
+        
         self.send_measurement_info()
         self.close_measurement()
 
@@ -990,3 +880,139 @@ if __name__ == "__main__":
     #    cfg = Configuration()
     #    self.initialize_settings(cfg)
     #    self.perform_experiment()
+
+
+
+    #class DataHandler:  #(QtCore.QObject):
+    ##spectrum_updated_signal = QtCore.pyqtSignal(int, dict) # int - range, dict - data{f:frequency, d:data}
+    ##resulting_spectrum_updated_signal = QtCore.pyqtSignal(dict)
+    ##timetrace_updated_signal = QtCore.pyqtSignal(object)
+    ## should gether data and 
+    ## 1 - save to file
+    ## 2 - notify visualization
+    ##meas_ranges:
+    ##{0 - range number: (0 - start freq, 1600- end freq, 1 - freq step) - list of params }
+    #def _get_frequencies(self, spectrum_ranges):
+    #    result = {}
+    #    for k,v in spectrum_ranges.items():
+    #        start,stop,step = v
+    #        nlines = 1+(stop-start)/step
+    #        result[k] = np.linspace(start,stop, nlines, True)
+    #    return result
+
+    #def __init__(self, working_directory, measurement_type = MeasurementTypes.spectrum, spectrum_ranges = {0: (1,1600,1),1:(64,102400,64)}, parent = None, input_data_queue = None):
+    #    #super().__init__(parent)
+    #    #assert isinstance(measurement_type, type(MeasurementTypes))
+    #    self._input_data_queue = None
+    #    if input_data_queue:
+    #        #assert isinstance(input_data_queue, JoinableQueue)
+    #        self._input_data_queue = input_data_queue
+    
+    #    assert isinstance(working_directory, str)
+    #    self._working_directory = working_directory
+
+    #    self._spectrum_ranges = spectrum_ranges
+    #    self._frequencies = self._get_frequencies(spectrum_ranges)
+    #    self._spectrum_data = {}   
+
+    #    self._current_measurement_info = None
+    #    #assert isinstance(self._current_measurement_info,MeasurementInfo)
+    #    self._counter = 0
+    
+    #@property
+    #def start_temperature(self):
+    #    return self._current_measurement_info._measured_temp_start
+    
+    #@start_temperature.setter
+    #def start_temperature(self, value):
+    #    self._current_measurement_info._measured_temp_start = value
+
+    #@property
+    #def end_temperature(self):
+    #    return self._current_measurement_info._measured_temp_end
+    
+    #@end_temperature.setter
+    #def end_temperature(self, value):
+    #    self._current_measurement_info._measured_temp_end = value
+
+    #@property
+    #def start_main_voltage(self):
+    #    return self._current_measurement_info._measured_main_voltage_start
+    
+    #@start_main_voltage.setter
+    #def start_main_voltage(self, value):
+    #    self._current_measurement_info._measured_main_voltage_start = value
+
+    #@property
+    #def end_main_voltage(self):
+    #    return self._current_measurement_info._measured_main_voltage_end
+    
+    #@end_main_voltage.setter
+    #def end_main_voltage(self, value):
+    #    self._current_measurement_info._measured_main_voltage_end = value
+
+    #@property
+    #def start_sample_voltage(self):
+    #    return self._current_measurement_info.start_sample_voltage
+    
+    #@start_sample_voltage.setter
+    #def start_sample_voltage(self, value):
+    #    self._current_measurement_info.start_sample_voltage = value
+
+    #@property
+    #def end_sample_voltage(self):
+    #    return self._current_measurement_info.end_sample_voltage
+    
+    #@end_sample_voltage.setter
+    #def end_sample_voltage(self, value):
+    #    self._current_measurement_info.end_sample_voltage = value
+
+    #def _send_command(self,command):
+    #    q = self._input_data_queue
+    #    if q:
+    #        q.put_nowait({'c': command})
+
+    #def _send_command_with_param(self,command,param):
+    #    q = self._input_data_queue
+    #    if q:
+    #        q.put_nowait({'c':command, 'p':param})
+
+    #def open_experiment(self,experiment_name):
+    #    self._send_command_with_param(ExperimentCommands.EXPERIMENT_STARTED,experiment_name)    
+
+    #def close_experiment(self):
+    #    self._send_command(ExperimentCommands.EXPERIMENT_STOPPED)
+
+    #def open_measurement(self,measurement_name):
+    #    self._current_measurement_info = MeasurementInfo(measurement_name)
+    #    self._send_command_with_param(ExperimentCommands.MEASUREMENT_STARTED,measurement_name) 
+
+    #def close_measurement(self):
+    #    self._send_command(ExperimentCommands.MEASUREMENT_FINISHED)
+
+    #def send_measurement_info(self):
+    #    self._send_command_with_param(ExperimentCommands.MEASUREMENT_INFO, self._current_measurement_info)
+
+    #def update_spectrum(self, data,rang = 0):
+    #    #range numeration from 0:   0 - 0 to 1600HZ
+    #    #                           1 - 0 to 102,4KHZ
+    #    self._spectrum_data[rang] = data
+    #    q = self._input_data_queue
+    #    freq = self._frequencies[rang]
+    #    print(rang)
+    #    print(len(freq))
+    #    print(len(data))
+
+    #    result = {'c': ExperimentCommands.DATA, 'r': rang, 'f': freq, 'd':data, 'i': self._counter}
+    #    self._counter+=1
+    #    if q:
+    #        q.put_nowait(result) 
+        
+    #def update_resulting_spectrum(self):
+    #    pass
+
+    #def update_timetrace(self,data):
+    #    raise NotImplementedError()
+
+    #def reset(self):
+    #    raise NotImplementedError()
