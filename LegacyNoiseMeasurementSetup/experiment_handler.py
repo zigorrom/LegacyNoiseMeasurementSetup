@@ -336,6 +336,7 @@ class ExperimentHandler(Process):
         self._exit.set()
 
     def run(self):
+        sys.stdout = open("log.txt", "w")
         cfg = Configuration()
         exp_settings = cfg.get_node_from_path("Settings.ExperimentSettings")
         assert isinstance(exp_settings, ExperimentSettings)
@@ -362,7 +363,10 @@ class Experiment:
         self._data_handler = None
         self._stop_event = stop_event
         self._measurement_info = None
-        
+        self._spectrum_ranges = {0: (1,1600,1),1:(64,102400,64)}
+        self._frequencies = self._get_frequencies(self._spectrum_ranges)
+        self._spectrum_data = {}
+
 
     @property
     def configuration(self):
@@ -383,6 +387,13 @@ class Experiment:
     #@property
     #def data_handler(self):
     #    return self._data_handler
+    def _get_frequencies(self, spectrum_ranges):
+        result = {}
+        for k,v in spectrum_ranges.items():
+            start,stop,step = v
+            nlines = 1+(stop-start)/step
+            result[k] = np.linspace(start,stop, nlines, True)
+        return result
 
 
     def initialize_settings(self, configuration):
@@ -505,6 +516,23 @@ class Experiment:
         #print("simulate close measurement")
         self._send_command(ExperimentCommands.MEASUREMENT_FINISHED)
 
+    def send_measurement_info(self):
+        self._send_command_with_param(ExperimentCommands.MEASUREMENT_INFO, self._measurement_info)
+
+    def update_spectrum(self, data,rang = 0):
+        #range numeration from 0:   0 - 0 to 1600HZ
+        #                           1 - 0 to 102,4KHZ
+        self._spectrum_data[rang] = data
+        q = self._input_data_queue
+        freq = self._frequencies[rang]
+        print(rang)
+        print(len(freq))
+        print(len(data))
+
+        result = {'c': ExperimentCommands.DATA, 'r': rang, 'f': freq, 'd':data, 'i': 1}
+        if q:
+            q.put_nowait(result) 
+
     def generate_experiment_function(self):
         func = None
         print(self.__exp_settings.meas_gated_structure)
@@ -553,6 +581,20 @@ class SimulateExperiment(Experiment):
     def single_value_measurement(self, drain_source_voltage, gate_voltage):
         self.open_measurement()
         print("simulating single measurement vds:{0} vg:{1}".format(drain_source_voltage, gate_voltage))
+        self.send_measurement_info()
+
+        counter = 0
+        max_counter = 10
+        
+        while counter < max_counter: #(not need_exit()) and counter < max_counter:
+            data = 10**-9 * np.random.random(1600)
+            self.update_spectrum(data,0)
+            self.update_spectrum(data,1)
+            counter+=1
+            time.sleep(0.5)
+       
+    #   
+        self.send_measurement_info()
         self.close_measurement()
 
     def non_gated_single_value_measurement(self, drain_source_voltage):
