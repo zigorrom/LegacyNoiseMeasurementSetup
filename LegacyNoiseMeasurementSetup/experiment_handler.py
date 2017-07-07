@@ -10,9 +10,6 @@ from n_enum import enum
 from PyQt4 import QtCore
 from os.path import join
 
-
-
-
 import pyqtgraph as pg
 from multiprocessing import JoinableQueue
 from multiprocessing import Process
@@ -23,7 +20,6 @@ from plot import SpectrumPlotWidget
 import time
 
 from measurement_data_structures import MeasurementInfo
-
 
 class ExperimentController(QtCore.QObject):
     def __init__(self, spectrum_plot=None, timetrace_plot=None, status_object = None, measurement_ranges = {0: (0,1600,1),1:(0,102400,64)},  parent = None):
@@ -120,8 +116,6 @@ class ExperimentController(QtCore.QObject):
         self._input_data_queue.join()
         self._processing_thread.stop()
 
-
-
 class ProcessingThread(QtCore.QThread):
     
     threadStarted = QtCore.pyqtSignal()
@@ -194,12 +188,9 @@ class ProcessingThread(QtCore.QThread):
 
         self.alive = False
 
-
-
-
-
 ExperimentCommands = enum("EXPERIMENT_STARTED","EXPERIMENT_STOPPED","DATA","MESSAGE", "MEASUREMENT_STARTED", "MEASUREMENT_FINISHED", "SPECTRUM_DATA", "TIMETRACE_DATA","EXPERIMENT_INFO", "MEASUREMENT_INFO", "ABORT", "ERROR")
 MeasurementTypes = enum("spectrum", "timetrace", "time_spectrum")
+
 class DataHandler:  #(QtCore.QObject):
     #spectrum_updated_signal = QtCore.pyqtSignal(int, dict) # int - range, dict - data{f:frequency, d:data}
     #resulting_spectrum_updated_signal = QtCore.pyqtSignal(dict)
@@ -346,7 +337,6 @@ class ExperimentHandler(Process):
     def run(self):
         raise NotImplementedError()
 
-
 class Experiment:
     def __init__(self, simulate = False, input_data_queue = None, stop_event = None):
         self.__config = None
@@ -366,7 +356,7 @@ class Experiment:
 
     @property
     def experiment_settings(self):
-        return self.__exp_settings
+        return self.__exp_settings 
 
     @property
     def hardware_settings(self):
@@ -386,9 +376,6 @@ class Experiment:
         self._working_directory = self.__exp_settings.working_directory
         self._data_handler = DataHandler(self._working_directory,input_data_queue = self._input_data_queue)
 
-        #self._data_handler = DataHandler(
-        #raise NotImplementedError()
-
     def initialize_hardware(self):
         if self.__exp_settings.use_transistor_selector or self.__exp_settings.use_automated_voltage_control:
             self.__arduino_controller = ArduinoController(self.__hardware_settings.arduino_controller_resource)
@@ -396,9 +383,7 @@ class Experiment:
         self.__dynamic_signal_analyzer = HP3567A(self.__hardware_settings.dsa_resource)
         self.__sample_multimeter = HP34401A(self.__hardware_settings.sample_multimeter_resource)
         self.__main_gate_multimeter = HP34401A(self.__hardware_settings.main_gate_multimeter_resource)
-        #assert self.__dynamic_signal_analyzer and self.__arduino_controller and self.__sample_multimeter and self.__main_gate_multimeter
-        #raise NotImplementedError()
-
+        
     def get_meas_ranges(self):
         fg_range = self.__config.get_node_from_path("front_gate_range")
         if self.__exp_settings.use_set_vfg_range:
@@ -413,7 +398,6 @@ class Experiment:
         
         if (not self.__exp_settings.use_set_vfg_range) and (not self.__exp_settings.use_set_vds_range):
             self.single_value_measurement(self.__exp_settings.drain_source_voltage,self.__exp_settings.front_gate_voltage)
-
 
         elif self.__exp_settings.use_set_vds_range and self.__exp_settings.use_set_vfg_range:
             for vfg in fg_range.get_range_handler():
@@ -452,7 +436,6 @@ class Experiment:
         else:
             raise ValueError("range handlers are not properly defined")
 
-
     def non_gated_structure_meaurement_function(self):
         if self.__exp_settings.use_set_vds_range:
              for vds in self.__exp_settings.vds_range:
@@ -460,7 +443,6 @@ class Experiment:
         else:
             self.non_gated_single_value_measurement(self.__exp_settings.drain_source_voltage)
 
-    
     def switch_transistor(self,transistor):
         raise NotImplementedError()
 
@@ -501,7 +483,6 @@ class Experiment:
 
         self._execution_function = func
         
-
     def perform_experiment(self):
         self.generate_experiment_function()
         self._data_handler.open_experiment(self.__exp_settings.experiment_name)
@@ -509,7 +490,6 @@ class Experiment:
         self._execution_function()
         #function_to_execute()
         self._data_handler.close_experiment()
-
 
 class SimulateExperiment(Experiment):
     def __init__(self, input_data_queue = None, stop_event = None):
@@ -533,7 +513,6 @@ class SimulateExperiment(Experiment):
     def non_gated_single_value_measurement(self, drain_source_voltage):
         print("performing non gated single measurement")
 
-
 class PerformExperiment(Experiment):
     def __init__(self, input_data_queue = None, stop_event = None):
         Experiment.__init__(False, input_data_queue, stop_event)
@@ -555,10 +534,6 @@ class PerformExperiment(Experiment):
 
     def non_gated_single_value_measurement(self, drain_source_voltage):
         print("performing non gated single measurement")
-
-
-
-
 
 class ExperimentProcess(Process):
     def __init__(self, input_data_queue = None, simulate = True):
