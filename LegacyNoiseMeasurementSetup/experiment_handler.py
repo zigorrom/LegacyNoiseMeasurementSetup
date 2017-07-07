@@ -493,7 +493,7 @@ class Experiment:
 
 class SimulateExperiment(Experiment):
     def __init__(self, input_data_queue = None, stop_event = None):
-        Experiment.__init__(True, input_data_queue, stop_event)
+        Experiment.__init__(self,True, input_data_queue, stop_event)
 
     def initialize_hardware(self):
         print("simulating hardware init")
@@ -515,7 +515,7 @@ class SimulateExperiment(Experiment):
 
 class PerformExperiment(Experiment):
     def __init__(self, input_data_queue = None, stop_event = None):
-        Experiment.__init__(False, input_data_queue, stop_event)
+        Experiment.__init__(self,False, input_data_queue, stop_event)
 
     def initialize_hardware(self):
         pass
