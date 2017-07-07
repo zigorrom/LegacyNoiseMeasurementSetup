@@ -537,11 +537,7 @@ class PerformExperiment(Experiment):
 
 class ExperimentProcess(Process):
     def __init__(self, input_data_queue = None, simulate = True):
-        #self.__hardware_settings = None
-        #self.__exp_settings = ExperimentSettings()
-        #self.__initialize_hardware()
         super().__init__()
-
         self._simulate = simulate
 
         self.exit = Event()
