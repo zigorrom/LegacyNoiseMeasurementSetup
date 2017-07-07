@@ -395,7 +395,8 @@ class Experiment:
             q.put_nowait({'c':command, 'p':param})
 
     def open_experiment(self):
-        self._send_command(ExperimentCommands.EXPERIMENT_STARTED) #,experiment_name)
+        experiment_name = self.__exp_settings.experiment_name
+        self._send_command_with_param(ExperimentCommands.EXPERIMENT_STARTED, experiment_name)
         self._measurement_counter = self.__exp_settings.measurement_count
 
     def close_experiment(self):
@@ -403,8 +404,9 @@ class Experiment:
 
     def open_measurement(self):
         #print("simulate open measurement")
-        self._measurement_info = MeasurementInfo()
-        self._send_command_with_param(ExperimentCommands.MEASUREMENT_STARTED,self._measurement_counter) 
+        measurement_name = self.__exp_settings.measurement_name
+        self._measurement_info = MeasurementInfo(measurement_name, self._measurement_counter)
+        self._send_command(ExperimentCommands.MEASUREMENT_STARTED) 
 
     def close_measurement(self):
         #print("simulate close measurement")

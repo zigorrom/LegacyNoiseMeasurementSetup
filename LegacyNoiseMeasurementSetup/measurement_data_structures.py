@@ -1,7 +1,8 @@
 
 class MeasurementInfo:
-    def __init__(self, measurement_filename = ""):
+    def __init__(self, measurement_filename = "", measurement_count = 0):
         self._measurement_filename = measurement_filename
+        self._measurement_count = measurement_count
 
         self._measured_temp_start = 0
         self._measured_temp_end = 0
@@ -23,6 +24,14 @@ class MeasurementInfo:
 
         self._equivalent_resistance_start = 0
         self._equivalent_resistance_end = 0
+
+    @property
+    def measurement_count(self):
+        return self._measurement_count
+
+    @measurement_count.setter
+    def measurement_count(self,value):
+        self._measurement_count = value
 
     @property
     def measurement_filename(self):
