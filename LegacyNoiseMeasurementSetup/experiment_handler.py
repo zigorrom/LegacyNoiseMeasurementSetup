@@ -875,28 +875,15 @@ class ExperimentProcess(Process):
 
 if __name__ == "__main__":
     
-    #settings = cfg.get_node_from_path("Settings.ExperimentSettings")
-    #assert isinstance(settings, ExperimentSettings)
-    #print(settings)
-
     cfg = Configuration()
-    exp = ExperimentProcess(simulate = True)
+    exp = SimulateExperiment(None,None)
     exp.initialize_settings(cfg)
+    exp.initialize_hardware()
+
     exp.perform_experiment()
-    #exp.start()
 
-    #exp.join()
-
-
-
-    #h = DataHandler(MeasurementTypes.spectrum)
-    #data = np.random.random(1601)
-    #h.update_spectrum(data,0)
-
-   
-
-    #visual = pg.GraphicsLayoutWidget()
-    #s = SpectrumPlotWidget(visual)
-    #visual.show()
-
-    pass
+    #cfg = Configuration()
+    #exp = ExperimentProcess(simulate = True)
+    #exp.initialize_settings(cfg)
+    #exp.perform_experiment()
+    
