@@ -861,8 +861,6 @@ class ExperimentProcess(Process):
 
         analyzer = self.__initialize_analyzer(self.__dynamic_signal_analyzer)
 
-
-
         #measure_temperature
         #measure Vds, Vfg
         #switch Vfg to Vmain
@@ -881,7 +879,6 @@ class ExperimentProcess(Process):
 
         rang = 0
         self._data_handler.update_spectrum(data,rang)
-
         #measure Vds, Vfg
         #switch Vfg to Vmain
         #measure Vmain
