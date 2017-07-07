@@ -119,6 +119,7 @@ class MainView(mainViewBase,mainViewForm):
        self._dataMapper.addMapping(self.ui_front_gate_voltage ,22)
        self._dataMapper.addMapping(self.ui_drain_source_voltage ,23)
        self._dataMapper.addMapping(self.ui_use_automated_voltage_control, 24)
+       self._dataMapper.addMapping(self.ui_simulate, 25)
        
        QtCore.QObject.connect(self._viewModel, QtCore.SIGNAL("dataChanged(QModelIndex, QModelIndex)"), self.on_data_changed)
        self._dataMapper.toFirst()

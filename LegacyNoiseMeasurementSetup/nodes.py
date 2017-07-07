@@ -556,6 +556,8 @@ class ExperimentSettings(Node):
         super(ExperimentSettings,self).__init__(name,parent)
         #this settings - separate class. shoy\uld be saved to file
 
+        self.__simulate_experiment = False
+
         self.__working_directory = None
         self.__experiment_name = None
         self.__measurement_name = None
@@ -663,6 +665,7 @@ class ExperimentSettings(Node):
         elif column is 23: return self.drain_source_voltage
         
         elif column is 24: return self.use_automated_voltage_control
+        elif column is 25: return self.simulate_experiment
         else:
             return None
 
@@ -729,7 +732,7 @@ class ExperimentSettings(Node):
         #self.__drain_source_voltage = 0
         elif column is 23:  self.drain_source_voltage= value
         elif column is 24: self.use_automated_voltage_control = value
-
+        elif column is 25: self.simulate_experiment = value
 
     def typeInfo(self):
         return "ExperimentSettings"
@@ -753,6 +756,14 @@ class ExperimentSettings(Node):
     #@vfg_range.setter
     #def vfg_range(self,value):
     #    self.__vfg_range = value
+
+    @property
+    def simulate_experiment(self):
+        return self.__simulate_experiment
+
+    @simulate_experiment.setter
+    def simulate_experiment(self,value):
+        self.__simulate_experiment = value
 
     @property 
     def use_automated_voltage_control(self):
