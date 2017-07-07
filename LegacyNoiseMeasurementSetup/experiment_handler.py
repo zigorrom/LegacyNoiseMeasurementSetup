@@ -366,6 +366,11 @@ class Experiment:
     def simulate(self):
         return self._simulate
 
+    @property
+    def data_handler(self):
+        return self._data_handler
+
+
     def initialize_settings(self, configuration):
         self.__config = configuration
         assert isinstance(configuration, Configuration)
@@ -458,6 +463,18 @@ class Experiment:
     def non_gated_single_value_measurement(self, drain_source_voltage):
         raise NotImplementedError()
 
+    def open_experiment(self):
+        raise NotImplementedError()
+
+    def close_experiment(self):
+        raise NotImplementedError()
+
+    def open_measurement(self):
+        raise NotImplementedError()
+
+    def close_measurement(self):
+        raise NotImplementedError()
+
     def generate_experiment_function(self):
         func = None
         
@@ -485,11 +502,13 @@ class Experiment:
         
     def perform_experiment(self):
         self.generate_experiment_function()
-        self._data_handler.open_experiment(self.__exp_settings.experiment_name)
+        #self._data_handler.open_experiment(self.__exp_settings.experiment_name)
         #self._data_handler.send_process_start_command()
+        self.open_experiment()
         self._execution_function()
+        self.close_experiment()
         #function_to_execute()
-        self._data_handler.close_experiment()
+        #self._data_handler.close_experiment()
 
 class SimulateExperiment(Experiment):
     def __init__(self, input_data_queue = None, stop_event = None):
@@ -508,10 +527,10 @@ class SimulateExperiment(Experiment):
         print("simulate setting ds voltage: {0}".format(voltage))
 
     def single_value_measurement(self, drain_source_voltage, gate_voltage):
-        print("simulating single measurement")
+        print("simulating single measurement vds:{0} vg:{1}".format(drain_source_voltage, gate_voltage))
 
     def non_gated_single_value_measurement(self, drain_source_voltage):
-        print("simulating non gated single measurement")
+        print("simulating non gated single measurement vds:{0}".format(drain_source_voltage))
 
 class PerformExperiment(Experiment):
     def __init__(self, input_data_queue = None, stop_event = None):
