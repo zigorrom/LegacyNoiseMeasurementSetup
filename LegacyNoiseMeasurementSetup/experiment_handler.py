@@ -348,7 +348,7 @@ class ExperimentHandler(Process):
 
 
 class Experiment:
-    def __init__(self, simulate = False, input_data_queue = None):
+    def __init__(self, simulate = False, input_data_queue = None, stop_event = None):
         self.__config = None
         self.__exp_settings = None
         self.__hardware_settings = None
@@ -357,6 +357,7 @@ class Experiment:
         self._input_data_queue = input_data_queue
         self._working_directory = ""
         self._data_handler = None
+        self._stop_event = stop_event
         #self._data_handler = DataHandler(working_directory = "",input_data_queue = input_data_queue)
 
     @property
@@ -500,8 +501,6 @@ class Experiment:
 
         self._execution_function = func
         
-
-
 
     def perform_experiment(self):
         self.generate_experiment_function()
