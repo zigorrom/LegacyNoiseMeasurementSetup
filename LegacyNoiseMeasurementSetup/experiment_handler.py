@@ -337,20 +337,28 @@ class DataHandler:  #(QtCore.QObject):
 class ExperimentHandler(Process):
     def __init__(self, simulate = False):
         super().__init__()
+        self._exit = Event()
+        
+    
+    def stop(self):
+        self._exit.set()
 
+    def run(self):
+        raise NotImplementedError()
+
+
+class Experiment:
+    def __init__(self, simulate = False, input_data_queue = None):
         self.__config = None
         self.__exp_settings = None
         self.__hardware_settings = None
-
-        self._exit = Event()
         self._simulate = simulate
+        self._execution_function = None
+        self._input_data_queue = input_data_queue
+        self._working_directory = ""
+        self._data_handler = None
+        #self._data_handler = DataHandler(working_directory = "",input_data_queue = input_data_queue)
 
-        self.__dynamic_signal_analyzer = None
-        self.__arduino_controller = None
-        self.__sample_multimeter = None
-        self.__main_gate_multimeter = None
-
-    
     @property
     def configuration(self):
         return self.__config
@@ -367,12 +375,6 @@ class ExperimentHandler(Process):
     def simulate(self):
         return self._simulate
 
-    def stop(self):
-        self._exit.set()
-
-    def run(self):
-        raise NotImplementedError()
-
     def initialize_settings(self, configuration):
         self.__config = configuration
         assert isinstance(configuration, Configuration)
@@ -380,13 +382,13 @@ class ExperimentHandler(Process):
         assert isinstance(self.__exp_settings, ExperimentSettings)
         self.__hardware_settings = configuration.get_node_from_path("Settings.HardwareSettings")
         assert isinstance(self.__hardware_settings, HardwareSettings)
+        self._working_directory = self.__exp_settings.working_directory
+        self._data_handler = DataHandler(self._working_directory,input_data_queue = self._input_data_queue)
 
+        #self._data_handler = DataHandler(
         #raise NotImplementedError()
 
     def initialize_hardware(self):
-        if self._simulate:
-            return
-
         if self.__exp_settings.use_transistor_selector or self.__exp_settings.use_automated_voltage_control:
             self.__arduino_controller = ArduinoController(self.__hardware_settings.arduino_controller_resource)
 
@@ -406,13 +408,57 @@ class ExperimentHandler(Process):
         return ds_range, fg_range
 
     def output_curve_measurement_function(self):
-        raise NotImplementedError()
+        ds_range, fg_range = self.get_meas_ranges()
+        
+        if (not self.__exp_settings.use_set_vfg_range) and (not self.__exp_settings.use_set_vds_range):
+            self.single_value_measurement(self.__exp_settings.drain_source_voltage,self.__exp_settings.front_gate_voltage)
+
+
+        elif self.__exp_settings.use_set_vds_range and self.__exp_settings.use_set_vfg_range:
+            for vfg in fg_range.get_range_handler():
+                for vds in ds_range.get_range_handler():
+                    self.single_value_measurement(vds, vfg)
+           
+        elif not self.__exp_settings.use_set_vfg_range:
+            for vds in ds_range.get_range_handler():
+                    self.single_value_measurement(vds, self.__exp_settings.front_gate_voltage)
+                    
+        elif not self.__exp_settings.use_set_vds_range:
+            for vfg in fg_range.get_range_handler():
+                   self.single_value_measurement(self.__exp_settings.drain_source_voltage, vfg)
+        else:
+            raise ValueError("range handlers are not properly defined")
+
 
     def transfer_curve_measurement_function(self):
-        raise NotImplementedError()
+        ds_range, fg_range = self.get_meas_ranges()
+        if (not self.__exp_settings.use_set_vds_range) and (not self.__exp_settings.use_set_vfg_range):
+             self.single_value_measurement(self.__exp_settings.drain_source_voltage,self.__exp_settings.front_gate_voltage)
+
+        elif self.__exp_settings.use_set_vds_range and self.__exp_settings.use_set_vfg_range:
+            
+            for vds in ds_range.get_range_handler():
+                for vfg in fg_range.get_range_handler():
+                    self.single_value_measurement(vds, vfg)
+           
+        elif not self.__exp_settings.use_set_vfg_range:
+            for vds in ds_range.get_range_handler():
+                    self.single_value_measurement(vds, self.__exp_settings.front_gate_voltage)
+                    
+        elif not self.__exp_settings.use_set_vds_range:
+             for vfg in fg_range.get_range_handler():
+                    self.single_value_measurement(self.__exp_settings.drain_source_voltage, vfg)
+        else:
+            raise ValueError("range handlers are not properly defined")
+
 
     def non_gated_structure_meaurement_function(self):
-        raise NotImplementedError()
+        if self.__exp_settings.use_set_vds_range:
+             for vds in self.__exp_settings.vds_range:
+                    self.non_gated_single_value_measurement(vds)
+        else:
+            self.non_gated_single_value_measurement(self.__exp_settings.drain_source_voltage)
+
     
     def switch_transistor(self,transistor):
         raise NotImplementedError()
@@ -430,13 +476,50 @@ class ExperimentHandler(Process):
         raise NotImplementedError()
 
     def generate_experiment_function(self):
-        raise NotImplementedError()
+        func = None
+        
+        print(self.__exp_settings.meas_gated_structure)
+        print(self.__exp_settings.meas_characteristic_type)
+        print(self.__exp_settings.use_transistor_selector)
+       
+        if not self.__exp_settings.meas_gated_structure:# non gated structure measurement
+            func = self.non_gated_structure_meaurement_function
+        elif self.__exp_settings.meas_characteristic_type == 0: #output curve
+            func = self.output_curve_measurement_function
+        elif self.__exp_settings.meas_characteristic_type == 1: #transfer curve
+            func = self.transfer_curve_measurement_function
+        else: 
+            raise AssertionError("function was not selected properly")
+
+        if self.__exp_settings.use_transistor_selector:
+            def execution_function(self):
+                for transistor in self.__exp_settings.transistor_list:
+                    self.switch_transistor(transistor)
+                    func(self)
+            self._execution_function = execution_function
+
+        self._execution_function = func
+        
+
+
 
     def perform_experiment(self):
-        raise NotImplementedError()
+        self.generate_experiment_function()
+        self._data_handler.open_experiment(self.__exp_settings.experiment_name)
+        #self._data_handler.send_process_start_command()
+        self._execution_function()
+        #function_to_execute()
+        self._data_handler.close_experiment()
 
 
-#class SimulateExperimentHandler(
+class SimulateExperiment(Experiment):
+    def __init__(self):
+        Experiment.__init__(self,simulate = True)
+
+    def initialize_hardware(self):
+        print("simulating hardware init")
+
+    
     
 
 
