@@ -464,20 +464,19 @@ class Experiment:
         raise NotImplementedError()
 
     def open_experiment(self):
-        raise NotImplementedError()
+        print("simulation open experiment")
 
     def close_experiment(self):
-        raise NotImplementedError()
+        print("simulation close experiment")
 
     def open_measurement(self):
-        raise NotImplementedError()
+        print("simulate open measurement")
 
     def close_measurement(self):
-        raise NotImplementedError()
+        print("simulate close measurement")
 
     def generate_experiment_function(self):
         func = None
-        
         print(self.__exp_settings.meas_gated_structure)
         print(self.__exp_settings.meas_characteristic_type)
         print(self.__exp_settings.use_transistor_selector)
@@ -497,7 +496,6 @@ class Experiment:
                     self.switch_transistor(transistor)
                     func(self)
             self._execution_function = execution_function
-
         self._execution_function = func
         
     def perform_experiment(self):
@@ -527,10 +525,14 @@ class SimulateExperiment(Experiment):
         print("simulate setting ds voltage: {0}".format(voltage))
 
     def single_value_measurement(self, drain_source_voltage, gate_voltage):
+        self.open_measurement()
         print("simulating single measurement vds:{0} vg:{1}".format(drain_source_voltage, gate_voltage))
+        self.close_measurement()
 
     def non_gated_single_value_measurement(self, drain_source_voltage):
+        self.open_measurement()
         print("simulating non gated single measurement vds:{0}".format(drain_source_voltage))
+        self.close_measurement()
 
 class PerformExperiment(Experiment):
     def __init__(self, input_data_queue = None, stop_event = None):
@@ -549,10 +551,15 @@ class PerformExperiment(Experiment):
         print("performing setting ds voltage: {0}".format(voltage))
 
     def single_value_measurement(self, drain_source_voltage, gate_voltage):
+        self.open_measurement()
         print("performing single measurement")
+        self.close_measurement()
 
     def non_gated_single_value_measurement(self, drain_source_voltage):
+        self.open_measurement()
         print("performing non gated single measurement")
+        self.close_measurement()
+
 
 class ExperimentProcess(Process):
     def __init__(self, input_data_queue = None, simulate = True):
