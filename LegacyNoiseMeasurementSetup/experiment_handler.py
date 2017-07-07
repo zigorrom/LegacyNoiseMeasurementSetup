@@ -508,10 +508,10 @@ class SimulateExperiment(Experiment):
         print("simulate setting ds voltage: {0}".format(voltage))
 
     def single_value_measurement(self, drain_source_voltage, gate_voltage):
-        print("performing single measurement")
+        print("simulating single measurement")
 
     def non_gated_single_value_measurement(self, drain_source_voltage):
-        print("performing non gated single measurement")
+        print("simulating non gated single measurement")
 
 class PerformExperiment(Experiment):
     def __init__(self, input_data_queue = None, stop_event = None):
