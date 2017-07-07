@@ -208,8 +208,10 @@ class MainView(mainViewBase,mainViewForm):
     @QtCore.pyqtSlot()
     def on_folderBrowseButton_clicked(self):
         print("Select folder")
+        
         folder_name = QtGui.QFileDialog.getExistingDirectory(self, "Select Folder")
         
+
         msg = QtGui.QMessageBox()
         msg.setIcon(QtGui.QMessageBox.Information)
         msg.setText("This is a message box")
