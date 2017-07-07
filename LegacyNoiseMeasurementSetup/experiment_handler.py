@@ -518,8 +518,21 @@ class SimulateExperiment(Experiment):
     def initialize_hardware(self):
         print("simulating hardware init")
 
+    def switch_transistor(self, transistor):
+        print("simulating switch transistor")
+
+    def set_front_gate_voltage(self, voltage):
+        print("simulate setting fg voltage: {0}".format(voltage))
     
-    
+    def set_drain_source_voltage(self, voltage):
+        print("simulate setting ds voltage: {0}".format(voltage))
+
+    def single_value_measurement(self, drain_source_voltage, gate_voltage):
+        print("performing single measurement")
+
+    def non_gated_single_value_measurement(self, drain_source_voltage):
+        print("performing non gated single measurement")
+
 
 
 class ExperimentProcess(Process):
