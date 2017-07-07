@@ -362,7 +362,7 @@ class Experiment:
         self._data_handler = None
         self._stop_event = stop_event
         self._measurement_info = None
-        #self._data_handler = DataHandler(working_directory = "",input_data_queue = input_data_queue)
+        
 
     @property
     def configuration(self):
