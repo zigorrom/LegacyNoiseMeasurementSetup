@@ -54,7 +54,7 @@ class ExperimentController(QtCore.QObject):
         self._processing_thread.commandReceived.connect(self._command_received)
 
     def __init_experiment_thread(self):
-        self._experiment_thread = ExperimentProcess(self._input_data_queue,True)
+        self._experiment_thread = ExperimentHandler(self._input_data_queue) #ExperimentProcess(self._input_data_queue,True)
 
     def _command_received(self,cmd):
         self._status_object.send_message("Command received: {0}".format(ExperimentCommands[cmd]))
@@ -326,16 +326,29 @@ class DataHandler:  #(QtCore.QObject):
         raise NotImplementedError()
 
 class ExperimentHandler(Process):
-    def __init__(self, simulate = False):
+    def __init__(self, input_data_queue = None):
         super().__init__()
         self._exit = Event()
-        
-    
+        self._experiment  = None
+        self._input_data_queue = input_data_queue
+
     def stop(self):
         self._exit.set()
 
     def run(self):
-        raise NotImplementedError()
+        cfg = Configuration()
+        exp_settings = cfg.get_node_from_path("Settings.ExperimentSettings")
+        assert isinstance(exp_settings, ExperimentSettings)
+        simulate = exp_settings.simulate_experiment
+
+        if simulate:
+            self._experiment = SimulateExperiment(self._input_data_queue, self._exit)
+        else:
+            self._experiment = PerformExperiment(self._input_data_queue, self._exit)
+        
+        self._experiment.initialize_settings(cfg)
+        self._experiment.initialize_hardware()
+        self._experiment.perform_experiment()
 
 class Experiment:
     def __init__(self, simulate = False, input_data_queue = None, stop_event = None):
@@ -348,6 +361,7 @@ class Experiment:
         self._working_directory = ""
         self._data_handler = None
         self._stop_event = stop_event
+        self._measurement_info = None
         #self._data_handler = DataHandler(working_directory = "",input_data_queue = input_data_queue)
 
     @property
@@ -366,9 +380,9 @@ class Experiment:
     def simulate(self):
         return self._simulate
 
-    @property
-    def data_handler(self):
-        return self._data_handler
+    #@property
+    #def data_handler(self):
+    #    return self._data_handler
 
 
     def initialize_settings(self, configuration):
@@ -379,7 +393,7 @@ class Experiment:
         self.__hardware_settings = configuration.get_node_from_path("Settings.HardwareSettings")
         assert isinstance(self.__hardware_settings, HardwareSettings)
         self._working_directory = self.__exp_settings.working_directory
-        self._data_handler = DataHandler(self._working_directory,input_data_queue = self._input_data_queue)
+        #self._data_handler = DataHandler(self._working_directory,input_data_queue = self._input_data_queue)
 
     def initialize_hardware(self):
         if self.__exp_settings.use_transistor_selector or self.__exp_settings.use_automated_voltage_control:
@@ -388,7 +402,10 @@ class Experiment:
         self.__dynamic_signal_analyzer = HP3567A(self.__hardware_settings.dsa_resource)
         self.__sample_multimeter = HP34401A(self.__hardware_settings.sample_multimeter_resource)
         self.__main_gate_multimeter = HP34401A(self.__hardware_settings.main_gate_multimeter_resource)
-        
+    
+
+   
+
     def get_meas_ranges(self):
         fg_range = self.__config.get_node_from_path("front_gate_range")
         if self.__exp_settings.use_set_vfg_range:
@@ -463,17 +480,30 @@ class Experiment:
     def non_gated_single_value_measurement(self, drain_source_voltage):
         raise NotImplementedError()
 
+    def _send_command(self,command):
+        q = self._input_data_queue
+        if q:
+            q.put_nowait({'c': command})
+
+    def _send_command_with_param(self,command,param):
+        q = self._input_data_queue
+        if q:
+            q.put_nowait({'c':command, 'p':param})
+
     def open_experiment(self):
-        print("simulation open experiment")
+        self._send_command(ExperimentCommands.EXPERIMENT_STARTED) #,experiment_name)
 
     def close_experiment(self):
-        print("simulation close experiment")
+        self._send_command(ExperimentCommands.EXPERIMENT_STOPPED)
 
     def open_measurement(self):
-        print("simulate open measurement")
+        #print("simulate open measurement")
+        self._measurement_info = MeasurementInfo()
+        self._send_command(ExperimentCommands.MEASUREMENT_STARTED) #,measurement_name) 
 
     def close_measurement(self):
-        print("simulate close measurement")
+        #print("simulate close measurement")
+        self._send_command(ExperimentCommands.MEASUREMENT_FINISHED)
 
     def generate_experiment_function(self):
         func = None
@@ -500,13 +530,9 @@ class Experiment:
         
     def perform_experiment(self):
         self.generate_experiment_function()
-        #self._data_handler.open_experiment(self.__exp_settings.experiment_name)
-        #self._data_handler.send_process_start_command()
         self.open_experiment()
         self._execution_function()
         self.close_experiment()
-        #function_to_execute()
-        #self._data_handler.close_experiment()
 
 class SimulateExperiment(Experiment):
     def __init__(self, input_data_queue = None, stop_event = None):
@@ -561,342 +587,6 @@ class PerformExperiment(Experiment):
         self.close_measurement()
 
 
-class ExperimentProcess(Process):
-    def __init__(self, input_data_queue = None, simulate = True):
-        super().__init__()
-        self._simulate = simulate
-
-        self.exit = Event()
-
-        self._measured_temp_start = 0;
-        self._measured_temp_end = 0;
-
-        self._measured_main_voltage_start = 0;
-        self._measured_main_voltage_end = 0;
-
-        self._measured_sample_voltage_start = 0;
-        self._measured_samole_voltage_end = 0;
-        
-        self._measured_gate_voltage_start = 0;
-        self._measured_gate_voltage_end = 0;
-
-        self._sample_current_start = 0;
-        self._sample_current_end = 0;
-
-        self._sample_resistance_start = 0;
-        self._sample_resistance_end = 0;
-
-        self._equivalent_resistance_start = 0;
-        self._equivalent_resistance_end = 0;
-
-        self._counter = 0
-
-        self._data_handler = DataHandler(working_directory = "",input_data_queue = input_data_queue)
-
-    def initialize_settings(self, configuration):
-        assert isinstance(configuration, Configuration)
-        self.__config = configuration
-        self.__exp_settings = configuration.get_node_from_path("Settings.ExperimentSettings")
-        assert isinstance(self.__exp_settings, ExperimentSettings)
-        self.__hardware_settings = configuration.get_node_from_path("Settings.HardwareSettings")
-        assert isinstance(self.__hardware_settings, HardwareSettings)
-        
-        if not self._simulate:
-            self.__initialize_hardware();
-
-    def __initialize_hardware(self):
-        self.__dynamic_signal_analyzer = HP3567A(self.__hardware_settings.dsa_resource)
-        self.__arduino_controller = ArduinoController(self.__hardware_settings.arduino_controller_resource)
-        self.__sample_multimeter = HP34401A(self.__hardware_settings.sample_multimeter_resource)
-        self.__main_gate_multimeter = HP34401A(self.__hardware_settings.main_gate_multimeter_resource)
-        assert self.__dynamic_signal_analyzer and self.__arduino_controller and self.__sample_multimeter and self.__main_gate_multimeter
-
-    def get_meas_ranges(self):
-        fg_range = self.__config.get_node_from_path("front_gate_range")
-        if self.__exp_settings.use_set_vfg_range:
-            assert isinstance(fg_range, ValueRange)
-        ds_range = self.__config.get_node_from_path("drain_source_range")
-        if self.__exp_settings.use_set_vds_range:
-            assert isinstance(fg_range, ValueRange)
-        return ds_range, fg_range
-
-    def output_curve_measurement_function(self):
-        ds_range, fg_range = self.get_meas_ranges()
-        
-        if (not self.__exp_settings.use_set_vfg_range) and (not self.__exp_settings.use_set_vds_range):
-            self.single_value_measurement(self.__exp_settings.drain_source_voltage,self.__exp_settings.front_gate_voltage)
-
-
-        elif self.__exp_settings.use_set_vds_range and self.__exp_settings.use_set_vfg_range:
-            for vfg in fg_range.get_range_handler():
-                for vds in ds_range.get_range_handler():
-                    self.single_value_measurement(vds, vfg)
-           
-        elif not self.__exp_settings.use_set_vfg_range:
-            for vds in ds_range.get_range_handler():
-                    self.single_value_measurement(vds, self.__exp_settings.front_gate_voltage)
-                    
-        elif not self.__exp_settings.use_set_vds_range:
-            for vfg in fg_range.get_range_handler():
-                   self.single_value_measurement(self.__exp_settings.drain_source_voltage, vfg)
-        else:
-            raise ValueError("range handlers are not properly defined")
-        
-
-    def transfer_curve_measurement_function(self):
-        ds_range, fg_range = self.get_meas_ranges()
-        if (not self.__exp_settings.use_set_vds_range) and (not self.__exp_settings.use_set_vfg_range):
-             self.single_value_measurement(self.__exp_settings.drain_source_voltage,self.__exp_settings.front_gate_voltage)
-
-        elif self.__exp_settings.use_set_vds_range and self.__exp_settings.use_set_vfg_range:
-            
-            for vds in ds_range.get_range_handler():
-                for vfg in fg_range.get_range_handler():
-                    self.single_value_measurement(vds, vfg)
-           
-        elif not self.__exp_settings.use_set_vfg_range:
-            for vds in ds_range.get_range_handler():
-                    self.single_value_measurement(vds, self.__exp_settings.front_gate_voltage)
-                    
-        elif not self.__exp_settings.use_set_vds_range:
-             for vfg in fg_range.get_range_handler():
-                    self.single_value_measurement(self.__exp_settings.drain_source_voltage, vfg)
-        else:
-            raise ValueError("range handlers are not properly defined")
-        #    self.single_value_measurement(self.__exp_settings.drain_source_voltage,self.__exp_settings.front_gate_voltage)
-
-        # foreach vds_voltage in Vds_range
-        #     foreach vfg_voltage in Vfg_range 
-        #       single_value_measurement(vds_voltage,vfg_voltage)
-
-    def switch_transistor(self,transistor):
-        if self._simulate:
-            print("simulating switching transistor to {0}".format (transistor))
-            return
-        pass
-
-    def set_front_gate_voltage(self,voltage):
-        if self._simulate:
-            print("simulate settign front gate voltage: {0}".format(voltage))
-            return 
-
-        print("settign front gate voltage: {0}".format(voltage))
-        channel = self.__hardware_settings.gate_potentiometer_channel
-        potentiometer = MotorizedPotentiometer(self.__arduino_controller, channel, self.__main_gate_multimeter)
-        potentiometer.set_voltage(voltage)
-
-
-
-    def set_drain_source_voltage(self,voltage):
-        if self._simulate:
-            print("simulating settign drain source voltage: {0}".format(voltage))
-            return
-        
-        print("settign drain source voltage: {0}".format(voltage))
-        print("settign front gate voltage: {0}".format(voltage))
-        channel = self.__hardware_settings.sample_potentiometer_channel
-        potentiometer = MotorizedPotentiometer(self.__arduino_controller, channel, self.__sample_multimeter)
-        potentiometer.set_voltage(voltage)
-    #def set_voltage(self, voltage):
-    #    pass   
-
-    def single_value_measurement(self, drain_source_voltage, gate_voltage):
-        #self.set_drain_source_voltage(drain_source_voltage)
-        #self.set_front_gate_voltage(gate_voltage)
-        #self.set_drain_source_voltage(drain_source_voltage) ## specifics of the circuit!!! to correct the value of dropped voltage on opened channel
-        self.perform_single_measurement()
-        #set vds_voltage
-        # set vfg voltage
-        # stabilize voltage
-        # perform_single_measurement()
-        
-
-    def non_gated_structure_meaurement_function(self):
-        if self.__exp_settings.use_set_vds_range:
-             for vds in self.__exp_settings.vds_range:
-                    self.non_gated_single_value_measurement(vds)
-        else:
-            self.non_gated_single_value_measurement(self.__exp_settings.drain_source_voltage)
-
-        # foreach vds_voltage in Vds_range
-        #  non_gated_single_value_measurement(vds)
-
-    def non_gated_single_value_measurement(self, drain_source_voltage):
-        #self.set_drain_source_voltage(drain_source_voltage)
-        self.perform_non_gated_single_measurement()
-        #set vds_voltage
-        # stabilize voltage
-        # perform_single_measurement()
-        pass
-
-   
-
-    def generate_experiment_function(self):
-        func = None
-        
-        print(self.__exp_settings.meas_gated_structure)
-        print(self.__exp_settings.meas_characteristic_type)
-        print(self.__exp_settings.use_transistor_selector)
-       
-        if not self.__exp_settings.meas_gated_structure:# non gated structure measurement
-            func = self.non_gated_structure_meaurement_function
-        elif self.__exp_settings.meas_characteristic_type == 0: #output curve
-            func = self.output_curve_measurement_function
-        elif self.__exp_settings.meas_characteristic_type == 1: #transfer curve
-            func = self.transfer_curve_measurement_function
-        else: 
-            raise AssertionError("function was not selected properly")
-
-        if self.__exp_settings.use_transistor_selector:
-            def execution_function(self):
-                for transistor in self.__exp_settings.transistor_list:
-                    self.switch_transistor(transistor)
-                    func(self)
-            return execution_function
-
-        return func
-
-
-
-    def perform_non_gated_single_measurement(self):
-        raise NotImplementedError()
-        #set overload_rejection
-        #self.__dynamic_signal_analyzer.switch_overload_rejection(self.__exp_settings.overload_rejecion)
-        #calibrate
-        #if self.__exp_settings.calibrate_before_measurement:
-        #    self.__dynamic_signal_analyzer.calibrate()
-        
-        #set averaging
-        #self.__dynamic_signal_analyzer.set_average_count(self.__exp_settings.averages)
-
-        #set display updates
-        #self.__dynamic_signal_analyzer.set_display_update_rate(self.__exp_settings.display_refresh)
-
-        #measure_temperature
-        #if self.__exp_settings.need_measure_temperature:
-        #    raise NotImplementedError()
-
-        #switch Vfg to Vmain
-
-        #measure Vmain
-        #calculate Isample ,Rsample
-        #measure spectra 
-        #switch Vfg to Vmain
-        #measure Vmain
-        #calculate Isample ,Rsample
-        #calculate resulting spectra
-        #write data to measurement file and experiment file
-        print("performing perform_non_gated_single_measurement")
-        self._counter+=1
-        print("count: {0}".format(self._counter))
-        #pass
-        
-    def __initialize_analyzer(self,analyzer):
-        #analyzer = self.__dynamic_signal_analyzer
-        analyzer.remove_time_capture_data()
-        analyzer.clear_status()
-
-        #set mode
-        analyzer.select_instrument_mode(HP35670A_MODES.FFT)
-        analyzer.switch_input(HP35670A_INPUTS.INP2, False)
-        analyzer.select_active_traces(HP35670A_CALC.CALC1, HP35670A_TRACES.A)
-        analyzer.select_real_format(64)
-        analyzer.select_ascii_format()
-        analyzer.select_power_spectrum_function(HP35670A_CALC.CALC1)
-        analyzer.select_voltage_unit(HP35670A_CALC.CALC1)
-        analyzer.switch_calibration(False)
-        analyzer.set_frequency_resolution(1600)
-        analyzer.set_source_voltage(5)
-        #calibrate
-        if self.__exp_settings.calibrate_before_measurement:
-            analyzer.calibrate()
-        
-        #set averaging
-        analyzer.switch_averaging(True)
-        analyzer.set_average_count(self.__exp_settings.averages)
-        analyzer.set_display_update_rate(self.__exp_settings.display_refresh)
-        #set overload_rejection
-        analyzer.switch_overload_rejection(self.__exp_settings.overload_rejecion)
-        
-        
-        analyzer.set_frequency_start(0)
-        analyzer.set_frequency_stop(1600)
-        return analyzer
-
-    def perform_single_measurement(self):
-        if self._simulate:
-            for i in range(5):
-                print("simulating experiment")
-                rang = 0 #np.random.choice([0,1])
-                max_counter = 10
-                counter = 0
-                need_exit = self.exit.is_set
-                
-                self._data_handler.open_measurement("MyMeas{0}".format(i))#.send_process_start_command()
-                self._data_handler.start_sample_voltage = np.random.random_sample()
-                self._data_handler.send_measurement_info()
-                while (not need_exit()) and counter < max_counter:
-                    data = 10**-9 * np.random.random(1600)
-                    self._data_handler.update_spectrum(data,0)
-                    self._data_handler.update_spectrum(data,1)
-                    counter+=1
-                    time.sleep(0.5)
-                self._data_handler.end_sample_voltage = np.random.random_sample()
-                self._data_handler.send_measurement_info()
-                self._data_handler.close_measurement()
-                if need_exit():
-                    return
-                #self._data_handler.send_measurement_finished_command()#send_process_end_command()
-            return
-
-        analyzer = self.__initialize_analyzer(self.__dynamic_signal_analyzer)
-
-        #measure_temperature
-        #measure Vds, Vfg
-        #switch Vfg to Vmain
-        #measure Vmain
-        #calculate Isample ,Rsample
-        #measure spectra 
-        print(analyzer.get_points_number(HP35670A_CALC.CALC1))
-        analyzer.init_instrument()
-
-        analyzer.wait_operation_complete()
-        
-        str_data = analyzer.get_data(HP35670A_CALC.CALC1)
-        data = np.fromstring(str_data, sep = ',')
-
-        
-
-        rang = 0
-        self._data_handler.update_spectrum(data,rang)
-        #measure Vds, Vfg
-        #switch Vfg to Vmain
-        #measure Vmain
-        #calculate Isample ,Rsample
-        #calculate resulting spectra
-        #write data to measurement file and experiment file
-        print("performing perform_single_measurement")
-        self._counter+=1
-        print("count: {0}".format(self._counter))
-        #pass
-
-
-    def perform_experiment(self):
-        function_to_execute = self.generate_experiment_function()
-        self._data_handler.open_experiment(self.__exp_settings.experiment_name)
-        #self._data_handler.send_process_start_command()
-        function_to_execute()
-        self._data_handler.close_experiment()
-
-
-    def stop(self):
-        self.exit.set()
-
-    def run(self):
-        sys.stdout = open("log.txt", "w")
-        cfg = Configuration()
-        self.initialize_settings(cfg)
-        self.perform_experiment()
 
 
 if __name__ == "__main__":
@@ -913,3 +603,344 @@ if __name__ == "__main__":
     #exp.initialize_settings(cfg)
     #exp.perform_experiment()
     
+
+
+    ##########################
+    ##OLD version
+    ##########################
+    #class ExperimentProcess(Process):
+    #def __init__(self, input_data_queue = None, simulate = True):
+    #    super().__init__()
+    #    self._simulate = simulate
+
+    #    self.exit = Event()
+
+    #    self._measured_temp_start = 0;
+    #    self._measured_temp_end = 0;
+
+    #    self._measured_main_voltage_start = 0;
+    #    self._measured_main_voltage_end = 0;
+
+    #    self._measured_sample_voltage_start = 0;
+    #    self._measured_samole_voltage_end = 0;
+        
+    #    self._measured_gate_voltage_start = 0;
+    #    self._measured_gate_voltage_end = 0;
+
+    #    self._sample_current_start = 0;
+    #    self._sample_current_end = 0;
+
+    #    self._sample_resistance_start = 0;
+    #    self._sample_resistance_end = 0;
+
+    #    self._equivalent_resistance_start = 0;
+    #    self._equivalent_resistance_end = 0;
+
+    #    self._counter = 0
+
+    #    self._data_handler = DataHandler(working_directory = "",input_data_queue = input_data_queue)
+
+    #def initialize_settings(self, configuration):
+    #    assert isinstance(configuration, Configuration)
+    #    self.__config = configuration
+    #    self.__exp_settings = configuration.get_node_from_path("Settings.ExperimentSettings")
+    #    assert isinstance(self.__exp_settings, ExperimentSettings)
+    #    self.__hardware_settings = configuration.get_node_from_path("Settings.HardwareSettings")
+    #    assert isinstance(self.__hardware_settings, HardwareSettings)
+        
+    #    if not self._simulate:
+    #        self.__initialize_hardware();
+
+    #def __initialize_hardware(self):
+    #    self.__dynamic_signal_analyzer = HP3567A(self.__hardware_settings.dsa_resource)
+    #    self.__arduino_controller = ArduinoController(self.__hardware_settings.arduino_controller_resource)
+    #    self.__sample_multimeter = HP34401A(self.__hardware_settings.sample_multimeter_resource)
+    #    self.__main_gate_multimeter = HP34401A(self.__hardware_settings.main_gate_multimeter_resource)
+    #    assert self.__dynamic_signal_analyzer and self.__arduino_controller and self.__sample_multimeter and self.__main_gate_multimeter
+
+    #def get_meas_ranges(self):
+    #    fg_range = self.__config.get_node_from_path("front_gate_range")
+    #    if self.__exp_settings.use_set_vfg_range:
+    #        assert isinstance(fg_range, ValueRange)
+    #    ds_range = self.__config.get_node_from_path("drain_source_range")
+    #    if self.__exp_settings.use_set_vds_range:
+    #        assert isinstance(fg_range, ValueRange)
+    #    return ds_range, fg_range
+
+    #def output_curve_measurement_function(self):
+    #    ds_range, fg_range = self.get_meas_ranges()
+        
+    #    if (not self.__exp_settings.use_set_vfg_range) and (not self.__exp_settings.use_set_vds_range):
+    #        self.single_value_measurement(self.__exp_settings.drain_source_voltage,self.__exp_settings.front_gate_voltage)
+
+
+    #    elif self.__exp_settings.use_set_vds_range and self.__exp_settings.use_set_vfg_range:
+    #        for vfg in fg_range.get_range_handler():
+    #            for vds in ds_range.get_range_handler():
+    #                self.single_value_measurement(vds, vfg)
+           
+    #    elif not self.__exp_settings.use_set_vfg_range:
+    #        for vds in ds_range.get_range_handler():
+    #                self.single_value_measurement(vds, self.__exp_settings.front_gate_voltage)
+                    
+    #    elif not self.__exp_settings.use_set_vds_range:
+    #        for vfg in fg_range.get_range_handler():
+    #               self.single_value_measurement(self.__exp_settings.drain_source_voltage, vfg)
+    #    else:
+    #        raise ValueError("range handlers are not properly defined")
+        
+
+    #def transfer_curve_measurement_function(self):
+    #    ds_range, fg_range = self.get_meas_ranges()
+    #    if (not self.__exp_settings.use_set_vds_range) and (not self.__exp_settings.use_set_vfg_range):
+    #         self.single_value_measurement(self.__exp_settings.drain_source_voltage,self.__exp_settings.front_gate_voltage)
+
+    #    elif self.__exp_settings.use_set_vds_range and self.__exp_settings.use_set_vfg_range:
+            
+    #        for vds in ds_range.get_range_handler():
+    #            for vfg in fg_range.get_range_handler():
+    #                self.single_value_measurement(vds, vfg)
+           
+    #    elif not self.__exp_settings.use_set_vfg_range:
+    #        for vds in ds_range.get_range_handler():
+    #                self.single_value_measurement(vds, self.__exp_settings.front_gate_voltage)
+                    
+    #    elif not self.__exp_settings.use_set_vds_range:
+    #         for vfg in fg_range.get_range_handler():
+    #                self.single_value_measurement(self.__exp_settings.drain_source_voltage, vfg)
+    #    else:
+    #        raise ValueError("range handlers are not properly defined")
+    #    #    self.single_value_measurement(self.__exp_settings.drain_source_voltage,self.__exp_settings.front_gate_voltage)
+
+    #    # foreach vds_voltage in Vds_range
+    #    #     foreach vfg_voltage in Vfg_range 
+    #    #       single_value_measurement(vds_voltage,vfg_voltage)
+
+    #def switch_transistor(self,transistor):
+    #    if self._simulate:
+    #        print("simulating switching transistor to {0}".format (transistor))
+    #        return
+    #    pass
+
+    #def set_front_gate_voltage(self,voltage):
+    #    if self._simulate:
+    #        print("simulate settign front gate voltage: {0}".format(voltage))
+    #        return 
+
+    #    print("settign front gate voltage: {0}".format(voltage))
+    #    channel = self.__hardware_settings.gate_potentiometer_channel
+    #    potentiometer = MotorizedPotentiometer(self.__arduino_controller, channel, self.__main_gate_multimeter)
+    #    potentiometer.set_voltage(voltage)
+
+
+
+    #def set_drain_source_voltage(self,voltage):
+    #    if self._simulate:
+    #        print("simulating settign drain source voltage: {0}".format(voltage))
+    #        return
+        
+    #    print("settign drain source voltage: {0}".format(voltage))
+    #    print("settign front gate voltage: {0}".format(voltage))
+    #    channel = self.__hardware_settings.sample_potentiometer_channel
+    #    potentiometer = MotorizedPotentiometer(self.__arduino_controller, channel, self.__sample_multimeter)
+    #    potentiometer.set_voltage(voltage)
+    ##def set_voltage(self, voltage):
+    ##    pass   
+
+    #def single_value_measurement(self, drain_source_voltage, gate_voltage):
+    #    #self.set_drain_source_voltage(drain_source_voltage)
+    #    #self.set_front_gate_voltage(gate_voltage)
+    #    #self.set_drain_source_voltage(drain_source_voltage) ## specifics of the circuit!!! to correct the value of dropped voltage on opened channel
+    #    self.perform_single_measurement()
+    #    #set vds_voltage
+    #    # set vfg voltage
+    #    # stabilize voltage
+    #    # perform_single_measurement()
+        
+
+    #def non_gated_structure_meaurement_function(self):
+    #    if self.__exp_settings.use_set_vds_range:
+    #         for vds in self.__exp_settings.vds_range:
+    #                self.non_gated_single_value_measurement(vds)
+    #    else:
+    #        self.non_gated_single_value_measurement(self.__exp_settings.drain_source_voltage)
+
+    #    # foreach vds_voltage in Vds_range
+    #    #  non_gated_single_value_measurement(vds)
+
+    #def non_gated_single_value_measurement(self, drain_source_voltage):
+    #    #self.set_drain_source_voltage(drain_source_voltage)
+    #    self.perform_non_gated_single_measurement()
+    #    #set vds_voltage
+    #    # stabilize voltage
+    #    # perform_single_measurement()
+    #    pass
+
+   
+
+    #def generate_experiment_function(self):
+    #    func = None
+        
+    #    print(self.__exp_settings.meas_gated_structure)
+    #    print(self.__exp_settings.meas_characteristic_type)
+    #    print(self.__exp_settings.use_transistor_selector)
+       
+    #    if not self.__exp_settings.meas_gated_structure:# non gated structure measurement
+    #        func = self.non_gated_structure_meaurement_function
+    #    elif self.__exp_settings.meas_characteristic_type == 0: #output curve
+    #        func = self.output_curve_measurement_function
+    #    elif self.__exp_settings.meas_characteristic_type == 1: #transfer curve
+    #        func = self.transfer_curve_measurement_function
+    #    else: 
+    #        raise AssertionError("function was not selected properly")
+
+    #    if self.__exp_settings.use_transistor_selector:
+    #        def execution_function(self):
+    #            for transistor in self.__exp_settings.transistor_list:
+    #                self.switch_transistor(transistor)
+    #                func(self)
+    #        return execution_function
+
+    #    return func
+
+
+
+    #def perform_non_gated_single_measurement(self):
+    #    raise NotImplementedError()
+    #    #set overload_rejection
+    #    #self.__dynamic_signal_analyzer.switch_overload_rejection(self.__exp_settings.overload_rejecion)
+    #    #calibrate
+    #    #if self.__exp_settings.calibrate_before_measurement:
+    #    #    self.__dynamic_signal_analyzer.calibrate()
+        
+    #    #set averaging
+    #    #self.__dynamic_signal_analyzer.set_average_count(self.__exp_settings.averages)
+
+    #    #set display updates
+    #    #self.__dynamic_signal_analyzer.set_display_update_rate(self.__exp_settings.display_refresh)
+
+    #    #measure_temperature
+    #    #if self.__exp_settings.need_measure_temperature:
+    #    #    raise NotImplementedError()
+
+    #    #switch Vfg to Vmain
+
+    #    #measure Vmain
+    #    #calculate Isample ,Rsample
+    #    #measure spectra 
+    #    #switch Vfg to Vmain
+    #    #measure Vmain
+    #    #calculate Isample ,Rsample
+    #    #calculate resulting spectra
+    #    #write data to measurement file and experiment file
+    #    print("performing perform_non_gated_single_measurement")
+    #    self._counter+=1
+    #    print("count: {0}".format(self._counter))
+    #    #pass
+        
+    #def __initialize_analyzer(self,analyzer):
+    #    #analyzer = self.__dynamic_signal_analyzer
+    #    analyzer.remove_time_capture_data()
+    #    analyzer.clear_status()
+
+    #    #set mode
+    #    analyzer.select_instrument_mode(HP35670A_MODES.FFT)
+    #    analyzer.switch_input(HP35670A_INPUTS.INP2, False)
+    #    analyzer.select_active_traces(HP35670A_CALC.CALC1, HP35670A_TRACES.A)
+    #    analyzer.select_real_format(64)
+    #    analyzer.select_ascii_format()
+    #    analyzer.select_power_spectrum_function(HP35670A_CALC.CALC1)
+    #    analyzer.select_voltage_unit(HP35670A_CALC.CALC1)
+    #    analyzer.switch_calibration(False)
+    #    analyzer.set_frequency_resolution(1600)
+    #    analyzer.set_source_voltage(5)
+    #    #calibrate
+    #    if self.__exp_settings.calibrate_before_measurement:
+    #        analyzer.calibrate()
+        
+    #    #set averaging
+    #    analyzer.switch_averaging(True)
+    #    analyzer.set_average_count(self.__exp_settings.averages)
+    #    analyzer.set_display_update_rate(self.__exp_settings.display_refresh)
+    #    #set overload_rejection
+    #    analyzer.switch_overload_rejection(self.__exp_settings.overload_rejecion)
+        
+        
+    #    analyzer.set_frequency_start(0)
+    #    analyzer.set_frequency_stop(1600)
+    #    return analyzer
+
+    #def perform_single_measurement(self):
+    #    if self._simulate:
+    #        for i in range(5):
+    #            print("simulating experiment")
+    #            rang = 0 #np.random.choice([0,1])
+    #            max_counter = 10
+    #            counter = 0
+    #            need_exit = self.exit.is_set
+                
+    #            self._data_handler.open_measurement("MyMeas{0}".format(i))#.send_process_start_command()
+    #            self._data_handler.start_sample_voltage = np.random.random_sample()
+    #            self._data_handler.send_measurement_info()
+    #            while (not need_exit()) and counter < max_counter:
+    #                data = 10**-9 * np.random.random(1600)
+    #                self._data_handler.update_spectrum(data,0)
+    #                self._data_handler.update_spectrum(data,1)
+    #                counter+=1
+    #                time.sleep(0.5)
+    #            self._data_handler.end_sample_voltage = np.random.random_sample()
+    #            self._data_handler.send_measurement_info()
+    #            self._data_handler.close_measurement()
+    #            if need_exit():
+    #                return
+    #            #self._data_handler.send_measurement_finished_command()#send_process_end_command()
+    #        return
+
+    #    analyzer = self.__initialize_analyzer(self.__dynamic_signal_analyzer)
+
+    #    #measure_temperature
+    #    #measure Vds, Vfg
+    #    #switch Vfg to Vmain
+    #    #measure Vmain
+    #    #calculate Isample ,Rsample
+    #    #measure spectra 
+    #    print(analyzer.get_points_number(HP35670A_CALC.CALC1))
+    #    analyzer.init_instrument()
+
+    #    analyzer.wait_operation_complete()
+        
+    #    str_data = analyzer.get_data(HP35670A_CALC.CALC1)
+    #    data = np.fromstring(str_data, sep = ',')
+
+        
+
+    #    rang = 0
+    #    self._data_handler.update_spectrum(data,rang)
+    #    #measure Vds, Vfg
+    #    #switch Vfg to Vmain
+    #    #measure Vmain
+    #    #calculate Isample ,Rsample
+    #    #calculate resulting spectra
+    #    #write data to measurement file and experiment file
+    #    print("performing perform_single_measurement")
+    #    self._counter+=1
+    #    print("count: {0}".format(self._counter))
+    #    #pass
+
+
+    #def perform_experiment(self):
+    #    function_to_execute = self.generate_experiment_function()
+    #    self._data_handler.open_experiment(self.__exp_settings.experiment_name)
+    #    #self._data_handler.send_process_start_command()
+    #    function_to_execute()
+    #    self._data_handler.close_experiment()
+
+
+    #def stop(self):
+    #    self.exit.set()
+
+    #def run(self):
+    #    sys.stdout = open("log.txt", "w")
+    #    cfg = Configuration()
+    #    self.initialize_settings(cfg)
+    #    self.perform_experiment()

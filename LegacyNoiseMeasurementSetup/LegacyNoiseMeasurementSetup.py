@@ -10,7 +10,7 @@ from nodes import ExperimentSettings, Node, SettingsModel, ValueRange, HardwareS
 from configuration import Configuration
 from communication_layer import get_available_gpib_resources, get_available_com_resources
 from plot import SpectrumPlotWidget
-from experiment_handler import ProcessingThread, ExperimentProcess, ExperimentController
+from experiment_handler import ProcessingThread, ExperimentController   #, ExperimentProcess
 from measurement_data_structures import MeasurementInfo
 
 class StatusObject(QtCore.QObject):
