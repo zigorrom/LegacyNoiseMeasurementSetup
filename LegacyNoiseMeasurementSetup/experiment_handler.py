@@ -29,7 +29,7 @@ class ExperimentController(QtCore.QObject):
         self._spectrum_plot = spectrum_plot
         #self._spectrum_plot
 
-        self._visualization_deque = deque(maxlen = 50)
+        self._visualization_deque = deque(maxlen = 100)
         self._input_data_queue = JoinableQueue()
 
         self._status_object = status_object
@@ -40,7 +40,7 @@ class ExperimentController(QtCore.QObject):
         self._experiment_thread = None # Experiment(self._input_data_queue)
 
         self._refresh_timer = QtCore.QTimer(self)
-        self._refresh_timer.setInterval(200)
+        self._refresh_timer.setInterval(20)
         self._refresh_timer.timeout.connect(self._update_gui)
         self._counter = 0
 
@@ -367,6 +367,7 @@ class Experiment:
         self._frequencies = self._get_frequencies(self._spectrum_ranges)
         self._spectrum_data = {}
 
+        self._measurement_counter = 0
 
     @property
     def configuration(self):
@@ -404,6 +405,7 @@ class Experiment:
         self.__hardware_settings = configuration.get_node_from_path("Settings.HardwareSettings")
         assert isinstance(self.__hardware_settings, HardwareSettings)
         self._working_directory = self.__exp_settings.working_directory
+        
         #self._data_handler = DataHandler(self._working_directory,input_data_queue = self._input_data_queue)
 
     def initialize_hardware(self):
@@ -503,6 +505,7 @@ class Experiment:
 
     def open_experiment(self):
         self._send_command(ExperimentCommands.EXPERIMENT_STARTED) #,experiment_name)
+        self._measurement_counter = self.__exp_settings.measurement_count
 
     def close_experiment(self):
         self._send_command(ExperimentCommands.EXPERIMENT_STOPPED)
@@ -510,10 +513,11 @@ class Experiment:
     def open_measurement(self):
         #print("simulate open measurement")
         self._measurement_info = MeasurementInfo()
-        self._send_command(ExperimentCommands.MEASUREMENT_STARTED) #,measurement_name) 
+        self._send_command_with_param(ExperimentCommands.MEASUREMENT_STARTED,self._measurement_counter) 
 
     def close_measurement(self):
         #print("simulate close measurement")
+        self._measurement_counter+=1
         self._send_command(ExperimentCommands.MEASUREMENT_FINISHED)
 
     def send_measurement_info(self):
