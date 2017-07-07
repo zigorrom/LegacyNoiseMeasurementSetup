@@ -567,7 +567,6 @@ class ExperimentProcess(Process):
 
         self._data_handler = DataHandler(working_directory = "",input_data_queue = input_data_queue)
 
-
     def initialize_settings(self, configuration):
         assert isinstance(configuration, Configuration)
         self.__config = configuration
@@ -585,7 +584,6 @@ class ExperimentProcess(Process):
         self.__sample_multimeter = HP34401A(self.__hardware_settings.sample_multimeter_resource)
         self.__main_gate_multimeter = HP34401A(self.__hardware_settings.main_gate_multimeter_resource)
         assert self.__dynamic_signal_analyzer and self.__arduino_controller and self.__sample_multimeter and self.__main_gate_multimeter
-
 
     def get_meas_ranges(self):
         fg_range = self.__config.get_node_from_path("front_gate_range")
@@ -617,11 +615,6 @@ class ExperimentProcess(Process):
                    self.single_value_measurement(self.__exp_settings.drain_source_voltage, vfg)
         else:
             raise ValueError("range handlers are not properly defined")
-        #    self.single_value_measurement(self.__exp_settings.drain_source_voltage,self.__exp_settings.front_gate_voltage)
-
-        #foreach vfg_voltage in Vfg_range 
-        #    foreach vds_voltage in Vds_range
-        #       single_value_measurement(vds_voltage,vfg_voltage)
         
 
     def transfer_curve_measurement_function(self):
