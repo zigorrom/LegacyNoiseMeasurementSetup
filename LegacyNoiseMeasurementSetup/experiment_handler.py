@@ -512,8 +512,8 @@ class Experiment:
 
 
 class SimulateExperiment(Experiment):
-    def __init__(self):
-        Experiment.__init__(self,simulate = True)
+    def __init__(self, input_data_queue = None, stop_event = None):
+        Experiment.__init__(True, input_data_queue, stop_event)
 
     def initialize_hardware(self):
         print("simulating hardware init")
@@ -532,6 +532,31 @@ class SimulateExperiment(Experiment):
 
     def non_gated_single_value_measurement(self, drain_source_voltage):
         print("performing non gated single measurement")
+
+
+class PerformExperiment(Experiment):
+    def __init__(self, input_data_queue = None, stop_event = None):
+        Experiment.__init__(False, input_data_queue, stop_event)
+
+    def initialize_hardware(self):
+        pass
+
+    def switch_transistor(self, transistor):
+        print("performing switch transistor")
+
+    def set_front_gate_voltage(self, voltage):
+        print("performing setting fg voltage: {0}".format(voltage))
+    
+    def set_drain_source_voltage(self, voltage):
+        print("performing setting ds voltage: {0}".format(voltage))
+
+    def single_value_measurement(self, drain_source_voltage, gate_voltage):
+        print("performing single measurement")
+
+    def non_gated_single_value_measurement(self, drain_source_voltage):
+        print("performing non gated single measurement")
+
+
 
 
 
