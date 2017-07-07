@@ -345,6 +345,13 @@ class ExperimentHandler(Process):
         self._exit = Event()
         self._simulate = simulate
 
+        self.__dynamic_signal_analyzer = None
+        self.__arduino_controller = None
+        self.__sample_multimeter = None
+        self.__main_gate_multimeter = None
+
+        
+
     def stop(self):
         self._exit.set()
 
@@ -362,6 +369,9 @@ class ExperimentHandler(Process):
         #raise NotImplementedError()
 
     def initialize_hardware(self):
+        if self._simulate:
+            return
+
         if self.__exp_settings.use_transistor_selector or self.__exp_settings.use_automated_voltage_control:
             pass
 
@@ -370,7 +380,7 @@ class ExperimentHandler(Process):
         #self.__arduino_controller = ArduinoController(self.__hardware_settings.arduino_controller_resource)
         #self.__sample_multimeter = HP34401A(self.__hardware_settings.sample_multimeter_resource)
         #self.__main_gate_multimeter = HP34401A(self.__hardware_settings.main_gate_multimeter_resource)
-        assert self.__dynamic_signal_analyzer and self.__arduino_controller and self.__sample_multimeter and self.__main_gate_multimeter
+        #assert self.__dynamic_signal_analyzer and self.__arduino_controller and self.__sample_multimeter and self.__main_gate_multimeter
         
         raise NotImplementedError()
 
