@@ -397,7 +397,13 @@ class ExperimentHandler(Process):
         #raise NotImplementedError()
 
     def get_meas_ranges(self):
-        raise NotImplementedError()
+        fg_range = self.__config.get_node_from_path("front_gate_range")
+        if self.__exp_settings.use_set_vfg_range:
+            assert isinstance(fg_range, ValueRange)
+        ds_range = self.__config.get_node_from_path("drain_source_range")
+        if self.__exp_settings.use_set_vds_range:
+            assert isinstance(fg_range, ValueRange)
+        return ds_range, fg_range
 
     def output_curve_measurement_function(self):
         raise NotImplementedError()
@@ -429,6 +435,8 @@ class ExperimentHandler(Process):
     def perform_experiment(self):
         raise NotImplementedError()
 
+
+class SimulateExperimentHandler(
     
 
 
