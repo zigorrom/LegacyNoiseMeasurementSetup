@@ -16,6 +16,7 @@ from measurement_data_structures import MeasurementInfo
 class StatusObject(QtCore.QObject):
     message_arrived = QtCore.pyqtSignal(str)
     value_changed = QtCore.pyqtSignal(str,object)
+    multiple_param_changed = QtCore.pyqtSignal(dict)
     measurement_info_changed = QtCore.pyqtSignal(MeasurementInfo)
 
     def __init__(self):
@@ -30,6 +31,8 @@ class StatusObject(QtCore.QObject):
     def send_measurement_info_changed(self, measurement_info):
         self.measurement_info_changed.emit(measurement_info)
 
+    def send_multiple_param_changed(self, params):
+        self.multiple_param_changed.emit(params)
 
 
 mainViewBase, mainViewForm = uic.loadUiType("UI_NoiseMeasurement_v2.ui")
@@ -45,6 +48,8 @@ class MainView(mainViewBase,mainViewForm):
        self._status_object.message_arrived.connect(self._on_message_arrived)
        self._status_object.value_changed.connect(self._on_parameter_changed)
        self._status_object.measurement_info_changed.connect(self._on_measurement_info_changed)
+       self._status_object.multiple_param_changed.connect(self._on_multiple_param_changed)
+
        self._experiment_controller = ExperimentController(self._spectrumPlotWidget, status_object = self._status_object)
        
 
@@ -62,6 +67,14 @@ class MainView(mainViewBase,mainViewForm):
         self.front_gate_voltage_start.setText(str(measurement_info.start_gate_voltage))
         self.front_gate_voltage_end.setText(str(measurement_info.end_gate_voltage))
 
+    def __ui_set_measurement_name(self, measumrent_name):
+        self.ui_measurementName.setText(measumrent_name)
+
+    def __ui_set_experiment_name(self, experiment_name):
+        self.ui_experimentName.setText(experiment_name)
+
+    def __ui_set_measurement_couter(self,measurement_counter):
+        self.ui_measurementCount.setValue(int(measurement_counter))
         
     def _on_measurement_info_changed(self, measurement_info):
         print("measurement info changed")
@@ -69,11 +82,24 @@ class MainView(mainViewBase,mainViewForm):
             print("measurement_info :{0}".format(measurement_info))
             self.__ui_set_measurement_info(measurement_info)
 
+    def _on_multiple_param_changed(self, params):
+        if isinstance(params,dict):
+            for k,v in params.items():
+                self._on_parameter_changed(k,v)
 
+        
     def _on_parameter_changed(self,parameter, value):
         print("parameter_changed")
         if not parameter:
             return
+        elif parameter is "measurement_name":
+            self.__ui_set_measurement_name(value)
+        elif parameter is "experiment_name":
+            self.__ui_set_experiment_name(value)
+        elif parameter is "measurement_count":
+            self.__ui_set_measurement_couter(value)
+        
+            
 
         
     def _on_message_arrived(self,message):

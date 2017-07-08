@@ -28,6 +28,7 @@ class ExperimentController(QtCore.QObject):
             assert isinstance(spectrum_plot, SpectrumPlotWidget)
         self._spectrum_plot = spectrum_plot
         #self._spectrum_plot
+        self._running = False
 
         self._visualization_deque = deque(maxlen = 100)
         self._input_data_queue = JoinableQueue()
@@ -63,15 +64,18 @@ class ExperimentController(QtCore.QObject):
         msg = "Experiment \"{0}\" started".format(experiment_name)
         print(msg)
         self._status_object.send_message(msg)
+        self._status_object.send_value_changed("experiment_name", experiment_name)
 
     def _on_experiment_finished(self):
         print("Experiment finished")
         self.stop()
 
-    def _on_measurement_started(self, measurement_name = ""):
+    def _on_measurement_started(self, measurement_name = "", measurement_count = 0):
         msg = "Measurement \"{0}\" started".format(measurement_name)
         print(msg)
         self._status_object.send_message(msg)
+        self._status_object.send_multiple_param_changed(
+        #self._status_object.send_value_changed("measurement_name", measurement_name)
 
     def _on_measurement_finished(self):
         print("New measurement finished")
@@ -103,18 +107,24 @@ class ExperimentController(QtCore.QObject):
             print(str(e))
 
     def start(self):
+        if self._running:
+            return
         self.__init_process_thread()
         self.__init_experiment_thread()
         self._refresh_timer.start()
         self._experiment_thread.start()
         self._processing_thread.start()
+        self._running = True
 
     def stop(self):
+        if not self._running:
+            return
         self._refresh_timer.stop()
         self._experiment_thread.stop()
         self._experiment_thread.join()
         self._input_data_queue.join()
         self._processing_thread.stop()
+        self._running = False
 
 class ProcessingThread(QtCore.QThread):
     
