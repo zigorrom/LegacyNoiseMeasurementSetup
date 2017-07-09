@@ -60,25 +60,43 @@ class ExperimentController(QtCore.QObject):
     def _command_received(self,cmd):
         self._status_object.send_message("Command received: {0}".format(ExperimentCommands[cmd]))
 
-    def _on_experiment_started(self, experiment_name = ""):
-        msg = "Experiment \"{0}\" started".format(experiment_name)
-        print(msg)
-        self._status_object.send_message(msg)
-        self._status_object.send_value_changed("experiment_name", experiment_name)
+    def _on_experiment_started(self,  experiment_name = "", **kwargs):
+        print("Experiment started")
+        print(experiment_name)
+        print(kwargs)
+        #print(**params)
+        #msg = "Experiment \"{0}\" started".format(experiment_name)
+        #print(msg)
+        #self._status_object.send_message(msg)
+        #self._status_object.send_value_changed("experiment_name", experiment_name)
+    #def _on_experiment_started(self, experiment_name = ""):
+    #    msg = "Experiment \"{0}\" started".format(experiment_name)
+    #    print(msg)
+    #    self._status_object.send_message(msg)
+    #    self._status_object.send_value_changed("experiment_name", experiment_name)
 
     def _on_experiment_finished(self):
         print("Experiment finished")
         self.stop()
 
-    def _on_measurement_started(self, measurement_name = "", measurement_count = 1):
-        msg = "Measurement \"{0}\" started".format(measurement_name)
-        print(msg)
-        self._status_object.send_message(msg)
-        self._status_object.send_multiple_param_changed({"measurement_name":measurement_name, "measurement_count": measurement_count})
+    def _on_measurement_started(self,  measurement_name = "", measurement_count = 1, **kwargs):
+        print("measurement started")
+        print(measurement_name)
+        print(measurement_count)
+        print(kwargs)
+        #msg = "Measurement \"{0}\" started".format(measurement_name)
+        #print(msg)
+        #self._status_object.send_message(msg)
+        #self._status_object.send_multiple_param_changed({"measurement_name":measurement_name, "measurement_count": measurement_count})
+    #def _on_measurement_started(self, measurement_name = "", measurement_count = 1):
+    #    msg = "Measurement \"{0}\" started".format(measurement_name)
+    #    print(msg)
+    #    self._status_object.send_message(msg)
+    #    self._status_object.send_multiple_param_changed({"measurement_name":measurement_name, "measurement_count": measurement_count})
         #self._status_object.send_value_changed("measurement_name", measurement_name)
 
     def _on_measurement_finished(self):
-        print("New measurement finished")
+        print("Measurement finished")
 
     def _on_measurement_info_arrived(self,measurement_info):
         print("measurement_info_arrived")
@@ -131,9 +149,9 @@ class ProcessingThread(QtCore.QThread):
     threadStarted = QtCore.pyqtSignal()
     threadStopped = QtCore.pyqtSignal()
     commandReceived = QtCore.pyqtSignal(int)
-    experimentStarted = QtCore.pyqtSignal(str)
+    experimentStarted = QtCore.pyqtSignal(dict)
     experimentFinished = QtCore.pyqtSignal()
-    measurementStarted = QtCore.pyqtSignal(str)
+    measurementStarted = QtCore.pyqtSignal(dict)
     measurementFinished = QtCore.pyqtSignal()
     measurementDataArrived = QtCore.pyqtSignal(MeasurementInfo)
 
@@ -185,7 +203,7 @@ class ProcessingThread(QtCore.QThread):
                     continue
 
                 elif cmd is ExperimentCommands.MEASUREMENT_INFO:
-                    self.measurementDataArrived.emit(param)
+                    self.measurementDataArrived.emit(**param)
 
                 elif cmd is ExperimentCommands.DATA:
                     self._visualization_queue.append(data)    
@@ -404,9 +422,18 @@ class Experiment:
         if q:
             q.put_nowait({'c':command, 'p':param})
 
+    def _send_command_with_params(self,command, **kwargs):
+        q = self._input_data_queue
+        params = {'c': command}
+        if kwargs:
+            params['p'] = kwargs
+        #params.update(kwargs)
+        if q:
+            q.put_nowait(params)   
+
     def open_experiment(self):
         experiment_name = self.__exp_settings.experiment_name
-        self._send_command_with_param(ExperimentCommands.EXPERIMENT_STARTED, experiment_name)
+        self._send_command_with_params(ExperimentCommands.EXPERIMENT_STARTED, experiment_name = experiment_name)
         self._measurement_counter = self.__exp_settings.measurement_count
 
     def close_experiment(self):
@@ -416,7 +443,7 @@ class Experiment:
         #print("simulate open measurement")
         measurement_name = self.__exp_settings.measurement_name
         self._measurement_info = MeasurementInfo(measurement_name, self._measurement_counter)
-        self._send_command(ExperimentCommands.MEASUREMENT_STARTED) 
+        self._send_command_with_params(ExperimentCommands.MEASUREMENT_STARTED, measurement_name = measurement_name, measurement_count = self._measurement_counter) 
 
     def close_measurement(self):
         #print("simulate close measurement")
