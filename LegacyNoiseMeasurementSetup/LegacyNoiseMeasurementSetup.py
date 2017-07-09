@@ -352,6 +352,10 @@ if __name__== "__main__":
     app.setApplicationName("LegacyNoiseMeasurementSetup")
     #app.setStyle("cleanlooks")
 
+    #css = "QLineEdit#sample_voltage_start {background-color: yellow}"
+    #app.setStyleSheet(css)
+    #sample_voltage_start
+
     wnd = MainView()
     wnd.show()
 

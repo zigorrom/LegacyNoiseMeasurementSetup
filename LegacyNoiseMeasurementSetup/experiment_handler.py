@@ -70,11 +70,11 @@ class ExperimentController(QtCore.QObject):
         print("Experiment finished")
         self.stop()
 
-    def _on_measurement_started(self, measurement_name = "", measurement_count = 0):
+    def _on_measurement_started(self, measurement_name = "", measurement_count = 1):
         msg = "Measurement \"{0}\" started".format(measurement_name)
         print(msg)
         self._status_object.send_message(msg)
-        #self._status_object.send_multiple_param_changed(
+        self._status_object.send_multiple_param_changed({"measurement_name":measurement_name, "measurement_count": measurement_count})
         #self._status_object.send_value_changed("measurement_name", measurement_name)
 
     def _on_measurement_finished(self):
