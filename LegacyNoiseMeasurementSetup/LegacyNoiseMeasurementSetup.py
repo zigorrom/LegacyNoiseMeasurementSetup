@@ -97,11 +97,14 @@ class MainView(mainViewBase,mainViewForm):
         if not parameter:
             return
         elif parameter is "measurement_name":
-            self.__ui_set_measurement_name(value)
+            print(parameter)
+            #self.__ui_set_measurement_name(value)
         elif parameter is "experiment_name":
-            self.__ui_set_experiment_name(value)
+            print(parameter)
+            #self.__ui_set_experiment_name(value)
         elif parameter is "measurement_count":
-            self.__ui_set_measurement_couter(value)
+            print(parameter)
+            #self.__ui_set_measurement_couter(value)
             
 
         
