@@ -67,15 +67,18 @@ class MainView(mainViewBase,mainViewForm):
         self.front_gate_voltage_start.setText(str(measurement_info.start_gate_voltage))
         self.front_gate_voltage_end.setText(str(measurement_info.end_gate_voltage))
 
-    def __ui_set_measurement_name(self, measumrent_name):
-        self.ui_measurementName.setText(measumrent_name)
+    def __ui_set_measurement_name(self, measurement_name):
+        #self.ui_measurementName.setText(measumrent_name)
+        self._settings.measurement_name = measurement_name
 
     def __ui_set_experiment_name(self, experiment_name):
-        self.ui_experimentName.setText(experiment_name)
+        self._settings.experiment_name = experiment_name
+        #self.ui_experimentName.setText(experiment_name)
 
     def __ui_set_measurement_couter(self,measurement_counter):
-        print("setting measurement counter {0}".format(measurement_counter))
-        self.ui_measurementCount.setValue(int(measurement_counter))
+        self._settings.measurement_count = measurement_counter
+        #print("setting measurement counter {0}".format(measurement_counter))
+        #self.ui_measurementCount.setValue(int(measurement_counter))
         
     def _on_measurement_info_changed(self, measurement_info):
         print("measurement info changed")
@@ -96,21 +99,21 @@ class MainView(mainViewBase,mainViewForm):
         
         if not parameter:
             return
-        elif parameter is "measurement_name":
-            print(parameter)
-            #self.__ui_set_measurement_name(value)
-        elif parameter is "experiment_name":
-            print(parameter)
-            #self.__ui_set_experiment_name(value)
-        elif parameter is "measurement_count":
-            print(parameter)
-            #self.__ui_set_measurement_couter(value)
+        elif parameter == "measurement_name":
+            #print(parameter)
+            self.__ui_set_measurement_name(value)
+        elif parameter == "experiment_name":
+            #print(parameter)
+            self.__ui_set_experiment_name(value)
+        elif parameter == "measurement_count":
+            #print(parameter)
+            self.__ui_set_measurement_couter(value)
             
 
         
-    def _on_message_arrived(self,message):
+    def _on_message_arrived(self,message, timeout = 1000):
         #assert isinstance(self.statusbar, QtGui.QStatusBar)
-        self.statusbar.showMessage(message, 1000)
+        self.statusbar.showMessage(message, timeout)
         #print("message_arrived")
 
 
@@ -160,7 +163,9 @@ class MainView(mainViewBase,mainViewForm):
         print("view model changed")
         #s = XmlNodeSerializer()
         #xml = s.serialize(self._config.get_root_node())
+        self._on_message_arrived("saving config file")
         self._config.save_config()
+        self._on_message_arrived("config saved!")
 
 
     @QtCore.pyqtSlot()
@@ -181,6 +186,7 @@ class MainView(mainViewBase,mainViewForm):
 
     @QtCore.pyqtSlot()
     def on_startButton_clicked(self):
+        self.on_data_changed()
         print("start")
         self._experiment_controller.start()
 
