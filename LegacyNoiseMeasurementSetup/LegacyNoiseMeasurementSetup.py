@@ -74,6 +74,7 @@ class MainView(mainViewBase,mainViewForm):
         self.ui_experimentName.setText(experiment_name)
 
     def __ui_set_measurement_couter(self,measurement_counter):
+        print("setting measurement counter {0}".format(measurement_counter))
         self.ui_measurementCount.setValue(int(measurement_counter))
         
     def _on_measurement_info_changed(self, measurement_info):
@@ -90,6 +91,9 @@ class MainView(mainViewBase,mainViewForm):
         
     def _on_parameter_changed(self,parameter, value):
         print("parameter_changed")
+        print(parameter)
+        print(value)
+        
         if not parameter:
             return
         elif parameter is "measurement_name":
@@ -98,7 +102,6 @@ class MainView(mainViewBase,mainViewForm):
             self.__ui_set_experiment_name(value)
         elif parameter is "measurement_count":
             self.__ui_set_measurement_couter(value)
-        
             
 
         

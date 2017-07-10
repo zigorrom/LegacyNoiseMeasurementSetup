@@ -60,10 +60,16 @@ class ExperimentController(QtCore.QObject):
     def _command_received(self,cmd):
         self._status_object.send_message("Command received: {0}".format(ExperimentCommands[cmd]))
 
-    def _on_experiment_started(self,  experiment_name = "", **kwargs):
-        print("Experiment started")
-        print(experiment_name)
-        print(kwargs)
+    def _on_experiment_started(self, params): #experiment_name = "", **kwargs):
+        
+        experiment_name = params.get("experiment_name")
+        msg = "Experiment \"{0}\" started".format(experiment_name)
+        print(msg)
+        self._status_object.send_message(msg)
+        self._status_object.send_multiple_param_changed(params)
+        
+        #print(experiment_name)
+        #print(kwargs)
         #print(**params)
         #msg = "Experiment \"{0}\" started".format(experiment_name)
         #print(msg)
@@ -79,15 +85,14 @@ class ExperimentController(QtCore.QObject):
         print("Experiment finished")
         self.stop()
 
-    def _on_measurement_started(self,  measurement_name = "", measurement_count = 1, **kwargs):
-        print("measurement started")
-        print(measurement_name)
-        print(measurement_count)
-        print(kwargs)
-        #msg = "Measurement \"{0}\" started".format(measurement_name)
-        #print(msg)
-        #self._status_object.send_message(msg)
-        #self._status_object.send_multiple_param_changed({"measurement_name":measurement_name, "measurement_count": measurement_count})
+    def _on_measurement_started(self,  params):
+        measurement_name = params.get("measurement_name")
+        measurement_count = params.get("measurement_count")
+        msg = "Measurement \"{0}:{1}\" started".format(measurement_name, measurement_count)
+        print(msg)
+        self._status_object.send_message(msg)
+        self._status_object.send_multiple_param_changed(params)
+
     #def _on_measurement_started(self, measurement_name = "", measurement_count = 1):
     #    msg = "Measurement \"{0}\" started".format(measurement_name)
     #    print(msg)
