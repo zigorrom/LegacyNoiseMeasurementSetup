@@ -490,10 +490,7 @@ class Experiment:
         #self._spectrum_data[rang] = data
         q = self._input_data_queue
         freq = self._frequencies[rang]
-        #print(rang)
-        #print(len(freq))
-        #print(len(data))
-
+        
         result = {'c': ExperimentCommands.DATA, 'r': rang, 'f': freq, 'd':data, 'i': 1}
         if q:
             q.put_nowait(result) 
