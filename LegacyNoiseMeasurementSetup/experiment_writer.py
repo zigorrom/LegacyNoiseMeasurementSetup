@@ -1,4 +1,4 @@
-from os.path import join
+﻿from os.path import join
 import numpy as np
 
 #class MeasurementProperty:
@@ -22,19 +22,26 @@ class ExperimentWriter():
         self.__measurement_file_extension = "dat"
         self._experiment_file = None
         self._measurement_file = None
-        #self._experiment_info_data = [
-        #    ["U\_sample","V"],
-        #    ["Current", "A"],
-        #    ["R\_equivalent", "Ohm"],
-        #    ["Filename","str"],
-        #    ["R\_load","Ohm"],
-        #    ["U\_whole","V"],
-        #    ["U\_0sample", "V"],
-        #    ["U\_0whole","V"],
-
-
+        self._experiment_info_data = np.asarray([
+            ["U\_sample","V"],
+            ["Current", "A"],
+            ["R\_equivalent", "Ohm"],
+            ["Filename","str"],
+            ["R\_load","Ohm"],
+            ["U\_whole","V"],
+            ["U\_0sample", "V"],
+            ["U\_0whole","V"],
+            ["R\-(0sample)","Ohm"],
+            ["R\-(Esample)","Ohm"],
+            ["Temperature\-(0)","K"],
+            ["Temperature\-(E)","K"],
+            ["k\-(ampl)","int"],
+            ["N\-(aver)","int"],
+            ["V\-(Gate)","V"]
+            ]).transpose()
+        self._measurement_info_data = np.asarray([["Frequency","Hz"],["Sv","V2/Hz"]]).transpose()
         #    ]
-
+#       U\-(sample)	Current	R\-(Eq)	Filename	R\-(load)	U\-(Whole)	U\-(0sample)	U\-(0Whole)	R\-(0sample)	R\-(Esample)	Temperature\-(0)	Temperature\-(E)	k\-(ampl)	N\-(aver)	V\-(Gate)#       V	A	\g(W)		\g(W)	V	V	V	\g(W)	\g(W)	K	K			V
 
     @property
     def working_directory(self):
@@ -73,10 +80,11 @@ class ExperimentWriter():
         self._write_measurement_header()
 
     def _write_experiment_header(self):
-        pass
+        np.savetxt(self._experiment_file,self._experiment_info_data,'%s','\t')
 
     def _write_measurement_header(self):
-        pass
+        np.savetxt(self._measurement_file,self._measurement_info_data,'%s','\t')
+        
 
     def close_measurement(self):
         if self._measurement_file and not self._measurement_file.closed:

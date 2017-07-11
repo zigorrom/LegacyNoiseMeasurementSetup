@@ -20,6 +20,7 @@ from plot import SpectrumPlotWidget
 import time
 
 from measurement_data_structures import MeasurementInfo
+from experiment_writer import ExperimentWriter
 
 class ExperimentController(QtCore.QObject):
     def __init__(self, spectrum_plot=None, timetrace_plot=None, status_object = None, measurement_ranges = {0: (0,1600,1),1:(0,102400,64)},  parent = None):
@@ -267,8 +268,8 @@ class Experiment:
         self._spectrum_ranges = {0: (1,1600,1),1:(64,102400,64)}
         self._frequencies = self._get_frequencies(self._spectrum_ranges)
         self._spectrum_data = {}
-
         self._measurement_counter = 0
+        self._experiment_writer = None
     
     @property
     def need_exit(self):
@@ -436,47 +437,69 @@ class Experiment:
         if q:
             q.put_nowait(params)   
 
-    def _initialize_writer(self):
-        pass
-
-    def _close_writer(self):
-        pass
 
     def open_experiment(self):
         experiment_name = self.__exp_settings.experiment_name
         self._send_command_with_params(ExperimentCommands.EXPERIMENT_STARTED, experiment_name = experiment_name)
         self._measurement_counter = self.__exp_settings.measurement_count
+        self._experiment_writer = ExperimentWriter(self._working_directory)
+        self._experiment_writer.open_experiment(experiment_name)
+
 
     def close_experiment(self):
         self._send_command(ExperimentCommands.EXPERIMENT_STOPPED)
 
+        self._experiment_writer.close_experiment()
+
     def open_measurement(self):
         #print("simulate open measurement")
         measurement_name = self.__exp_settings.measurement_name
-        self._measurement_info = MeasurementInfo(measurement_name, self._measurement_counter)
-        self._send_command_with_params(ExperimentCommands.MEASUREMENT_STARTED, measurement_name = measurement_name, measurement_count = self._measurement_counter) 
+        measurement_counter = self._measurement_counter
+        self._measurement_info = MeasurementInfo(measurement_name, measurement_counter)
+        self._send_command_with_params(ExperimentCommands.MEASUREMENT_STARTED, measurement_name = measurement_name, measurement_count = measurement_counter) 
+
+        self._experiment_writer.open_measurement(measurement_name,measurement_counter)
 
     def close_measurement(self):
         #print("simulate close measurement")
         self._measurement_counter+=1
         self._send_command(ExperimentCommands.MEASUREMENT_FINISHED)
 
+        self._experiment_writer.close_measurement()
+
     def send_measurement_info(self):
         self._send_command_with_param(ExperimentCommands.MEASUREMENT_INFO, self._measurement_info)
 
-    def update_spectrum(self, data,rang = 0):
+    def update_spectrum(self, data,rang = 0, averages = 1):
         #range numeration from 0:   0 - 0 to 1600HZ
         #                           1 - 0 to 102,4KHZ
-        self._spectrum_data[rang] = data
+        current_data_dict = self._spectrum_data.get(rang)
+        if not current_data_dict:
+            self._spectrum_data[rang] = {"avg": averages,"d": data}
+        else:
+            current_average = self._spectrum_data["avg"]
+            current_data = self._spectrum_data["d"]
+            #self.average = np.average((self.average, data['p']), axis=0, weights=(self.average_counter - 1, 1))
+
+            average_data = np.average((current_data, data),axis = 0, weights = (current_average, averages))
+            current_average += averages
+
+            self._spectrum_data[rang] = {"avg": current_average,"d": average_data}
+             
+
+        #self._spectrum_data[rang] = data
         q = self._input_data_queue
         freq = self._frequencies[rang]
-        print(rang)
-        print(len(freq))
-        print(len(data))
+        #print(rang)
+        #print(len(freq))
+        #print(len(data))
 
         result = {'c': ExperimentCommands.DATA, 'r': rang, 'f': freq, 'd':data, 'i': 1}
         if q:
             q.put_nowait(result) 
+
+    def update_resulting_spectrum(self):
+        pass
 
     def generate_experiment_function(self):
         func = None
