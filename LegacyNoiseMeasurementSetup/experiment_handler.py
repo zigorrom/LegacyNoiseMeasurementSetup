@@ -436,6 +436,12 @@ class Experiment:
         if q:
             q.put_nowait(params)   
 
+    def _initialize_writer(self):
+        pass
+
+    def _close_writer(self):
+        pass
+
     def open_experiment(self):
         experiment_name = self.__exp_settings.experiment_name
         self._send_command_with_params(ExperimentCommands.EXPERIMENT_STARTED, experiment_name = experiment_name)
