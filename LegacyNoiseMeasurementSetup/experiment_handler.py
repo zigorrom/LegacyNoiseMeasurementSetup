@@ -317,8 +317,7 @@ class Experiment:
     def _get_frequency_linking_indexes(self, spectrum_ranges, linking_frequencies):
         start_idx = 0
         end_idx = -1
-
-
+        pass
 
     def initialize_settings(self, configuration):
         self.__config = configuration
