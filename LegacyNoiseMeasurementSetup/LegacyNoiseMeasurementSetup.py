@@ -68,17 +68,17 @@ class MainView(mainViewBase,mainViewForm):
         self.front_gate_voltage_end.setText(str(measurement_info.end_gate_voltage))
 
     def __ui_set_measurement_name(self, measurement_name):
-        self.ui_measurementName.setText(measumrent_name)
-        #self._settings.measurement_name = measurement_name
+        #self.ui_measurementName.setText(measurement_name)
+        self._settings.measurement_name = measurement_name
 
     def __ui_set_experiment_name(self, experiment_name):
-        #self._settings.experiment_name = experiment_name
-        self.ui_experimentName.setText(experiment_name)
+        self._settings.experiment_name = experiment_name
+        #self.ui_experimentName.setText(experiment_name)
 
     def __ui_set_measurement_couter(self,measurement_counter):
-        #self._settings.measurement_count = measurement_counter
+        self._settings.measurement_count = measurement_counter
         #print("setting measurement counter {0}".format(measurement_counter))
-        self.ui_measurementCount.setValue(int(measurement_counter))
+        #self.ui_measurementCount.setValue(int(measurement_counter))
         
     def _on_measurement_info_changed(self, measurement_info):
         print("measurement info changed")
