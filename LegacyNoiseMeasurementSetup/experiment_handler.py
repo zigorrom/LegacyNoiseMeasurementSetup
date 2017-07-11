@@ -253,6 +253,15 @@ class ExperimentHandler(Process):
         self._experiment.initialize_hardware()
         self._experiment.perform_experiment()
 
+class Measurement:
+    def __init__(self):
+        pass
+
+    def new_measurement(self):
+        pass
+
+    
+
 class Experiment:
     def __init__(self, simulate = False, input_data_queue = None, stop_event = None):
         self.__config = None
@@ -266,6 +275,7 @@ class Experiment:
         self._stop_event = stop_event
         self._measurement_info = None
         self._spectrum_ranges = {0: (1,1600,1),1:(64,102400,64)}
+        self._spectrum_linking_frequencies = [1600]
         self._frequencies = self._get_frequencies(self._spectrum_ranges)
         self._spectrum_data = {}
         self._measurement_counter = 0
@@ -303,6 +313,11 @@ class Experiment:
             nlines = 1+(stop-start)/step
             result[k] = np.linspace(start,stop, nlines, True)
         return result
+
+    def _get_frequency_linking_indexes(self, spectrum_ranges, linking_frequencies):
+        start_idx = 0
+        end_idx = -1
+
 
 
     def initialize_settings(self, configuration):
