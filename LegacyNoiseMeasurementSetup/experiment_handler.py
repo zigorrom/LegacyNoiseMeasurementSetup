@@ -464,6 +464,8 @@ class Experiment:
         #print("simulate close measurement")
         self._measurement_counter+=1
         self._send_command(ExperimentCommands.MEASUREMENT_FINISHED)
+        self._spectrum_data = dict()
+        
 
         self._experiment_writer.close_measurement()
 
@@ -474,11 +476,12 @@ class Experiment:
         #range numeration from 0:   0 - 0 to 1600HZ
         #                           1 - 0 to 102,4KHZ
         current_data_dict = self._spectrum_data.get(rang)
+        average_data = data
         if not current_data_dict:
             self._spectrum_data[rang] = {"avg": averages,"d": data}
         else:
-            current_average = self._spectrum_data["avg"]
-            current_data = self._spectrum_data["d"]
+            current_average = current_data_dict["avg"]
+            current_data = current_data_dict["d"]
             #self.average = np.average((self.average, data['p']), axis=0, weights=(self.average_counter - 1, 1))
 
             average_data = np.average((current_data, data),axis = 0, weights = (current_average, averages))
@@ -486,16 +489,15 @@ class Experiment:
 
             self._spectrum_data[rang] = {"avg": current_average,"d": average_data}
              
-
         #self._spectrum_data[rang] = data
         q = self._input_data_queue
         freq = self._frequencies[rang]
         
-        result = {'c': ExperimentCommands.DATA, 'r': rang, 'f': freq, 'd':data, 'i': 1}
+        result = {'c': ExperimentCommands.DATA, 'r': rang, 'f': freq, 'd':average_data, 'i': 1}#data, 'i': 1}
         if q:
             q.put_nowait(result) 
 
-    def update_resulting_spectrum(self):
+    def get_resulting_spectrum(self):
         pass
 
     def generate_experiment_function(self):
