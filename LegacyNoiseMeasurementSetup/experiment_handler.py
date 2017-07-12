@@ -18,6 +18,7 @@ import multiprocessing
 from collections import deque
 from plot import SpectrumPlotWidget
 import time
+import math
 
 from measurement_data_structures import MeasurementInfo
 from experiment_writer import ExperimentWriter
@@ -275,11 +276,12 @@ class Experiment:
         self._stop_event = stop_event
         self._measurement_info = None
         self._spectrum_ranges = {0: (1,1600,1),1:(64,102400,64)}
-        self._spectrum_linking_frequencies = [1600]
+        self._spectrum_linking_frequencies = {0:(1,1600),1:(1600,102400)}
         self._frequencies = self._get_frequencies(self._spectrum_ranges)
+        self._frequency_indexes = self._get_frequency_linking_indexes(self._spectrum_ranges, self._spectrum_linking_frequencies)
         self._spectrum_data = {}
         self._measurement_counter = 0
-        self._experiment_writer = None
+        self._experiment_writer = None                                                                                                                                         
     
     @property
     def need_exit(self):
@@ -315,9 +317,15 @@ class Experiment:
         return result
 
     def _get_frequency_linking_indexes(self, spectrum_ranges, linking_frequencies):
-        start_idx = 0
-        end_idx = -1
-        pass
+        result = {}
+        for rng, vals in spectrum_ranges.items():
+            start,stop,step = vals
+            start_freq, stop_freq = linking_frequencies[rng]
+            start_freq_idx =  math.ceil(start_freq/step)
+            stop_freq_idx = math.floor(stop_freq/step)
+            result[rng] = (start_freq_idx, stop_freq_idx)
+        return result
+
 
     def initialize_settings(self, configuration):
         self.__config = configuration
@@ -462,7 +470,6 @@ class Experiment:
 
     def close_experiment(self):
         self._send_command(ExperimentCommands.EXPERIMENT_STOPPED)
-
         self._experiment_writer.close_experiment()
 
     def open_measurement(self):
@@ -505,14 +512,20 @@ class Experiment:
              
         #self._spectrum_data[rang] = data
         q = self._input_data_queue
-        freq = self._frequencies[rang]
+        freq = self._frequencies[rang] 
         
         result = {'c': ExperimentCommands.DATA, 'r': rang, 'f': freq, 'd':average_data, 'i': 1}#data, 'i': 1}
         if q:
             q.put_nowait(result) 
 
     def get_resulting_spectrum(self):
-        pass
+        list_of_slices = []
+        for rng, spectrum_data in self._spectrum_data.items():
+            start_idx, stop_idx = self._frequency_indexes[rng]
+            data = spectrum_data["d"][start_idx:stop_idx]
+
+
+            
 
     def generate_experiment_function(self):
         func = None
@@ -565,7 +578,7 @@ class SimulateExperiment(Experiment):
         self.send_measurement_info()
 
         counter = 0
-        max_counter = 10
+        max_counter = 100
         
         while counter < max_counter: #(not need_exit()) and counter < max_counter:
             data = 10**-9 * np.random.random(1600)
