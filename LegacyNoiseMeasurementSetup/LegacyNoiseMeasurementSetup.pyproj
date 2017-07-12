@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>9efc1e3d-be9f-46ea-b936-985386cf6bf7</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>LegacyNoiseMeasurementSetup.py</StartupFile>
+    <StartupFile>fans_smu.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -24,6 +24,9 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="acquisition_process.py" />
+    <Compile Include="agilent_u2542a.py" />
+    <Compile Include="agilent_u2542a_constants.py" />
     <Compile Include="binding.py">
       <SubType>Code</SubType>
     </Compile>
@@ -42,6 +45,9 @@
     <Compile Include="arduino_controller.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="fans_constants.py" />
+    <Compile Include="fans_controller.py" />
+    <Compile Include="fans_smu.py" />
     <Compile Include="hp34401a_multimeter.py">
       <SubType>Code</SubType>
     </Compile>
