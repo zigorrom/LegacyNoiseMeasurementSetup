@@ -74,7 +74,8 @@ def generate_state_dictionary(enabled, output_channel, feedback_channel, polarit
 
 
 
-
+LOW_SPEED, FAST_SPEED = (1,5)
+SHORT_TIME,LONG_TIME = (0.3,2)
 
 class FANS_SMU:
     def __init__(self,fans_controller, drain_source_motor, drain_source_relay, drain_source_feedback,  gate_motor, gate_relay, gate_feedback, main_feedback, load_resistance  ):
@@ -205,6 +206,38 @@ class FANS_SMU:
     def set_gate_polarity_negativ(self):
         self.__set_voltage_polarity(FANS_NEGATIVE_POLARITY, self._gate_motor, self._gate_relay)
 
+    def move_motor(self, voltage_set_channel, direction, speed, timeout = 0.1):
+        output_channel = self._fans_controller.fans_ao_switch.select_channel(voltage_set_channel)
+        output_channel.ao_voltage = direction*speed
+        time.sleep(timeout)
+        output_channel.ao_voltage = 0
+
+    def move_ds_motor_left(self):
+        self.move_motor(self._drain_source_motor, -1, LOW_SPEED, SHORT_TIME)
+
+    def move_ds_motor_left_fast(self):
+        self.move_motor(self._drain_source_motor, -1, FAST_SPEED, LONG_TIME)
+
+    def move_ds_motor_right(self):
+        self.move_motor(self._drain_source_motor, 1, LOW_SPEED, SHORT_TIME)
+
+    def move_ds_motor_right_fast(self):
+        self.move_motor(self._drain_source_motor, 1, FAST_SPEED, LONG_TIME)
+
+    def move_gate_motor_left(self):
+        self.move_motor(self._gate_motor, -1, LOW_SPEED,SHORT_TIME)
+
+    def move_gate_motor_left_fast(self):
+        self.move_motor(self._gate_motor, -1, FAST_SPEED, LONG_TIME)
+
+    def move_gate_motor_right(self):
+        self.move_motor(self._gate_motor, 1, LOW_SPEED, SHORT_TIME)
+
+    def move_gate_motor_right_fast(self):
+        self.move_motor(self._gate_motor, 1, FAST_SPEED, LONG_TIME)
+
+
+
     def __set_voltage_for_function(self,voltage, voltage_set_channel, relay_channel, feedback_channel):
         self.init_smu_mode()
 
@@ -312,11 +345,11 @@ class HybridSMU_System(FANS_SMU):
 
 
 
-    
-        #self._drain_source_feedback_multimeter = drain_source_feedback_multimeter
-        #self._gate_feedback_multimeter = gate_feedback_multimeter
-        #self._main_feedback_multimeter = main_feedback_multimeter
+class ManualSMU(FANS_SMU):
+    def __init__(self, fans_controller, drain_source_motor, drain_source_relay, gate_motor, gate_relay, load_resistance):
+        super().__init__(fans_controller, drain_source_motor, drain_source_relay, None, gate_motor, gate_relay, None, None, load_resistance)
 
+        
 
 
     
