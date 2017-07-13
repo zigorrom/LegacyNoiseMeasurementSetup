@@ -519,13 +519,16 @@ class Experiment:
             q.put_nowait(result) 
 
     def get_resulting_spectrum(self):
-        list_of_slices = []
+        list_of_spectrum_slices = []
+        list_of_frequency_slices= []
         for rng, spectrum_data in self._spectrum_data.items():
             start_idx, stop_idx = self._frequency_indexes[rng]
             data = spectrum_data["d"][start_idx:stop_idx]
-
-
-            
+            freq = self._frequencies[rng][start_idx:stop_idx]
+            list_of_spectrum_slices.append(data)
+            list_of_frequency_slices.append(freq)
+        
+        #frequencies = np.vstack(
 
     def generate_experiment_function(self):
         func = None
@@ -587,6 +590,7 @@ class SimulateExperiment(Experiment):
             counter+=1
             time.sleep(0.02)
         
+        self.get_resulting_spectrum()
         self.send_measurement_info()
         self.close_measurement()
 

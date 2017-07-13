@@ -41,7 +41,8 @@ class ExperimentWriter():
             ]).transpose()
         self._measurement_info_data = np.asarray([["Frequency","Hz"],["Sv","V2/Hz"]]).transpose()
         #    ]
-#       U\-(sample)	Current	R\-(Eq)	Filename	R\-(load)	U\-(Whole)	U\-(0sample)	U\-(0Whole)	R\-(0sample)	R\-(Esample)	Temperature\-(0)	Temperature\-(E)	k\-(ampl)	N\-(aver)	V\-(Gate)#       V	A	\g(W)		\g(W)	V	V	V	\g(W)	\g(W)	K	K			V
+#       U\-(sample)	Current	R\-(Eq)	Filename	R\-(load)	U\-(Whole)	U\-(0sample)	U\-(0Whole)	R\-(0sample)	R\-(Esample)	Temperature\-(0)	Temperature\-(E)	k\-(ampl)	N\-(aver)	V\-(Gate)
+#       V	A	\g(W)		\g(W)	V	V	V	\g(W)	\g(W)	K	K			V
 
     @property
     def working_directory(self):
