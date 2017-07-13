@@ -111,6 +111,8 @@ class VoltageControlView(mainViewBase,mainViewForm):
         print("ui_gs_move_right_fast")
         self._fans_smu.move_gate_motor_right_fast()
 
+
+
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     app.setApplicationName("Voltage Control")
