@@ -109,7 +109,8 @@ class MainView(mainViewBase,mainViewForm):
             #print(parameter)
             self.__ui_set_measurement_couter(value)
             
-
+        #idx = QtCore.QModelIndex()
+        #self._viewModel.dataChanged.emit(idx,idx)
         
     def _on_message_arrived(self,message, timeout = 1000):
         #assert isinstance(self.statusbar, QtGui.QStatusBar)

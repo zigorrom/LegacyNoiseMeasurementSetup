@@ -22,6 +22,8 @@ import math
 
 from measurement_data_structures import MeasurementInfo
 from experiment_writer import ExperimentWriter
+from process_communication_protocol import ExperimentCommands
+
 
 class ExperimentController(QtCore.QObject):
     def __init__(self, spectrum_plot=None, timetrace_plot=None, status_object = None, measurement_ranges = {0: (0,1600,1),1:(0,102400,64)},  parent = None):
@@ -54,7 +56,7 @@ class ExperimentController(QtCore.QObject):
         self._processing_thread.measurementStarted.connect(self._on_measurement_started)
         self._processing_thread.measurementFinished.connect(self._on_measurement_finished)
         self._processing_thread.measurementDataArrived.connect(self._on_measurement_info_arrived)
-        self._processing_thread.resulting_spectrum_update.connect(self.update_resulting_spectrum)
+        self._processing_thread.resulting_spectrum_update.connect(self._on_update_resulting_spectrum)
         self._processing_thread.commandReceived.connect(self._command_received)
 
     def __init_experiment_thread(self):
@@ -70,19 +72,6 @@ class ExperimentController(QtCore.QObject):
         print(msg)
         self._status_object.send_message(msg)
         self._status_object.send_multiple_param_changed(params)
-        
-        #print(experiment_name)
-        #print(kwargs)
-        #print(**params)
-        #msg = "Experiment \"{0}\" started".format(experiment_name)
-        #print(msg)
-        #self._status_object.send_message(msg)
-        #self._status_object.send_value_changed("experiment_name", experiment_name)
-    #def _on_experiment_started(self, experiment_name = ""):
-    #    msg = "Experiment \"{0}\" started".format(experiment_name)
-    #    print(msg)
-    #    self._status_object.send_message(msg)
-    #    self._status_object.send_value_changed("experiment_name", experiment_name)
 
     def _on_experiment_finished(self):
         print("Experiment finished")
@@ -96,13 +85,6 @@ class ExperimentController(QtCore.QObject):
         self._status_object.send_message(msg)
         self._status_object.send_multiple_param_changed(params)
 
-    #def _on_measurement_started(self, measurement_name = "", measurement_count = 1):
-    #    msg = "Measurement \"{0}\" started".format(measurement_name)
-    #    print(msg)
-    #    self._status_object.send_message(msg)
-    #    self._status_object.send_multiple_param_changed({"measurement_name":measurement_name, "measurement_count": measurement_count})
-        #self._status_object.send_value_changed("measurement_name", measurement_name)
-
     def _on_measurement_finished(self):
         print("Measurement finished")
 
@@ -113,7 +95,7 @@ class ExperimentController(QtCore.QObject):
         #    for k,v in data_dict.items():
                 #self._status_object.send_value_changed(k,v)
 
-    def update_resulting_spectrum(self,data):
+    def _on_update_resulting_spectrum(self,data):
         frequency = data['f']
         spectrum_data = data['d']
         self._spectrum_plot.updata_resulting_spectrum(frequency,spectrum_data)
@@ -236,7 +218,7 @@ class ProcessingThread(QtCore.QThread):
 
         self.alive = False
 
-ExperimentCommands = enum("EXPERIMENT_STARTED","EXPERIMENT_STOPPED","DATA","MESSAGE", "MEASUREMENT_STARTED", "MEASUREMENT_FINISHED", "SPECTRUM_DATA", "TIMETRACE_DATA","EXPERIMENT_INFO", "MEASUREMENT_INFO", "ABORT", "ERROR")
+#ExperimentCommands = enum("EXPERIMENT_STARTED","EXPERIMENT_STOPPED","DATA","MESSAGE", "MEASUREMENT_STARTED", "MEASUREMENT_FINISHED", "SPECTRUM_DATA", "TIMETRACE_DATA","EXPERIMENT_INFO", "MEASUREMENT_INFO", "ABORT", "ERROR")
 MeasurementTypes = enum("spectrum", "timetrace", "time_spectrum")
 
 

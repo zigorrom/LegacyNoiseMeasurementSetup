@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1040</width>
-    <height>922</height>
+    <height>963</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -533,7 +533,11 @@
            </widget>
           </item>
           <item row="1" column="3">
-           <widget class="QSpinBox" name="ui_measurementCount"/>
+           <widget class="QSpinBox" name="ui_measurementCount">
+            <property name="maximum">
+             <number>99999</number>
+            </property>
+           </widget>
           </item>
           <item row="0" column="1" colspan="3">
            <widget class="QLineEdit" name="ui_experimentName"/>
@@ -599,7 +603,7 @@
      <x>0</x>
      <y>0</y>
      <width>1040</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>

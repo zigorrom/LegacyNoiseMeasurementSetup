@@ -71,6 +71,9 @@
     <Compile Include="plot.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="process_communication_protocol.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="range_handlers.py">
       <SubType>Code</SubType>
     </Compile>
