@@ -15,12 +15,10 @@ class SpectrumPlotWidget:
         if not isinstance(layout, pg.GraphicsLayoutWidget):
             raise ValueError("layout must be instance of pyqtgraph.GraphicsLayoutWidget")
 
-        
         self.layout = layout
         
         assert isinstance(spectrum_ranges, dict), "Spectrum ranges must be a dictionary of parameters"
         self.spectrum_ranges = spectrum_ranges
-
         
         self.main_curve_color = pg.mkColor("b")
         self.resulting_curve_color = pg.mkColor("c")
@@ -37,6 +35,12 @@ class SpectrumPlotWidget:
             curve.setZValue(900)
             curve.setVisible(True)
             self.curves[rang] = curve
+
+        curve = self.plot.plot(pen = self.resulting_curve_color)
+        curve.setZValue(1000)
+        curve.setVisible(True)
+        self.curves[-1] = curve
+
 
     def clear_curves(self):
         for rang, curve in self.curves.items():
@@ -69,6 +73,9 @@ class SpectrumPlotWidget:
                                          rateLimit=60, slot=self.mouse_moved)
 
    
+    def updata_resulting_spectrum(self, freq,data, force = False):
+        curve = self.curves[-1]
+        curve.setData(freq,data)
 
     def update_spectrum(self, rang, data, force = False):
         curve = self.curves[rang]

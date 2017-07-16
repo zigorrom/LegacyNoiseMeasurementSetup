@@ -54,6 +54,7 @@ class ExperimentController(QtCore.QObject):
         self._processing_thread.measurementStarted.connect(self._on_measurement_started)
         self._processing_thread.measurementFinished.connect(self._on_measurement_finished)
         self._processing_thread.measurementDataArrived.connect(self._on_measurement_info_arrived)
+        self._processing_thread.resulting_spectrum_update.connect(self.update_resulting_spectrum)
         self._processing_thread.commandReceived.connect(self._command_received)
 
     def __init_experiment_thread(self):
@@ -112,6 +113,12 @@ class ExperimentController(QtCore.QObject):
         #    for k,v in data_dict.items():
                 #self._status_object.send_value_changed(k,v)
 
+    def update_resulting_spectrum(self,data):
+        frequency = data['f']
+        spectrum_data = data['d']
+        self._spectrum_plot.updata_resulting_spectrum(frequency,spectrum_data)
+
+
     def _update_gui(self):
         try:
             #print("refreshing: {0}".format(self._counter))
@@ -127,6 +134,8 @@ class ExperimentController(QtCore.QObject):
                 rang = data['r']
                 #print("visualized data index: {0}".format(index))
                 self._spectrum_plot.update_spectrum(rang ,data)
+           
+                #self._spectrum_plot
             
         except Exception as e:
             print(str(e))
@@ -161,6 +170,7 @@ class ProcessingThread(QtCore.QThread):
     measurementStarted = QtCore.pyqtSignal(dict)
     measurementFinished = QtCore.pyqtSignal()
     measurementDataArrived = QtCore.pyqtSignal(MeasurementInfo)
+    resulting_spectrum_update = QtCore.pyqtSignal(dict)
 
     def __init__(self, input_data_queue = None,visualization_queue = None, parent = None):
         super().__init__(parent)
@@ -213,7 +223,10 @@ class ProcessingThread(QtCore.QThread):
                     self.measurementDataArrived.emit(param)
 
                 elif cmd is ExperimentCommands.DATA:
-                    self._visualization_queue.append(data)    
+                    self._visualization_queue.append(data)   
+                     
+                elif cmd is ExperimentCommands.SPECTRUM_DATA:
+                    self.resulting_spectrum_update.emit(data)
 
             except EOFError as e:
                 print(str(e))
@@ -517,6 +530,13 @@ class Experiment:
         result = {'c': ExperimentCommands.DATA, 'r': rang, 'f': freq, 'd':average_data, 'i': 1}#data, 'i': 1}
         if q:
             q.put_nowait(result) 
+            
+    def update_resulting_spectrum(self):
+        freq, data = self.get_resulting_spectrum()
+        result = {'c': ExperimentCommands.SPECTRUM_DATA, 'f': freq, 'd': data}
+        q = self._input_data_queue
+        if q:
+            q.put_nowait(result)
 
     def get_resulting_spectrum(self):
         list_of_spectrum_slices = []
@@ -529,6 +549,7 @@ class Experiment:
             list_of_frequency_slices.append(freq)
         result_freq = np.hstack(list_of_frequency_slices)
         result_data = np.hstack(list_of_spectrum_slices)
+        return (result_freq,result_data)
         #frequencies = np.vstack(
 
     def generate_experiment_function(self):
@@ -591,7 +612,8 @@ class SimulateExperiment(Experiment):
             counter+=1
             time.sleep(0.02)
         
-        self.get_resulting_spectrum()
+        self.update_resulting_spectrum()
+        #self.get_resulting_spectrum()
         self.send_measurement_info()
         self.close_measurement()
 
