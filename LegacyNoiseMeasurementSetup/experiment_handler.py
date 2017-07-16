@@ -321,8 +321,8 @@ class Experiment:
         for rng, vals in spectrum_ranges.items():
             start,stop,step = vals
             start_freq, stop_freq = linking_frequencies[rng]
-            start_freq_idx =  math.ceil(start_freq/step)
-            stop_freq_idx = math.floor(stop_freq/step)
+            start_freq_idx =  math.ceil(start_freq-start/step)
+            stop_freq_idx = math.floor(stop_freq-start/step)
             result[rng] = (start_freq_idx, stop_freq_idx)
         return result
 
@@ -527,7 +527,8 @@ class Experiment:
             freq = self._frequencies[rng][start_idx:stop_idx]
             list_of_spectrum_slices.append(data)
             list_of_frequency_slices.append(freq)
-        
+        result_freq = np.hstack(list_of_frequency_slices)
+        result_data = np.hstack(list_of_spectrum_slices)
         #frequencies = np.vstack(
 
     def generate_experiment_function(self):
