@@ -30,6 +30,9 @@
     <Compile Include="binding.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="calibration.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="communication_layer.py">
       <SubType>Code</SubType>
     </Compile>
