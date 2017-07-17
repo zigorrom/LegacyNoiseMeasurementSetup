@@ -316,8 +316,8 @@ class Experiment:
         for rng, vals in spectrum_ranges.items():
             start,stop,step = vals
             start_freq, stop_freq = linking_frequencies[rng]
-            start_freq_idx =  math.ceil(start_freq-start/step)
-            stop_freq_idx = math.floor(stop_freq-start/step)
+            start_freq_idx =  math.ceil((start_freq-start)/step)
+            stop_freq_idx = math.floor((stop_freq-start)/step)
             result[rng] = (start_freq_idx, stop_freq_idx)
         return result
 
@@ -520,6 +520,8 @@ class Experiment:
         if q:
             q.put_nowait(result)
 
+        return (freq,data)
+
     def get_resulting_spectrum(self):
         list_of_spectrum_slices = []
         list_of_frequency_slices= []
@@ -594,9 +596,12 @@ class SimulateExperiment(Experiment):
             counter+=1
             time.sleep(0.02)
         
-        self.update_resulting_spectrum()
+        #frequency, spectrum = self.update_resulting_spectrum()
+        data = np.vstack(self.update_resulting_spectrum()).T
+        self._experiment_writer.write_measurement(data)   ##.write_measurement()
         #self.get_resulting_spectrum()
         self.send_measurement_info()
+        
         self.close_measurement()
 
     def non_gated_single_value_measurement(self, drain_source_voltage):

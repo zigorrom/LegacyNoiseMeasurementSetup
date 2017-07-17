@@ -97,7 +97,10 @@ class ExperimentWriter():
 
     def write_measurement(self,data):
         if self._measurement_file:
-            np.savetxt(self._measurement_file,data)
+            np.savetxt(self._measurement_file,data,delimiter='\t')
+
+
+
 
 
 class TestClass:
