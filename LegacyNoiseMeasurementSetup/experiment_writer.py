@@ -103,9 +103,11 @@ class ExperimentWriter():
 
 
 
-class TestClass:
-    def __init__(self, **kwargs):
-        return super().__init__(**kwargs)
+class TestClass(dict):
+    def __init__(self):
+        super().__init__()
+    
+    
     
 
 if __name__=="__main__":
