@@ -22,7 +22,8 @@ import math
 
 from measurement_data_structures import MeasurementInfo
 from experiment_writer import ExperimentWriter
-from process_communication_protocol import ExperimentCommands
+from process_communication_protocol import *
+from calibration import Calibration
 
 
 class ExperimentController(QtCore.QObject):
@@ -96,8 +97,8 @@ class ExperimentController(QtCore.QObject):
                 #self._status_object.send_value_changed(k,v)
 
     def _on_update_resulting_spectrum(self,data):
-        frequency = data['f']
-        spectrum_data = data['d']
+        frequency = data[FREQUENCIES]
+        spectrum_data = data[DATA]
         self._spectrum_plot.updata_resulting_spectrum(frequency,spectrum_data)
 
 
@@ -108,12 +109,12 @@ class ExperimentController(QtCore.QObject):
             data = self._visualization_deque.popleft()
             cmd_format = "{0} command received"
 
-            cmd = data.get('c')
+            cmd = data.get(COMMAND)
             #print(cmd_format.format(ExperimentCommands[cmd]))
             
             if cmd is ExperimentCommands.DATA:
-                index = data['i']
-                rang = data['r']
+                index = data[INDEX]
+                rang = data[SPECTRUM_RANGE]
                 #print("visualized data index: {0}".format(index))
                 self._spectrum_plot.update_spectrum(rang ,data)
            
@@ -174,8 +175,8 @@ class ProcessingThread(QtCore.QThread):
                 data = self._input_data_queue.get(timeout = 1)
                 self._input_data_queue.task_done()
                 cmd_format = "{0} command received"
-                cmd = data.get('c')
-                param = data.get('p')
+                cmd = data.get(COMMAND)
+                param = data.get(PARAMETER)
                 
                 #print(cmd_format.format(ExperimentCommands[cmd]))
                 if cmd is None:
@@ -276,7 +277,9 @@ class Experiment:
         self._frequency_indexes = self._get_frequency_linking_indexes(self._spectrum_ranges, self._spectrum_linking_frequencies)
         self._spectrum_data = {}
         self._measurement_counter = 0
-        self._experiment_writer = None                                                                                                                                         
+        self._experiment_writer = None    
+        self._calibration = None
+                                                                                                                                             
     
     @property
     def need_exit(self):
@@ -341,7 +344,8 @@ class Experiment:
         self.__sample_multimeter = HP34401A(self.__hardware_settings.sample_multimeter_resource)
         self.__main_gate_multimeter = HP34401A(self.__hardware_settings.main_gate_multimeter_resource)
     
-
+    def initialize_calibration(self):
+        self._calibration = Calibration()
    
 
     def get_meas_ranges(self):
@@ -443,13 +447,13 @@ class Experiment:
     def _send_command_with_param(self,command,param):
         q = self._input_data_queue
         if q:
-            q.put_nowait({'c':command, 'p':param})
+            q.put_nowait({COMMAND:command, PARAMETER:param})
 
     def _send_command_with_params(self,command, **kwargs):
         q = self._input_data_queue
-        params = {'c': command}
+        params = {COMMAND: command}
         if kwargs:
-            params['p'] = kwargs
+            params[PARAMETER] = kwargs
         #params.update(kwargs)
         if q:
             q.put_nowait(params)   
@@ -494,28 +498,29 @@ class Experiment:
         current_data_dict = self._spectrum_data.get(rang)
         average_data = data
         if not current_data_dict:
-            self._spectrum_data[rang] = {"avg": averages,"d": data}
+            self._spectrum_data[rang] = {AVERAGES: averages,DATA: data}
         else:
-            current_average = current_data_dict["avg"]
-            current_data = current_data_dict["d"]
+            current_average = current_data_dict[AVERAGES]
+            current_data = current_data_dict[DATA]
             #self.average = np.average((self.average, data['p']), axis=0, weights=(self.average_counter - 1, 1))
 
             average_data = np.average((current_data, data),axis = 0, weights = (current_average, averages))
             current_average += averages
 
-            self._spectrum_data[rang] = {"avg": current_average,"d": average_data}
+            self._spectrum_data[rang] = {AVERAGES: current_average,DATA: average_data}
              
         #self._spectrum_data[rang] = data
         q = self._input_data_queue
         freq = self._frequencies[rang] 
         
-        result = {'c': ExperimentCommands.DATA, 'r': rang, 'f': freq, 'd':average_data, 'i': 1}#data, 'i': 1}
+        result = {COMMAND: ExperimentCommands.DATA, SPECTRUM_RANGE: rang, FREQUENCIES: freq, DATA:average_data, INDEX: 1}#data, 'i': 1}
         if q:
             q.put_nowait(result) 
             
     def update_resulting_spectrum(self):
         freq, data = self.get_resulting_spectrum()
-        result = {'c': ExperimentCommands.SPECTRUM_DATA, 'f': freq, 'd': data}
+
+        result = {COMMAND: ExperimentCommands.SPECTRUM_DATA, FREQUENCIES: freq, DATA: data}
         q = self._input_data_queue
         if q:
             q.put_nowait(result)
@@ -527,7 +532,7 @@ class Experiment:
         list_of_frequency_slices= []
         for rng, spectrum_data in self._spectrum_data.items():
             start_idx, stop_idx = self._frequency_indexes[rng]
-            data = spectrum_data["d"][start_idx:stop_idx]
+            data = spectrum_data[DATA][start_idx:stop_idx]
             freq = self._frequencies[rng][start_idx:stop_idx]
             list_of_spectrum_slices.append(data)
             list_of_frequency_slices.append(freq)
@@ -599,6 +604,7 @@ class SimulateExperiment(Experiment):
         #frequency, spectrum = self.update_resulting_spectrum()
         data = np.vstack(self.update_resulting_spectrum()).transpose()
         self._experiment_writer.write_measurement(data)   ##.write_measurement()
+        self._experiment_writer.write_measurement_info(self._measurement_info)
         #self.get_resulting_spectrum()
         self.send_measurement_info()
         
@@ -611,7 +617,7 @@ class SimulateExperiment(Experiment):
 
 class PerformExperiment(Experiment):
     def __init__(self, input_data_queue = None, stop_event = None):
-        Experiment.__init__(self,False, input_data_queue, stop_event)
+        Experiment.__init__(self,False, input_data_queue, stop_event)  
 
     def initialize_hardware(self):
         pass

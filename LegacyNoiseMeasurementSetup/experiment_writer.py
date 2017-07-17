@@ -1,5 +1,6 @@
 ﻿from os.path import join
 import numpy as np
+from measurement_data_structures import MeasurementInfo
 
 #class MeasurementProperty:
 #    def __init__(self):
@@ -91,9 +92,13 @@ class ExperimentWriter():
         if self._measurement_file and not self._measurement_file.closed:
             self._measurement_file.close()
 
-    def write_experiment_info(self,info):
-        if self._experiment_file:
-            np.savetxt(self._experiment_file,info)
+    def write_measurement_info(self,info):
+        if not self._experiment_file:
+            return 
+
+        if isinstance(info, MeasurementInfo):
+            self._experiment_file.write(str(info).encode())
+            self._experiment_file.flush()
 
     def write_measurement(self,data):
         if self._measurement_file:

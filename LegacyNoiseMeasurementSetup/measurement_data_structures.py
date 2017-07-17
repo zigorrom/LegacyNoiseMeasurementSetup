@@ -105,5 +105,26 @@ class MeasurementInfo:
     def end_gate_voltage(self,value):
         self._measured_gate_voltage_end = value
 
+    def __str__(self):
+        list = [self.start_sample_voltage, 
+                self._sample_current_start,
+                self._equivalent_resistance_start,
+                self.measurement_filename,
+                None,
+                self.end_main_voltage,
+                self.start_sample_voltage,
+                self.start_main_voltage,
+                self._sample_resistance_start,
+                self._sample_resistance_end,
+                self.start_temperature,
+                self.end_temperature,
+                None,
+                None,
+                self.end_gate_voltage
+                ]
+        representation = "\t".join(map(str,list)) + '\n'
+        return representation
+        
+
 
 
