@@ -20,9 +20,12 @@ class Calibration:
 
 
     def load_calibration_data(self):
+        
         pass
 
 
+    def _apply_calibration(self, amplifier, spectrum_data):
+        pass
 
     def apply_calibration(self, noise_spectrum):
 
