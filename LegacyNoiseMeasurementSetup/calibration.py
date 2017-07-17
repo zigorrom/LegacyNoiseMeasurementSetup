@@ -1,6 +1,6 @@
 
 class Calibration:
-    def __init__(self, use_preamplifier = True, use_second_amplifier = True):
+    def __init__(self, spectrum_ranges, use_preamplifier = True, use_second_amplifier = True):
         super().__init__()
         self.cabilration_data = {
             "second_amplifier":None,
@@ -16,6 +16,8 @@ class Calibration:
         self._second_amplifier_gain = None
         self._second_amplifier_calibration_curve = None
 
+        self._spectrum_ranges = spectrum_ranges
+        
 
 
 
