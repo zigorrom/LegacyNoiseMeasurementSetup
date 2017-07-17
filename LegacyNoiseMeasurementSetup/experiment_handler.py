@@ -597,7 +597,7 @@ class SimulateExperiment(Experiment):
             time.sleep(0.02)
         
         #frequency, spectrum = self.update_resulting_spectrum()
-        data = np.vstack(self.update_resulting_spectrum()).T
+        data = np.vstack(self.update_resulting_spectrum()).transpose()
         self._experiment_writer.write_measurement(data)   ##.write_measurement()
         #self.get_resulting_spectrum()
         self.send_measurement_info()
