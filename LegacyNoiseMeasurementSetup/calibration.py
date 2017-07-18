@@ -36,8 +36,11 @@ class Calibration:
     def _apply_calibration(self, amplifier, gain, spectrum_data):
         freq, data = spectrum_data
         calibration_curve = self.cabilration_data[amplifier]["calibration_curve"][freq]
-        freq_response = self.cabilration_data[amplifier]["freq_response"][]
+        freq_response = self.cabilration_data[amplifier]["freq_response"][freq]
         
+        result = data/(freq_response*freq_response) - calibration_curve
+        return result
+
 
 
     def apply_calibration(self, noise_spectrum):
