@@ -1,3 +1,10 @@
+import numpy as np
+
+class CalibrationInfo:
+    def __init__(self):
+        super().__init__()
+
+
 
 class Calibration:
     def __init__(self, spectrum_ranges, use_preamplifier = True, use_second_amplifier = True):
@@ -10,10 +17,10 @@ class Calibration:
         self._use_preamplifier = use_preamplifier
         self._use_second_amplifier = use_second_amplifier
 
-        self._preamplifier_gain = None
+        self._preamplifier_frequency_response = None
         self._preamplifier_calibration_curve = None
 
-        self._second_amplifier_gain = None
+        self._second_amplifier_frequency_response = None
         self._second_amplifier_calibration_curve = None
 
         self._spectrum_ranges = spectrum_ranges
@@ -26,12 +33,22 @@ class Calibration:
         pass
 
 
-    def _apply_calibration(self, amplifier, spectrum_data):
-        pass
+    def _apply_calibration(self, amplifier, gain, spectrum_data):
+        freq, data = spectrum_data
+        calibration_curve = self.cabilration_data[amplifier]["calibration_curve"][freq]
+        freq_response = self.cabilration_data[amplifier]["freq_response"][]
+        
+
 
     def apply_calibration(self, noise_spectrum):
 
         return noise_spectrum
 
     #def divide_by_amplification_coefficient(self,
+    
+
+if __name__ == "__main__":
+    arr = np.ones((10,2))
+    for f,d in arr:
+        print("f = {0}; d = {1}".format(f,d))
     
