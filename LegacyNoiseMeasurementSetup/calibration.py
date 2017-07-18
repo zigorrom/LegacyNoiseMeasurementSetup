@@ -18,14 +18,23 @@ class Calibration:
         
         self._spectrum_ranges = {}
         
+        self.load_calibration_data()
+            
         #self.load_calibration_data()
 
-    def init_spectrum_range_calibration(self):
+    def init_spectrum_range_calibration(self, spectrum_ranges):
         pass
 
     def load_calibration_data(self):
-        self.cablibration_data['preamplifier'] = {"frequency_response":None, "calibration_curve": None}
-        self.cablibration_data['second_amplifier'] = {"frequency_response":None, "calibration_curve": None}
+        try:
+            with open("calibration_data.dat","r") as f:
+                self.calibration_data_info = json.load(f)
+            return True
+        except Exception as e:
+            return False
+        
+        #self.cablibration_data['preamplifier'] = {"frequency_response":None, "calibration_curve": None}
+        #self.cablibration_data['second_amplifier'] = {"frequency_response":None, "calibration_curve": None}
         
     def save_calibration_data(self):
         with open("calibration_data.dat","w") as f:
