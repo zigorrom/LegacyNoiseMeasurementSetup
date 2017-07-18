@@ -51,7 +51,15 @@ class Calibration:
     
 
 if __name__ == "__main__":
-    arr = np.ones((10,2))
-    for f,d in arr:
-        print("f = {0}; d = {1}".format(f,d))
+    size = 10
+    arr = np.ones((size,2)).T
+    freq,data = arr
+    calibration_curve = np.random.rand(size)
+    freq_response = np.random.rand(size)
+    
+    result = data/(freq_response*freq_response) - calibration_curve
+    print(result)
+
+
+    
     
