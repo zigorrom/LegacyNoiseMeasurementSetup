@@ -1,1 +1,1 @@
-{"preamp": {"max_freq": 1.0, "frequency_response": 
+{"preamp": {"ID": 1, "max_freq": 1.0, "calibration_curve_filename": "preamp_calibration_curve.dat", "min_freq": 1.0, "frequency_response_filename": "preamp_freq_resp.dat"}}

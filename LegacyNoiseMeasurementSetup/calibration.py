@@ -28,13 +28,13 @@ class Calibration:
         
     def save_calibration_data(self):
         with open("calibration_data.dat","w") as f:
-            json.dump(self.cablibration_data,f)
+            json.dump(self.calibration_data_info,f)
 
     def add_amplifier(self, amplifier_name, amplifier_id, frequencies, frequency_response, calibration_curve):
         min_freq = frequencies[0]
         max_freq = frequencies[-1]
-        self.calibration_data_info[amplifier_name] = {"ID": amplifier_id,"min_freq":min_freq,"max_freq": max_freq, "frequency_response_filename": "_".join([amplifier_name,"freq_resp.dat"]), "calibration_curve_filename": calibration_curve}
-        #self.calibration_data_info[amplifier_id] = {}
+        self.calibration_data_info[amplifier_name] = {"ID": amplifier_id,"min_freq":min_freq,"max_freq": max_freq, "frequency_response_filename": "{0}_{1}.dat".format(amplifier_name,"freq_resp"), "calibration_curve_filename": "{0}_{1}.dat".format(amplifier_name,"calibration_curve")}
+        self.calibration_data[amplifier_name] = {"frequency_response":frequency_response, "calibration_curve": calibration_curve}
 
     def _apply_calibration(self, amplifier, gain, spectrum_data):
         freq, data = spectrum_data
