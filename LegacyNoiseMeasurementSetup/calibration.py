@@ -9,28 +9,21 @@ class CalibrationInfo:
 class Calibration:
     def __init__(self, spectrum_ranges, use_preamplifier = True, use_second_amplifier = True):
         super().__init__()
-        self.cabilration_data = {
-            "second_amplifier":None,
-            "preamplifier": None
-            }
+        self.cabilration_data = None
         
         self._use_preamplifier = use_preamplifier
         self._use_second_amplifier = use_second_amplifier
-
-        self._preamplifier_frequency_response = None
-        self._preamplifier_calibration_curve = None
-
-        self._second_amplifier_frequency_response = None
-        self._second_amplifier_calibration_curve = None
-
+        
         self._spectrum_ranges = spectrum_ranges
         
+        self.load_calibration_data()
 
 
 
     def load_calibration_data(self):
+        self.cabilration_data['preamplifier'] = {"frequency_response":None, "calibration_curve": None}
+        self.cabilration_data['second_amplifier'] = {"frequency_response":None, "calibration_curve": None}
         
-        pass
 
 
     def _apply_calibration(self, amplifier, gain, spectrum_data):
@@ -53,10 +46,14 @@ class Calibration:
 if __name__ == "__main__":
     size = 10
     arr = np.ones((size,2)).T
+    ampl = 178
     freq,data = arr
+
+    print(data)
     calibration_curve = np.random.rand(size)
-    freq_response = np.random.rand(size)
-    
+    print(calibration_curve)
+    freq_response = 178 * np.random.rand(size)
+    print(freq_response)
     result = data/(freq_response*freq_response) - calibration_curve
     print(result)
 
