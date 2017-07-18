@@ -1,4 +1,5 @@
 import numpy as np
+import json
 
 class CalibrationInfo:
     def __init__(self):
@@ -9,22 +10,31 @@ class CalibrationInfo:
 class Calibration:
     def __init__(self, spectrum_ranges, use_preamplifier = True, use_second_amplifier = True):
         super().__init__()
-        self.cabilration_data = None
+        self.calibration_data_info = {}
+        self.calibration_data = {}
         
         self._use_preamplifier = use_preamplifier
         self._use_second_amplifier = use_second_amplifier
         
         self._spectrum_ranges = spectrum_ranges
         
-        self.load_calibration_data()
+        #self.load_calibration_data()
 
 
 
     def load_calibration_data(self):
-        self.cabilration_data['preamplifier'] = {"frequency_response":None, "calibration_curve": None}
-        self.cabilration_data['second_amplifier'] = {"frequency_response":None, "calibration_curve": None}
+        self.cablibration_data['preamplifier'] = {"frequency_response":None, "calibration_curve": None}
+        self.cablibration_data['second_amplifier'] = {"frequency_response":None, "calibration_curve": None}
         
+    def save_calibration_data(self):
+        with open("calibration_data.dat","w") as f:
+            json.dump(self.cablibration_data,f)
 
+    def add_amplifier(self, amplifier_name, amplifier_id, frequencies, frequency_response, calibration_curve):
+        min_freq = frequencies[0]
+        max_freq = frequencies[-1]
+        self.calibration_data_info[amplifier_name] = {"ID": amplifier_id,"min_freq":min_freq,"max_freq": max_freq, "frequency_response_filename": "_".join([amplifier_name,"freq_resp.dat"]), "calibration_curve_filename": calibration_curve}
+        #self.calibration_data_info[amplifier_id] = {}
 
     def _apply_calibration(self, amplifier, gain, spectrum_data):
         freq, data = spectrum_data
@@ -44,18 +54,22 @@ class Calibration:
     
 
 if __name__ == "__main__":
-    size = 10
-    arr = np.ones((size,2)).T
-    ampl = 178
-    freq,data = arr
+    c = Calibration(None)
+    arr = np.ones(10)
+    c.add_amplifier("preamp", 1, arr,arr,arr)
+    c.save_calibration_data()
+    #size = 10
+    #arr = np.ones((size,2)).T
+    #ampl = 178
+    #freq,data = arr
 
-    print(data)
-    calibration_curve = np.random.rand(size)
-    print(calibration_curve)
-    freq_response = 178 * np.random.rand(size)
-    print(freq_response)
-    result = data/(freq_response*freq_response) - calibration_curve
-    print(result)
+    #print(data)
+    #calibration_curve = np.random.rand(size)
+    #print(calibration_curve)
+    #freq_response = 178 * np.random.rand(size)
+    #print(freq_response)
+    #result = data/(freq_response*freq_response) - calibration_curve
+    #print(result)
 
 
     
