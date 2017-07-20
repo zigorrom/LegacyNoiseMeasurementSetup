@@ -1,5 +1,6 @@
 import numpy as np
 import json
+from scipy.interpolate import interp1d
 
 class CalibrationInfo:
     def __init__(self):
@@ -34,8 +35,14 @@ class Calibration:
                 freq_resp_filename = v["frequency_response_filename"]
                 calibration_curve_filename = v["calibration_curve_filename"]
                 freq_resp = np.loadtxt(freq_resp_filename)
+                frequencies, freq_response = freq_resp
+                freq_resp_interp = interp1d(frequencies, freq_response)
+
                 calib_curve = np.loadtxt(calibration_curve_filename)
-                self.calibration_data[k] = {"frequency_response":freq_resp, "calibration_curve": calib_curve}
+                frequencies, calibration_curve = calib_curve
+                calibration_interp = interp1d(frequencies, calibration_curve)
+
+                self.calibration_data[k] = {"frequency_response":freq_resp,"freq_response_interp": freq_resp_interp, "calibration_curve": calib_curve, "calib_interp": calibration_interp}
                 
 
             return True
@@ -61,12 +68,16 @@ class Calibration:
         min_freq = frequencies[0]
         max_freq = frequencies[-1]
         self.calibration_data_info[amplifier_name] = {"ID": amplifier_id,"min_freq":min_freq,"max_freq": max_freq, "frequency_response_filename": "{0}_{1}.dat".format(amplifier_name,"freq_resp"), "calibration_curve_filename": "{0}_{1}.dat".format(amplifier_name,"calibration_curve")}
-        self.calibration_data[amplifier_name] = {"frequency_response":frequency_response, "calibration_curve": calibration_curve}
+        freq_resp_interp = interp1d(frequencies, frequency_response)
+        calibr_interp = interp1d(frequencies, calibration_curve)
+        frequency_response = np.vstack((frequencies, frequency_response))
+        calibration_curve = np.vstack((frequencies, calibration_curve))
+        self.calibration_data[amplifier_name] = {"frequency_response":frequency_response, "freq_response_interp": freq_resp_interp,  "calibration_curve": calibration_curve, "calib_interp": calibr_interp}
 
     def _apply_calibration(self, amplifier, gain, spectrum_data):
         freq, data = spectrum_data
-        calibration_curve = self.cabilration_data[amplifier]["calibration_curve"][freq]
-        freq_response_sqr = self.cabilration_data[amplifier]["freq_response"][freq] 
+        calibration_curve = self.calibration_data[amplifier]["calib_interp"](freq)
+        freq_response_sqr = self.calibration_data[amplifier]["freq_response_interp"](freq)
         gain_sqr = gain*gain
         result = data/(gain_sqr*freq_response_sqr) - calibration_curve
         return result
@@ -82,11 +93,14 @@ class Calibration:
 
 if __name__ == "__main__":
     c = Calibration(None)
-    arr = np.ones((10,2)).T
-    freq = np.ones(10)
-    print(arr)
-    c.add_amplifier("preamp", 1, freq,arr,arr)
-    c.save_calibration_data()
+    n = 10
+    freq = np.linspace(1,200,n)
+    arr = np.ones(n)
+    #print(arr)
+    #c.add_amplifier("preamp", 1, freq,arr,arr)
+    #c.save_calibration_data()
+
+    c._apply_calibration("preamp", 100, (freq,np.random.rand(n)))
     #size = 10
     #arr = np.ones((size,2)).T
     #ampl = 178
