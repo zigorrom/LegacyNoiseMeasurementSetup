@@ -36,19 +36,13 @@ class Calibration:
                 freq_resp = np.loadtxt(freq_resp_filename)
                 calib_curve = np.loadtxt(calibration_curve_filename)
                 self.calibration_data[k] = {"frequency_response":freq_resp, "calibration_curve": calib_curve}
-                #ampl_data = self.calibration_data[k]
-                #freq_resp = ampl_data["frequency_response"]
-                #calib_curve = ampl_data["calibration_curve"]
-                #np.savetxt(freq_resp_filename, freq_resp)
-                #np.savetxt(calibration_curve_filename, calib_curve)
+                
 
             return True
         except Exception as e:
             return False
         
-        #self.cablibration_data['preamplifier'] = {"frequency_response":None, "calibration_curve": None}
-        #self.cablibration_data['second_amplifier'] = {"frequency_response":None, "calibration_curve": None}
-        
+      
     def save_calibration_data(self):
         with open("calibration_data.dat","w") as f:
             json.dump(self.calibration_data_info,f)
