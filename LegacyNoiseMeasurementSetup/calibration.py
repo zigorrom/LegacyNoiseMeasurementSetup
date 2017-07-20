@@ -29,6 +29,19 @@ class Calibration:
         try:
             with open("calibration_data.dat","r") as f:
                 self.calibration_data_info = json.load(f)
+
+            for k,v in self.calibration_data_info.items():
+                freq_resp_filename = v["frequency_response_filename"]
+                calibration_curve_filename = v["calibration_curve_filename"]
+                freq_resp = np.loadtxt(freq_resp_filename)
+                calib_curve = np.loadtxt(calibration_curve_filename)
+                self.calibration_data[k] = {"frequency_response":freq_resp, "calibration_curve": calib_curve}
+                #ampl_data = self.calibration_data[k]
+                #freq_resp = ampl_data["frequency_response"]
+                #calib_curve = ampl_data["calibration_curve"]
+                #np.savetxt(freq_resp_filename, freq_resp)
+                #np.savetxt(calibration_curve_filename, calib_curve)
+
             return True
         except Exception as e:
             return False
@@ -39,6 +52,16 @@ class Calibration:
     def save_calibration_data(self):
         with open("calibration_data.dat","w") as f:
             json.dump(self.calibration_data_info,f)
+
+        for k,v in self.calibration_data_info.items():
+            freq_resp_filename = v["frequency_response_filename"]
+            calibration_curve_filename = v["calibration_curve_filename"]
+            ampl_data = self.calibration_data[k]
+            freq_resp = ampl_data["frequency_response"]
+            calib_curve = ampl_data["calibration_curve"]
+            np.savetxt(freq_resp_filename, freq_resp)
+            np.savetxt(calibration_curve_filename, calib_curve)
+
 
     def add_amplifier(self, amplifier_name, amplifier_id, frequencies, frequency_response, calibration_curve):
         min_freq = frequencies[0]
@@ -65,8 +88,10 @@ class Calibration:
 
 if __name__ == "__main__":
     c = Calibration(None)
-    arr = np.ones(10)
-    c.add_amplifier("preamp", 1, arr,arr,arr)
+    arr = np.ones((10,2)).T
+    freq = np.ones(10)
+    print(arr)
+    c.add_amplifier("preamp", 1, freq,arr,arr)
     c.save_calibration_data()
     #size = 10
     #arr = np.ones((size,2)).T
