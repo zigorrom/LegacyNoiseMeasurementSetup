@@ -243,6 +243,9 @@ class FANS_SMU:
     def move_gate_motor_right_fast(self):
         self.move_motor(self._gate_motor, 1, FAST_SPEED, LONG_TIME)
 
+    def set_analog_read_averaging(self,averaging):
+         self._fans_controller.analog_read_averaging(averaging)
+
     def __set_voltage_for_function_new(self, voltage, voltage_set_channel, relay_channel, feedback_channel):
         raise NotImplementedError()
         self.init_smu_mode()
@@ -295,6 +298,15 @@ class FANS_SMU:
         #
 
         output_channel = self._fans_controller.fans_ao_switch.select_channel(voltage_set_channel)
+        
+
+        assert isinstance(output_channel, FANS_AO_channel)
+
+        #set read averaging to small value for fast acquisition
+        coarse_averaging = 10
+        fine_averaging = 1000
+        self.set_analog_read_averaging(coarse_averaging)
+
         prev_value = self.analog_read(feedback_channel)
         fine_tuning = False
         polarity_switched = False
@@ -325,7 +337,12 @@ class FANS_SMU:
                 value_to_set = voltage_setting_function(current_value,voltage,True)
             
             if abs_distance < VoltageSetError and fine_tuning: #FANS_VOLTAGE_SET_ERROR and fine_tuning:
+                # set high averaging, moving voltage to 0 and check condition again count times if is of return true if not repeat adjustment
                 output_channel.ao_voltage = 0
+                self.set_analog_read_averaging(fine_averaging)
+                
+                self.set_analog_read_averaging(coarse_averaging)
+
                 return True
             
             if polarity_switched:
@@ -386,6 +403,12 @@ class HybridSMU_System(FANS_SMU):
 
         elif isinstance(channels, list):
             return {ch: self.analog_read_channel(ch) for ch in channels}
+
+    def set_analog_read_averaging(self, averaging):
+        raise BaseException("NotImplementedError")
+        for k,v in self._multimeters:
+            assert isinstance(v, HP34401A)
+            v.read_average = averaging
 
 class ManualSMU(FANS_SMU):
     def __init__(self, fans_controller, drain_source_motor, drain_source_relay, gate_motor, gate_relay, load_resistance):

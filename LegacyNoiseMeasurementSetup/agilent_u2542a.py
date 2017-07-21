@@ -256,7 +256,7 @@ class AgilentU2542A:
     def daq_single_shot_read_data(self):
         self.instrument.write("DIG")
         while self.instrument.ask("WAV:COMP?")=="NO":
-            pass
+            continue
         return self.daq_read_data()
         
         
