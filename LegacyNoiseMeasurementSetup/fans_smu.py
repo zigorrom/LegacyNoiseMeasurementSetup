@@ -236,9 +236,33 @@ class FANS_SMU:
     def move_gate_motor_right_fast(self):
         self.move_motor(self._gate_motor, 1, FAST_SPEED, LONG_TIME)
 
+    def __set_voltage_for_function_new(self, voltage, voltage_set_channel, relay_channel, feedback_channel):
+        self.init_smu_mode()
+        
+        output_channel = self._fans_controller.fans_ao_switch.select_channel(voltage_set_channel)
+        prev_value = self.analog_read(feedback_channel)
+        fine_tuning = False
+        polarity_switched = False
+        
+        VoltageSetError = FANS_VOLTAGE_SET_ERROR
+
+        condition_satisfied = False
+        
+        while not condition_satisfied:
+            # using set voltage function to set voltage less than estimation error
+
+            # move the motor with the smallest speed to the goal value
+
+            # if the error is smaller than the final error 
+            # check if it staus there for count times in a row.
+            # otherwise correct the value
+            # and repeat the correction
+            
+            pass
 
 
     def __set_voltage_for_function(self,voltage, voltage_set_channel, relay_channel, feedback_channel):
+        
         self.init_smu_mode()
 
         #ai_feedback = self._fans_controller.get_ai_channel(feedback_channel)
@@ -250,7 +274,6 @@ class FANS_SMU:
         #
 
         output_channel = self._fans_controller.fans_ao_switch.select_channel(voltage_set_channel)
-       
         prev_value = self.analog_read(feedback_channel)
         fine_tuning = False
         polarity_switched = False
@@ -342,8 +365,6 @@ class HybridSMU_System(FANS_SMU):
 
         elif isinstance(channels, list):
             return {ch: self.analog_read_channel(ch) for ch in channels}
-
-
 
 class ManualSMU(FANS_SMU):
     def __init__(self, fans_controller, drain_source_motor, drain_source_relay, gate_motor, gate_relay, load_resistance):

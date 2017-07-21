@@ -586,12 +586,6 @@ class FANS_CONTROLLER:
         for name, channel in self._ai_channels.items():
             channel.apply_configuration(self._config)
 
-
-
-
-
-
-
     def set_data_storage(self,data_storage):
         self._data_storage = data_storage
     
