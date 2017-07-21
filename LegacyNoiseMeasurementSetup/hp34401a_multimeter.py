@@ -44,6 +44,9 @@ class HP34401A(VisaInstrument):
     def init_instrument(self):
         self.write("INIT")
 
+    def set_averaging(self,averaging):
+        raise NotImplementedError()
+
     @instrument_await_function
     def read_voltage(self):
         return float(self.query("MEAS:VOLTAGE:DC?")) #"CALC:AVER:AVER?"))

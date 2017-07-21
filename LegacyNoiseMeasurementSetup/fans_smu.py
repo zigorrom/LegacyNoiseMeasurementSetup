@@ -408,7 +408,7 @@ class HybridSMU_System(FANS_SMU):
         raise BaseException("NotImplementedError")
         for k,v in self._multimeters:
             assert isinstance(v, HP34401A)
-            v.read_average = averaging
+            v.set_averaging(averaging)
 
 class ManualSMU(FANS_SMU):
     def __init__(self, fans_controller, drain_source_motor, drain_source_relay, gate_motor, gate_relay, load_resistance):
