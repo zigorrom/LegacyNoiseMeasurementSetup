@@ -32,6 +32,8 @@ FANS_POLARITY_CHANGE_VOLTAGE = (-5,5)
 FANS_NEGATIVE_POLARITY,FANS_POSITIVE_POLARITY = FANS_POLARITY_CHANGE_VOLTAGE
  
 
+X0_VOLTAGE_SET = 0.01
+POWER_VOLTAGE_SET = 5
 
 
 def voltage_setting_function(current_value, set_value, fine_tuning = False):
@@ -53,13 +55,18 @@ def voltage_setting_function(current_value, set_value, fine_tuning = False):
         return sign*MIN_MOVING_VOLTAGE
     else:
         diff = math.fabs(current_value-set_value)
-        try:
-            exponent = math.exp(diff/FD_CONST)
-        except OverflowError:
-            exponent = float("inf")
+        return MAX_MOVING_VOLTAGE + (MIN_MOVING_VOLTAGE-MAX_MOVING_VOLTAGE)/(1+math.pow(diff/X0_VOLTAGE_SET,POWER_VOLTAGE_SET))
+        
+
+        #try:
+        #    exponent = math.exp(diff/FD_CONST)
+        #except OverflowError:
+        #    exponent = float("inf")
         
         #return (MIN_MOVING_VOLTAGE + VALUE_DIFFERENCE/(exponent+1))
-        return sign*(MIN_MOVING_VOLTAGE + VALUE_DIFFERENCE/(exponent+1))
+        #return sign*(MIN_MOVING_VOLTAGE + VALUE_DIFFERENCE/(exponent+1))
+        #return 
+
 
 OUT_ENABLED_CH, OUT_CH, FEEDBACK_CH, POLARITY_RELAY_CH , CH_POLARITY = [0,1,2,3,4]
 # output channel - A0_BOX_CHANNELS
@@ -237,6 +244,7 @@ class FANS_SMU:
         self.move_motor(self._gate_motor, 1, FAST_SPEED, LONG_TIME)
 
     def __set_voltage_for_function_new(self, voltage, voltage_set_channel, relay_channel, feedback_channel):
+        raise NotImplementedError()
         self.init_smu_mode()
         
         output_channel = self._fans_controller.fans_ao_switch.select_channel(voltage_set_channel)
@@ -247,7 +255,20 @@ class FANS_SMU:
         VoltageSetError = FANS_VOLTAGE_SET_ERROR
 
         condition_satisfied = False
+
+        # READ CURRENT VALUE
+        # IF DIFFERENT POLARITY - GO TO 0 AND SWITCH POLARITY
         
+        # SWITCHING POLARITY
+        #if current_value*voltage<0 and not polarity_switched:
+        #        set_result = self.__set_voltage_for_function(0, voltage_set_channel, relay_channel, feedback_channel)
+                 #if set_result:
+                 #   polarity = FANS_NEGATIVE_POLARITY if voltage<0 else FANS_POSITIVE_POLARITY
+                 #   self.__set_voltage_polarity(polarity, voltage_set_channel, relay_channel)
+                 #   polarity_switched = True
+
+        
+
         while not condition_satisfied:
             # using set voltage function to set voltage less than estimation error
 
