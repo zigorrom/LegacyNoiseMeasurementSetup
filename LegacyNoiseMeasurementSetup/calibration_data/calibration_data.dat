@@ -1,0 +1,1 @@
+{"second_amp": {"ID": 1, "frequency_response_filename": "second_amp_freq_resp.dat", "max_freq": 102400.0, "calibration_curve_filename": "second_amp_calibration_curve.dat", "min_freq": 1.0}, "preamp": {"ID": 0, "frequency_response_filename": "preamp_freq_resp.dat", "max_freq": 102400.0, "calibration_curve_filename": "preamp_calibration_curve.dat", "min_freq": 1.0}}

@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import json
 from scipy.interpolate import interp1d
@@ -9,8 +10,10 @@ class CalibrationInfo:
 
 
 class Calibration:
-    def __init__(self, use_preamplifier = True, use_second_amplifier = True):
+    def __init__(self, calibration_directory = "", use_preamplifier = True, use_second_amplifier = True):
         super().__init__()
+
+        self.calibration_directory = calibration_directory
         self.calibration_data_info = {}
         self.calibration_data = {}
         
@@ -28,12 +31,13 @@ class Calibration:
 
     def load_calibration_data(self):
         try:
-            with open("calibration_data.dat","r") as f:
+            filename = os.path.join(self.calibration_directory, "calibration_data.dat")
+            with open(filename,"r") as f:
                 self.calibration_data_info = json.load(f)
 
             for k,v in self.calibration_data_info.items():
-                freq_resp_filename = v["frequency_response_filename"]
-                calibration_curve_filename = v["calibration_curve_filename"]
+                freq_resp_filename =  os.path.join(self.calibration_directory, v["frequency_response_filename"])
+                calibration_curve_filename =  os.path.join(self.calibration_directory,v["calibration_curve_filename"])
                 freq_resp = np.loadtxt(freq_resp_filename)
                 frequencies, freq_response = freq_resp
                 freq_resp_interp = interp1d(frequencies, freq_response)
@@ -51,7 +55,7 @@ class Calibration:
         
       
     def save_calibration_data(self):
-        with open("calibration_data.dat","w") as f:
+        with open(os.path.join(self.calibration_directory, "calibration_data.dat"),"w") as f:
             json.dump(self.calibration_data_info,f)
 
         for k,v in self.calibration_data_info.items():
@@ -60,8 +64,8 @@ class Calibration:
             ampl_data = self.calibration_data[k]
             freq_resp = ampl_data["frequency_response"]
             calib_curve = ampl_data["calibration_curve"]
-            np.savetxt(freq_resp_filename, freq_resp)
-            np.savetxt(calibration_curve_filename, calib_curve)
+            np.savetxt(os.path.join(self.calibration_directory,freq_resp_filename), freq_resp)
+            np.savetxt(os.path.join(self.calibration_directory,calibration_curve_filename), calib_curve)
 
 
     def add_amplifier(self, amplifier_name, amplifier_id, frequencies, frequency_response, calibration_curve):
@@ -90,30 +94,36 @@ class Calibration:
 
     #def divide_by_amplification_coefficient(self,
     
+def add_amplifiers():
+    dir = os.path.dirname(__file__)
+    c = Calibration(os.path.join(dir,"calibration_data"))
+    dir  = os.path.join(os.path.dirname(__file__), "calibration_data")
+
+    freq_file = os.path.join(dir,"frequencies.dat")
+    h0_file = os.path.join(dir,"h0.dat")
+    h0n_file = os.path.join(dir,"h0n.dat")
+
+    k2_file = os.path.join(dir,"k2.dat")
+    k2n_file = os.path.join(dir,"k2n.dat")
+
+    frequencies = np.loadtxt(freq_file)
+    preamp_calib_curve = np.loadtxt(h0_file)
+    preamp_freq_resp = np.loadtxt(k2_file)
+
+    second_amp_calib_curve = np.loadtxt(h0n_file)
+    second_amp_freq_resp = np.loadtxt(k2n_file)
+
+    c.add_amplifier("preamp", 0, frequencies, preamp_freq_resp, preamp_calib_curve)
+    c.add_amplifier("second_amp",1,frequencies, second_amp_freq_resp,second_amp_calib_curve)
+    c.save_calibration_data()
+
+def load_amplifiers():
+    dir = os.path.dirname(__file__)
+    c = Calibration(os.path.join(dir,"calibration_data"))
 
 if __name__ == "__main__":
-    c = Calibration(None)
-    n = 10
-    freq = np.linspace(1,200,n)
-    arr = np.ones(n)
-    #print(arr)
-    #c.add_amplifier("preamp", 1, freq,arr,arr)
-    #c.save_calibration_data()
+    add_amplifiers()
 
-    c._apply_calibration("preamp", 100, (freq,np.random.rand(n)))
-    #size = 10
-    #arr = np.ones((size,2)).T
-    #ampl = 178
-    #freq,data = arr
+    load_amplifiers()
 
-    #print(data)
-    #calibration_curve = np.random.rand(size)
-    #print(calibration_curve)
-    #freq_response = 178 * np.random.rand(size)
-    #print(freq_response)
-    #result = data/(freq_response*freq_response) - calibration_curve
-    #print(result)
-
-
-    
     
