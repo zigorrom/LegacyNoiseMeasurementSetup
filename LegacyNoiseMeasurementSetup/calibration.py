@@ -68,29 +68,46 @@ class Calibration:
             np.savetxt(os.path.join(self.calibration_directory,calibration_curve_filename), calib_curve)
 
 
-    def add_amplifier(self, amplifier_name, amplifier_id, frequencies, frequency_response, calibration_curve):
+
+    def add_amplifier(self, amplifier_name, amplifier_id, frequencies, frequency_response, calibration_curve, amplifier_gain = 1):
         min_freq = frequencies[0]
         max_freq = frequencies[-1]
-        self.calibration_data_info[amplifier_name] = {"ID": amplifier_id,"min_freq":min_freq,"max_freq": max_freq, "frequency_response_filename": "{0}_{1}.dat".format(amplifier_name,"freq_resp"), "calibration_curve_filename": "{0}_{1}.dat".format(amplifier_name,"calibration_curve")}
+        self.calibration_data_info[amplifier_name] = {"ID": amplifier_id,"gain": amplifier_gain,"min_freq":min_freq,"max_freq": max_freq, "frequency_response_filename": "{0}_{1}.dat".format(amplifier_name,"freq_resp"), "calibration_curve_filename": "{0}_{1}.dat".format(amplifier_name,"calibration_curve")}
         freq_resp_interp = interp1d(frequencies, frequency_response)
         calibr_interp = interp1d(frequencies, calibration_curve)
         frequency_response = np.vstack((frequencies, frequency_response))
         calibration_curve = np.vstack((frequencies, calibration_curve))
         self.calibration_data[amplifier_name] = {"frequency_response":frequency_response, "freq_response_interp": freq_resp_interp,  "calibration_curve": calibration_curve, "calib_interp": calibr_interp}
 
-    def _apply_calibration(self, amplifier, gain, spectrum_data):
-        freq, data = spectrum_data
-        calibration_curve = self.calibration_data[amplifier]["calib_interp"](freq)
-        freq_response_sqr = self.calibration_data[amplifier]["freq_response_interp"](freq)
-        gain_sqr = gain*gain
-        result = data/(gain_sqr*freq_response_sqr) - calibration_curve
-        return result
+    #def _apply_calibration(self, amplifier, gain, spectrum_data):
+    #    freq, data = spectrum_data
+    #    calibration_curve = self.calibration_data[amplifier]["calib_interp"](freq)
+    #    freq_response_sqr = self.calibration_data[amplifier]["freq_response_interp"](freq)
+    #    gain_sqr = gain*gain
+    #    result = data/(gain_sqr*freq_response_sqr) - calibration_curve
+    #    return result
 
+    def get_amplifier_gain(self,amplifier):
+        return self.calibration_data_info[amplifier]["gain"]
 
+    def set_amplifier_gain(self, amplifier, gain):
+        self.calibration_data_info[amplifier]["gain"] = gain
 
     def apply_calibration(self, noise_spectrum):
+        frequencies, data = noise_spectrum
+        preamp_calibration_curve =  self.calibration_data["preamp"]["calib_interp"](frequencies)
+        preamp_gain = self.get_amplifier_gain("preamp")**2
+        preamp_freq_response_sqr = self.calibration_data["preamp"]["freq_response_interp"](frequencies)*preamp_gain
+        
 
-        return noise_spectrum
+        second_amp_calibration_curve = self.calibration_data["second_amp"]["calib_interp"](frequencies)
+        second_amp_gain = self.get_amplifier_gain("second_amp")**2
+        second_amp_freq_response_sqr = self.calibration_data["second_amp"]["freq_response_interp"](frequencies)*second_amp_gain
+        
+        real_spectrum = (data/second_amp_freq_response_sqr - second_amp_calibration_curve)/ preamp_freq_response_sqr - preamp_calibration_curve
+
+         
+        return real_spectrum
 
     #def divide_by_amplification_coefficient(self,
     
@@ -113,17 +130,32 @@ def add_amplifiers():
     second_amp_calib_curve = np.loadtxt(h0n_file)
     second_amp_freq_resp = np.loadtxt(k2n_file)
 
-    c.add_amplifier("preamp", 0, frequencies, preamp_freq_resp, preamp_calib_curve)
-    c.add_amplifier("second_amp",1,frequencies, second_amp_freq_resp,second_amp_calib_curve)
+    c.add_amplifier("preamp", 0, frequencies, preamp_freq_resp, preamp_calib_curve, 178)
+    c.add_amplifier("second_amp",1,frequencies, second_amp_freq_resp,second_amp_calib_curve, 100)
     c.save_calibration_data()
 
 def load_amplifiers():
     dir = os.path.dirname(__file__)
     c = Calibration(os.path.join(dir,"calibration_data"))
 
-if __name__ == "__main__":
-    add_amplifiers()
+def test_calibration():
+    dir = os.path.dirname(__file__)
+    c = Calibration(os.path.join(dir,"calibration_data"))
 
-    load_amplifiers()
+    n = 10000
+    frequency = np.linspace(1,102400, n)
+    data = np.random.rand(n)
+    print(data)
+    res = c.apply_calibration((frequency,data))
+    print(res)
+
+
+
+if __name__ == "__main__":
+    #add_amplifiers()
+
+    #load_amplifiers()
+
+    test_calibration()
 
     
