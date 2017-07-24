@@ -32,8 +32,8 @@ FANS_POLARITY_CHANGE_VOLTAGE = (-5,5)
 FANS_NEGATIVE_POLARITY,FANS_POSITIVE_POLARITY = FANS_POLARITY_CHANGE_VOLTAGE
  
 
-X0_VOLTAGE_SET = 0.01
-POWER_VOLTAGE_SET = 5
+X0_VOLTAGE_SET = 0.05
+POWER_VOLTAGE_SET = 3
 
 
 def voltage_setting_function(current_value, set_value, fine_tuning = False):
@@ -55,7 +55,7 @@ def voltage_setting_function(current_value, set_value, fine_tuning = False):
         return sign*MIN_MOVING_VOLTAGE
     else:
         diff = math.fabs(current_value-set_value)
-        return MAX_MOVING_VOLTAGE + (MIN_MOVING_VOLTAGE-MAX_MOVING_VOLTAGE)/(1+math.pow(diff/X0_VOLTAGE_SET,POWER_VOLTAGE_SET))
+        return sign*(MAX_MOVING_VOLTAGE + (MIN_MOVING_VOLTAGE-MAX_MOVING_VOLTAGE)/(1+math.pow(diff/X0_VOLTAGE_SET,POWER_VOLTAGE_SET)))
         
 
         #try:
@@ -303,8 +303,8 @@ class FANS_SMU:
         assert isinstance(output_channel, FANS_AO_channel)
 
         #set read averaging to small value for fast acquisition
-        coarse_averaging = 10
-        fine_averaging = 1000
+        coarse_averaging = 5
+        fine_averaging = 10000
         stabilization_counter = 200
 
         self.set_analog_read_averaging(coarse_averaging)
@@ -340,14 +340,15 @@ class FANS_SMU:
                 output_channel.ao_voltage = 0
                 self.set_analog_read_averaging(fine_averaging)
                 current_value = self.analog_read(feedback_channel)
-                if current_value < VoltageSetError:
+                abs_distance = math.fabs(current_value - voltage)
+                if abs_distance < VoltageSetError:
                     return True
                 #for i in range(stabilization_counter):
                 #    current_value = self.analog_read(feedback_channel)
                 self.set_analog_read_averaging(coarse_averaging)
 
 
-            elif abs_distance < VoltageTuningInterval: #FANS_VOLTAGE_FINE_TUNING_INTERVAL:
+            elif abs_distance < VoltageTuningInterval or fine_tuning: #FANS_VOLTAGE_FINE_TUNING_INTERVAL:
                 fine_tuning = True
                 value_to_set = voltage_setting_function(current_value,voltage,True)
             
@@ -414,7 +415,7 @@ class HybridSMU_System(FANS_SMU):
 
     def set_analog_read_averaging(self, averaging):
         #raise BaseException("NotImplementedError")
-        for k,v in self._multimeters:
+        for k,v in self._multimeters.items():
             assert isinstance(v, HP34401A)
             v.set_averaging(averaging)
 
@@ -448,25 +449,27 @@ if __name__ == "__main__":
     smu = FANS_SMU(f, AO_BOX_CHANNELS.ao_ch_1, AO_BOX_CHANNELS.ao_ch_4, AI_CHANNELS.AI_101, AO_BOX_CHANNELS.ao_ch_9, AO_BOX_CHANNELS.ao_ch_12, AI_CHANNELS.AI_102, AI_CHANNELS.AI_103, 5000)
 
     mult1 = HP34401A("GPIB0::23::INSTR")
+    mult1.set_nplc(0.1)
     mult2 = HP34401A("GPIB0::22::INSTR")
+    mult2.set_nplc(0.1)
 
     smu_h = HybridSMU_System(f, AO_BOX_CHANNELS.ao_ch_1, AO_BOX_CHANNELS.ao_ch_4, mult1, AO_BOX_CHANNELS.ao_ch_9, AO_BOX_CHANNELS.ao_ch_12, mult2, mult2, 5000)
 
     print(smu_h.analog_read([0,1,2]))
 
-    smu_h.set_drain_source_polarity_negativ()
-    time.sleep(1)
-    smu_h.set_drain_source_polarity_positiv()
-    time.sleep(1)
+    #smu_h.set_drain_source_polarity_negativ()
+    #time.sleep(1)
+    #smu_h.set_drain_source_polarity_positiv()
+    #time.sleep(1)
 
-    smu_h.set_gate_polarity_negativ()
-    time.sleep(1)
-    smu_h.set_gate_polarity_positiv()
-    time.sleep(1)
+    #smu_h.set_gate_polarity_negativ()
+    #time.sleep(1)
+    #smu_h.set_gate_polarity_positiv()
+    #time.sleep(1)
 
 
     try:
-        smu_h.smu_set_drain_source_voltage(0.1)
+        smu_h.smu_set_drain_source_voltage(0.2)
         for vg in np.arange(-0.3,0.2,0.05):
           print("setting gate")
           smu_h.smu_set_gate_voltage(vg)
