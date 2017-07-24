@@ -305,6 +305,8 @@ class FANS_SMU:
         #set read averaging to small value for fast acquisition
         coarse_averaging = 10
         fine_averaging = 1000
+        stabilization_counter = 200
+
         self.set_analog_read_averaging(coarse_averaging)
 
         prev_value = self.analog_read(feedback_channel)
@@ -332,18 +334,24 @@ class FANS_SMU:
 
             value_to_set = voltage_setting_function(current_value,voltage)
             abs_distance = math.fabs(current_value - voltage)
-            if abs_distance < VoltageTuningInterval: #FANS_VOLTAGE_FINE_TUNING_INTERVAL:
-                fine_tuning = True
-                value_to_set = voltage_setting_function(current_value,voltage,True)
-            
+
             if abs_distance < VoltageSetError and fine_tuning: #FANS_VOLTAGE_SET_ERROR and fine_tuning:
                 # set high averaging, moving voltage to 0 and check condition again count times if is of return true if not repeat adjustment
                 output_channel.ao_voltage = 0
                 self.set_analog_read_averaging(fine_averaging)
-                
+                current_value = self.analog_read(feedback_channel)
+                if current_value < VoltageSetError:
+                    return True
+                #for i in range(stabilization_counter):
+                #    current_value = self.analog_read(feedback_channel)
                 self.set_analog_read_averaging(coarse_averaging)
 
-                return True
+
+            elif abs_distance < VoltageTuningInterval: #FANS_VOLTAGE_FINE_TUNING_INTERVAL:
+                fine_tuning = True
+                value_to_set = voltage_setting_function(current_value,voltage,True)
+            
+            
             
             if polarity_switched:
                 abs_value = math.fabs(value_to_set)
