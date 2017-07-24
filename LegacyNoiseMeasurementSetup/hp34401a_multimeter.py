@@ -45,7 +45,7 @@ class HP34401A(VisaInstrument):
         self.write("INIT")
 
     def set_averaging(self,averaging):
-        raise NotImplementedError()
+        self.set_trigger_count(averaging)
 
     @instrument_await_function
     def read_voltage(self):

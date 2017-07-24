@@ -413,10 +413,11 @@ class HybridSMU_System(FANS_SMU):
             return {ch: self.analog_read_channel(ch) for ch in channels}
 
     def set_analog_read_averaging(self, averaging):
-        raise BaseException("NotImplementedError")
+        #raise BaseException("NotImplementedError")
         for k,v in self._multimeters:
             assert isinstance(v, HP34401A)
             v.set_averaging(averaging)
+
 
 class ManualSMU(FANS_SMU):
     def __init__(self, fans_controller, drain_source_motor, drain_source_relay, gate_motor, gate_relay, load_resistance):
