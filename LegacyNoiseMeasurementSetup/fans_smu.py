@@ -8,7 +8,7 @@ import numpy as np
 from hp34401a_multimeter import HP34401A,HP34401A_FUNCTIONS
 
 
-MIN_MOVING_VOLTAGE = 0.4
+MIN_MOVING_VOLTAGE = 0.3
 MAX_MOVING_VOLTAGE = 6
 VALUE_DIFFERENCE = MAX_MOVING_VOLTAGE-MIN_MOVING_VOLTAGE
 FD_CONST = -0.1
@@ -24,7 +24,7 @@ p = 3
 FANS_VOLTAGE_FINE_TUNING_INTERVAL_FUNCTION = lambda error: A2 + (A1 - A2)/(1+math.pow(error/X0,p))
 
 
-FANS_ZERO_VOLTAGE_INTERVAL = 0.02#0.005
+FANS_ZERO_VOLTAGE_INTERVAL = 0.01#0.005
 
 FANS_VOLTAGE_SET_MAXITER = 10000
 
@@ -32,7 +32,7 @@ FANS_POLARITY_CHANGE_VOLTAGE = (-5,5)
 FANS_NEGATIVE_POLARITY,FANS_POSITIVE_POLARITY = FANS_POLARITY_CHANGE_VOLTAGE
  
 
-X0_VOLTAGE_SET = 0.05
+X0_VOLTAGE_SET = 0.1
 POWER_VOLTAGE_SET = 3
 
 
@@ -303,8 +303,8 @@ class FANS_SMU:
         assert isinstance(output_channel, FANS_AO_channel)
 
         #set read averaging to small value for fast acquisition
-        coarse_averaging = 5
-        fine_averaging = 10000
+        coarse_averaging = 1
+        fine_averaging = 50
         stabilization_counter = 200
 
         self.set_analog_read_averaging(coarse_averaging)
@@ -338,14 +338,26 @@ class FANS_SMU:
             if abs_distance < VoltageSetError and fine_tuning: #FANS_VOLTAGE_SET_ERROR and fine_tuning:
                 # set high averaging, moving voltage to 0 and check condition again count times if is of return true if not repeat adjustment
                 output_channel.ao_voltage = 0
-                self.set_analog_read_averaging(fine_averaging)
-                current_value = self.analog_read(feedback_channel)
-                abs_distance = math.fabs(current_value - voltage)
-                if abs_distance < VoltageSetError:
+                condition_sattisfied = True
+                for i in range(fine_averaging):
+                    current_value = self.analog_read(feedback_channel)
+                    abs_distance = math.fabs(current_value - voltage)
+
+                    print("current distanse: {0}, trust_error: {1}, count: {2}, value: {3}".format(abs_distance, VoltageSetError, i, current_value))
+                    if abs_distance > VoltageSetError:
+                        condition_sattisfied = False
+                        break
+
+                if condition_sattisfied:
                     return True
-                #for i in range(stabilization_counter):
-                #    current_value = self.analog_read(feedback_channel)
-                self.set_analog_read_averaging(coarse_averaging)
+                #self.set_analog_read_averaging(fine_averaging)
+                #current_value = self.analog_read(feedback_channel)
+                #abs_distance = math.fabs(current_value - voltage)
+                #if abs_distance < VoltageSetError:
+                #    return True
+                ##for i in range(stabilization_counter):
+                ##    current_value = self.analog_read(feedback_channel)
+                #self.set_analog_read_averaging(coarse_averaging)
 
 
             elif abs_distance < VoltageTuningInterval or fine_tuning: #FANS_VOLTAGE_FINE_TUNING_INTERVAL:

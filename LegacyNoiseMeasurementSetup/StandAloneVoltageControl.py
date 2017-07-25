@@ -139,7 +139,7 @@ class VoltageControlView(mainViewBase,mainViewForm):
         if not self._initialized:
             return
         print("setting gs value clicked")
-        value = self.ui_ds_value.value()
+        value = self.ui_gs_value.value()
         self._fans_smu.smu_set_gate_voltage(value)
 
 
