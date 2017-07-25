@@ -1,6 +1,7 @@
-﻿from os.path import join
+﻿from os.path import join, isfile
+
 import numpy as np
-from measurement_data_structures import MeasurementInfo
+from measurement_data_structures import MeasurementInfo,generate_measurement_info_filename
 
 #class MeasurementProperty:
 #    def __init__(self):
@@ -59,10 +60,14 @@ class ExperimentWriter():
         if self._experiment_file: 
             self.close_experiment()
         
+        file_exists = False
         self._experiment_name = experiment_name
         filepath = join(self._working_directory, "{0}.{1}".format(self._experiment_name,self.__experiment_file_extension))
-        self._experiment_file = open(filepath, 'wb')
-        self._write_experiment_header()
+        file_exists = isfile(filepath)
+        self._experiment_file = open(filepath, 'ab')
+        
+        if not file_exists:
+            self._write_experiment_header()
 
 
     def close_experiment(self):
@@ -77,7 +82,7 @@ class ExperimentWriter():
 
         self._measurement_name = measurement_name
         self._measurement_counter = measurement_counter
-        filepath = join(self._working_directory, "{0}_{1}.{2}".format(self._measurement_name,self._measurement_counter, self.__measurement_file_extension))
+        filepath = join(self._working_directory, generate_measurement_info_filename(self._measurement_name,self._measurement_counter, self.__measurement_file_extension))
         self._measurement_file = open(filepath,"wb")
         self._write_measurement_header()
 

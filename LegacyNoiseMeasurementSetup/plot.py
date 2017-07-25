@@ -21,7 +21,7 @@ class SpectrumPlotWidget:
         self.spectrum_ranges = spectrum_ranges
         
         self.main_curve_color = pg.mkColor("b")
-        self.resulting_curve_color = pg.mkColor("c")
+        self.resulting_curve_color = pg.mkColor("r")
         self.curves = {}
 
         self.create_plot()

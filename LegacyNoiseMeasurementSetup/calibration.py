@@ -107,7 +107,7 @@ class Calibration:
         real_spectrum = (data/second_amp_freq_response_sqr - second_amp_calibration_curve)/ preamp_freq_response_sqr - preamp_calibration_curve
 
          
-        return real_spectrum
+        return np.vstack((frequencies,real_spectrum))
 
     #def divide_by_amplification_coefficient(self,
     

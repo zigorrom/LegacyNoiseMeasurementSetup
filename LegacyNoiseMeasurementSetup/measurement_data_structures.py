@@ -1,8 +1,12 @@
 
+def generate_measurement_info_filename(measurement_name, measurement_count, file_extension = "dat"):
+    return "{0}_{1}.{2}".format(measurement_name,measurement_count, file_extension)
+
 class MeasurementInfo:
-    def __init__(self, measurement_filename = "", measurement_count = 0):
+    def __init__(self, measurement_filename = "", measurement_count = 0,file_extension = "dat"):
         self._measurement_filename = measurement_filename
         self._measurement_count = measurement_count
+        self._measurement_file_extension = file_extension
 
         self._measured_temp_start = 0
         self._measured_temp_end = 0
@@ -109,7 +113,7 @@ class MeasurementInfo:
         list = [self.start_sample_voltage, 
                 self._sample_current_start,
                 self._equivalent_resistance_start,
-                self.measurement_filename,
+                generate_measurement_info_filename(self.measurement_filename, self.measurement_count,self._measurement_file_extension),
                 None,
                 self.end_main_voltage,
                 self.start_sample_voltage,

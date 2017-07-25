@@ -1,4 +1,5 @@
 ﻿import sys
+import os
 from nodes import ExperimentSettings, ValueRange, HardwareSettings
 from configuration import Configuration
 from hp34401a_multimeter import HP34401A,HP34401A_FUNCTIONS
@@ -248,6 +249,7 @@ class ExperimentHandler(Process):
         
         self._experiment.initialize_settings(cfg)
         self._experiment.initialize_hardware()
+        self._experiment.initialize_calibration()
         self._experiment.perform_experiment()
 
 class Measurement:
@@ -345,7 +347,8 @@ class Experiment:
         self.__main_gate_multimeter = HP34401A(self.__hardware_settings.main_gate_multimeter_resource)
     
     def initialize_calibration(self):
-        self._calibration = Calibration()
+        dir = os.path.dirname(__file__)
+        self._calibration = Calibration(os.path.join(dir,"calibration_data"))
    
 
     def get_meas_ranges(self):
@@ -518,14 +521,14 @@ class Experiment:
             q.put_nowait(result) 
             
     def update_resulting_spectrum(self):
-        freq, data = self.get_resulting_spectrum()
+        freq, data = spectrum = self.get_resulting_spectrum()
 
         result = {COMMAND: ExperimentCommands.SPECTRUM_DATA, FREQUENCIES: freq, DATA: data}
         q = self._input_data_queue
         if q:
             q.put_nowait(result)
 
-        return (freq,data)
+        return spectrum
 
     def get_resulting_spectrum(self):
         list_of_spectrum_slices = []
@@ -538,7 +541,11 @@ class Experiment:
             list_of_frequency_slices.append(freq)
         result_freq = np.hstack(list_of_frequency_slices)
         result_data = np.hstack(list_of_spectrum_slices)
-        return (result_freq,result_data)
+        data = np.vstack((result_freq,result_data))
+        if self._calibration:
+            data = self._calibration.apply_calibration(data)
+
+        return data #(result_freq,result_data)
         #frequencies = np.vstack(
 
     def generate_experiment_function(self):
@@ -595,14 +602,19 @@ class SimulateExperiment(Experiment):
         max_counter = 100
         
         while counter < max_counter: #(not need_exit()) and counter < max_counter:
-            data = 10**-9 * np.random.random(1600)
+            data = 10**-3 * np.random.random(1600)
             self.update_spectrum(data,0)
             self.update_spectrum(data,1)
             counter+=1
             time.sleep(0.02)
         
         #frequency, spectrum = self.update_resulting_spectrum()
-        data = np.vstack(self.update_resulting_spectrum()).transpose()
+        data = self.update_resulting_spectrum()
+        #data = np.vstack(self.update_resulting_spectrum()).transpose()
+        #freq,spectrum = np.vstack(self.update_resulting_spectrum()).transpose()
+        
+
+        data = data.transpose()
         self._experiment_writer.write_measurement(data)   ##.write_measurement()
         self._experiment_writer.write_measurement_info(self._measurement_info)
         #self.get_resulting_spectrum()
@@ -650,6 +662,7 @@ if __name__ == "__main__":
     exp = SimulateExperiment(None,None)
     exp.initialize_settings(cfg)
     exp.initialize_hardware()
+    exp.initialize_calibration()
 
     exp.perform_experiment()
 
