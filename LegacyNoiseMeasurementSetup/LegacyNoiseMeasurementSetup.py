@@ -19,6 +19,8 @@ class StatusObject(QtCore.QObject):
     value_changed = QtCore.pyqtSignal(str,object)
     multiple_param_changed = QtCore.pyqtSignal(dict)
     measurement_info_changed = QtCore.pyqtSignal(MeasurementInfo)
+    refresh_measurement_start_data = QtCore.pyqtSignal(MeasurementInfo)
+    refresh_measurement_end_data = QtCore.pyqtSignal(MeasurementInfo)
 
     def __init__(self):
         super().__init__()
@@ -31,6 +33,12 @@ class StatusObject(QtCore.QObject):
 
     def send_measurement_info_changed(self, measurement_info):
         self.measurement_info_changed.emit(measurement_info)
+
+    def send_refresh_measurement_start_data(self, measurement_info):
+        self.refresh_measurement_start_data.emit(measurement_info)
+
+    def send_refresh_measurement_end_data(self, measurement_info):
+        self.refresh_measurement_end_data.emit(measurement_info)
 
     def send_multiple_param_changed(self, params):
         self.multiple_param_changed.emit(params)
@@ -52,6 +60,7 @@ class MainView(mainViewBase,mainViewForm):
        self._status_object = StatusObject()
        self._status_object.message_arrived.connect(self._on_message_arrived)
        self._status_object.value_changed.connect(self._on_parameter_changed)
+       
        self._status_object.measurement_info_changed.connect(self._on_measurement_info_changed)
        self._status_object.multiple_param_changed.connect(self._on_multiple_param_changed)
 
@@ -109,7 +118,13 @@ class MainView(mainViewBase,mainViewForm):
         self._settings.measurement_count = measurement_counter
         #print("setting measurement counter {0}".format(measurement_counter))
         #self.ui_measurementCount.setValue(int(measurement_counter))
-        
+    
+    def  _on_refresh_measurement_start_data(self, measurement_info):
+        pass
+      
+    def  _on_refresh_measurement_end_data(self, measurement_info):
+        pass
+
     def _on_measurement_info_changed(self, measurement_info):
         print("measurement info changed")
         if isinstance(measurement_info, MeasurementInfo):
