@@ -47,6 +47,8 @@ class MainView(mainViewBase,mainViewForm):
        rootNode = self._config.get_node_from_path("Settings")#Node("settings")
        self.setSettings(rootNode)
        self.setupPlots()
+
+
        self._status_object = StatusObject()
        self._status_object.message_arrived.connect(self._on_message_arrived)
        self._status_object.value_changed.connect(self._on_parameter_changed)
@@ -58,15 +60,14 @@ class MainView(mainViewBase,mainViewForm):
 
     def setupFolderBrowseButton(self):
         self.popMenu = QtGui.QMenu(self)
-        self.selected_folder_context_menu_item= QtGui.QAction(self)
-        
+        self.selected_folder_context_menu_item = QtGui.QAction(self)
+        self.selected_folder_context_menu_item.triggered.connect(self.on_open_folder_in_explorer)
         self.popMenu.addAction(self.selected_folder_context_menu_item)
         self.popMenu.addSeparator()
 
-        open_folder_action = QtGui.QAction("Open in explorer...",self)
-        open_folder_action.triggered.connect(self.on_open_folder_in_explorer)
-
-        self.popMenu.addAction(open_folder_action)
+        #open_folder_action = QtGui.QAction("Open in explorer...",self)
+        #open_folder_action.triggered.connect(self.on_open_folder_in_explorer)
+        #self.popMenu.addAction(open_folder_action)
         
         self.folderBrowseButton.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.folderBrowseButton.customContextMenuRequested.connect(self.on_folder_browse_button_context_menu)
@@ -157,7 +158,6 @@ class MainView(mainViewBase,mainViewForm):
        assert isinstance(settings,ExperimentSettings)
        self._settings = settings
        self._viewModel = SettingsModel(rootNode)
-       
        self._dataMapper = QtGui.QDataWidgetMapper()
        self._dataMapper.setModel(self._viewModel)
        self._dataMapper.addMapping(self.ui_experimentName ,1)
@@ -185,8 +185,7 @@ class MainView(mainViewBase,mainViewForm):
        self._dataMapper.addMapping(self.ui_drain_source_voltage ,23)
        self._dataMapper.addMapping(self.ui_use_automated_voltage_control, 24)
        self._dataMapper.addMapping(self.ui_simulate, 25)
-       
-       QtCore.QObject.connect(self._viewModel, QtCore.SIGNAL("dataChanged(QModelIndex, QModelIndex)"), self.on_data_changed)
+       #QtCore.QObject.connect(self._viewModel, QtCore.SIGNAL("dataChanged(QModelIndex, QModelIndex)"), self.on_data_changed)
        self._dataMapper.toFirst()
        
        self.set_selected_folder_context_menu_item_text(self._settings.working_directory)
@@ -283,7 +282,6 @@ class MainView(mainViewBase,mainViewForm):
         
         folder_name = os.path.abspath(QtGui.QFileDialog.getExistingDirectory(self, "Select Folder"))
         
-
         msg = QtGui.QMessageBox()
         msg.setIcon(QtGui.QMessageBox.Information)
         msg.setText("This is a message box")
@@ -336,9 +334,6 @@ class HardwareSettingsView(HardwareSettingsBase, HardwareSettingsForm):
         self._dataMapper.addMapping(self.ui_gate_channel ,8,"currentIndex")
 
 
-
-
-
 DUTselectorViewBase, DUTselectorViewForm = uic.loadUiType("UI_TransistorSelector.ui")
 class DUTselectorView(DUTselectorViewBase,DUTselectorViewForm):
     def __init__(self,parent = None):
@@ -387,7 +382,6 @@ class RangeSelectorView(rangeSelectorBase,rangeSelectorForm):
 
     def on_data_changed(self):
         print("range changed")
-        
 
 
 def update():
