@@ -1,4 +1,5 @@
 ﻿import sys
+import os
 import time
 import numpy as np
 from multiprocessing import JoinableQueue
@@ -40,6 +41,8 @@ class MainView(mainViewBase,mainViewForm):
     def __init__(self, parent = None):
        super(mainViewBase,self).__init__(parent)
        self.setupUi(self)
+       self.setupFolderBrowseButton()
+       
        self._config  = Configuration()
        rootNode = self._config.get_node_from_path("Settings")#Node("settings")
        self.setSettings(rootNode)
@@ -53,9 +56,35 @@ class MainView(mainViewBase,mainViewForm):
        self._experiment_controller = ExperimentController(self._spectrumPlotWidget, status_object = self._status_object)
        
 
-    #def _init_status_bar(self):
-    #    self.statusBar = QtGui.QStatusBar()
-    #    self.
+    def setupFolderBrowseButton(self):
+        self.popMenu = QtGui.QMenu(self)
+        self.selected_folder_context_menu_item= QtGui.QAction(self)
+        
+        self.popMenu.addAction(self.selected_folder_context_menu_item)
+        self.popMenu.addSeparator()
+
+        open_folder_action = QtGui.QAction("Open in explorer...",self)
+        open_folder_action.triggered.connect(self.on_open_folder_in_explorer)
+
+        self.popMenu.addAction(open_folder_action)
+        
+        self.folderBrowseButton.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.folderBrowseButton.customContextMenuRequested.connect(self.on_folder_browse_button_context_menu)
+        
+    def set_selected_folder_context_menu_item_text(self,text):
+        self.selected_folder_context_menu_item.setText(text)
+
+    def on_open_folder_in_explorer(self):
+        print("opening folder")
+        print(self._settings.working_directory)
+        request = 'explorer "{0}"'.format(self._settings.working_directory)
+        print(request)
+        os.system(request)
+
+    def on_folder_browse_button_context_menu(self,point):
+        self.popMenu.exec_(self.folderBrowseButton.mapToGlobal(point))
+    
+
     def __ui_set_measurement_info(self, measurement_info):
         print("updating ui")
         print(measurement_info.start_sample_voltage)
@@ -159,6 +188,9 @@ class MainView(mainViewBase,mainViewForm):
        
        QtCore.QObject.connect(self._viewModel, QtCore.SIGNAL("dataChanged(QModelIndex, QModelIndex)"), self.on_data_changed)
        self._dataMapper.toFirst()
+       
+       self.set_selected_folder_context_menu_item_text(self._settings.working_directory)
+
 
     def on_data_changed(self):
         print("view model changed")
@@ -249,7 +281,7 @@ class MainView(mainViewBase,mainViewForm):
     def on_folderBrowseButton_clicked(self):
         print("Select folder")
         
-        folder_name = QtGui.QFileDialog.getExistingDirectory(self, "Select Folder")
+        folder_name = os.path.abspath(QtGui.QFileDialog.getExistingDirectory(self, "Select Folder"))
         
 
         msg = QtGui.QMessageBox()
@@ -262,6 +294,7 @@ class MainView(mainViewBase,mainViewForm):
         retval = msg.exec_()
         if retval and self._settings:
             self._settings.working_directory = folder_name
+            self.set_selected_folder_context_menu_item_text(folder_name)
             
     
     @QtCore.pyqtSlot()

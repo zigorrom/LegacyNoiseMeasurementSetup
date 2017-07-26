@@ -2,25 +2,31 @@ reading file
 name: name, val: Settings, type: <class 'str'>
 converted value: Settings, type:<class 'str'>
 
-name: use_transistor_selector, val: bool:False, type: <class 'str'>
+name: need_measure_temperature, val: bool:False, type: <class 'str'>
 False
 5
 False
 converted value: False, type:<class 'bool'>
 
-name: use_automated_voltage_control, val: bool:False, type: <class 'str'>
-False
-5
-False
-converted value: False, type:<class 'bool'>
-
-name: experiment_name, val: , type: <class 'str'>
-converted value: , type:<class 'str'>
-
-name: measurement_count, val: i:0, type: <class 'str'>
+name: drain_source_voltage, val: i:0, type: <class 'str'>
 converted value: 0, type:<class 'int'>
 
-name: use_homemade_amplifier, val: bool:True, type: <class 'str'>
+name: working_directory, val: D:/Testdata, type: <class 'str'>
+converted value: D:/Testdata, type:<class 'str'>
+
+name: front_gate_voltage, val: i:0, type: <class 'str'>
+converted value: 0, type:<class 'int'>
+
+name: use_automated_voltage_control, val: bool:True, type: <class 'str'>
+True
+4
+True
+converted value: True, type:<class 'bool'>
+
+name: name, val: ExperimentSettings, type: <class 'str'>
+converted value: ExperimentSettings, type:<class 'str'>
+
+name: use_set_vfg_range, val: bool:True, type: <class 'str'>
 True
 4
 True
@@ -29,68 +35,8 @@ converted value: True, type:<class 'bool'>
 name: averages, val: i:100, type: <class 'str'>
 converted value: 100, type:<class 'int'>
 
-name: meas_characteristic_type, val: i:0, type: <class 'str'>
-converted value: 0, type:<class 'int'>
-
-name: need_measure_temperature, val: bool:False, type: <class 'str'>
-False
-5
-False
-converted value: False, type:<class 'bool'>
-
-name: measurement_name, val: , type: <class 'str'>
+name: transistor_list, val: , type: <class 'str'>
 converted value: , type:<class 'str'>
-
-name: simulate_experiment, val: bool:False, type: <class 'str'>
-False
-5
-False
-converted value: False, type:<class 'bool'>
-
-name: working_directory, val: D:/I.Zadorozhnyi/temp, type: <class 'str'>
-converted value: D:/I.Zadorozhnyi/temp, type:<class 'str'>
-
-name: use_set_vfg_range, val: bool:False, type: <class 'str'>
-False
-5
-False
-converted value: False, type:<class 'bool'>
-
-name: calibrate_before_measurement, val: bool:False, type: <class 'str'>
-False
-5
-False
-converted value: False, type:<class 'bool'>
-
-name: name, val: ExperimentSettings, type: <class 'str'>
-converted value: ExperimentSettings, type:<class 'str'>
-
-name: load_resistance, val: i:5000, type: <class 'str'>
-converted value: 5000, type:<class 'int'>
-
-name: meas_gated_structure, val: bool:True, type: <class 'str'>
-True
-4
-True
-converted value: True, type:<class 'bool'>
-
-name: second_amp_coeff, val: i:100, type: <class 'str'>
-converted value: 100, type:<class 'int'>
-
-name: front_gate_voltage, val: i:0, type: <class 'str'>
-converted value: 0, type:<class 'int'>
-
-name: drain_source_voltage, val: i:0, type: <class 'str'>
-converted value: 0, type:<class 'int'>
-
-name: display_refresh, val: i:10, type: <class 'str'>
-converted value: 10, type:<class 'int'>
-
-name: overload_rejecion, val: bool:False, type: <class 'str'>
-False
-5
-False
-converted value: False, type:<class 'bool'>
 
 name: use_second_amplifier, val: bool:True, type: <class 'str'>
 True
@@ -98,20 +44,80 @@ True
 True
 converted value: True, type:<class 'bool'>
 
-name: transistor_list, val: , type: <class 'str'>
-converted value: , type:<class 'str'>
+name: measurement_count, val: i:99, type: <class 'str'>
+converted value: 99, type:<class 'int'>
 
-name: homemade_amp_coeff, val: i:178, type: <class 'str'>
-converted value: 178, type:<class 'int'>
+name: meas_characteristic_type, val: i:0, type: <class 'str'>
+converted value: 0, type:<class 'int'>
 
-name: use_set_vds_range, val: bool:False, type: <class 'str'>
+name: calibrate_before_measurement, val: bool:False, type: <class 'str'>
 False
 5
 False
 converted value: False, type:<class 'bool'>
 
-name: name, val: drain_source_range, type: <class 'str'>
-converted value: drain_source_range, type:<class 'str'>
+name: overload_rejecion, val: bool:False, type: <class 'str'>
+False
+5
+False
+converted value: False, type:<class 'bool'>
+
+name: second_amp_coeff, val: i:100, type: <class 'str'>
+converted value: 100, type:<class 'int'>
+
+name: simulate_experiment, val: bool:True, type: <class 'str'>
+True
+4
+True
+converted value: True, type:<class 'bool'>
+
+name: experiment_name, val: NewExperiment, type: <class 'str'>
+converted value: NewExperiment, type:<class 'str'>
+
+name: load_resistance, val: i:5000, type: <class 'str'>
+converted value: 5000, type:<class 'int'>
+
+name: homemade_amp_coeff, val: i:178, type: <class 'str'>
+converted value: 178, type:<class 'int'>
+
+name: meas_gated_structure, val: bool:True, type: <class 'str'>
+True
+4
+True
+converted value: True, type:<class 'bool'>
+
+name: use_set_vds_range, val: bool:True, type: <class 'str'>
+True
+4
+True
+converted value: True, type:<class 'bool'>
+
+name: display_refresh, val: i:10, type: <class 'str'>
+converted value: 10, type:<class 'int'>
+
+name: measurement_name, val: NewMeasurement, type: <class 'str'>
+converted value: NewMeasurement, type:<class 'str'>
+
+name: use_transistor_selector, val: bool:False, type: <class 'str'>
+False
+5
+False
+converted value: False, type:<class 'bool'>
+
+name: use_homemade_amplifier, val: bool:True, type: <class 'str'>
+True
+4
+True
+converted value: True, type:<class 'bool'>
+
+name: range_mode, val: i:0, type: <class 'str'>
+converted value: 0, type:<class 'int'>
+
+name: start_units, val: i:0, type: <class 'str'>
+converted value: 0, type:<class 'int'>
+
+name: end_value, val: i:1, type: <class 'str'>
+converted value: 1, type:<class 'int'>
 
 name: start_value, val: i:0, type: <class 'str'>
 converted value: 0, type:<class 'int'>
@@ -122,63 +128,157 @@ converted value: 10, type:<class 'int'>
 name: end_units, val: i:0, type: <class 'str'>
 converted value: 0, type:<class 'int'>
 
-name: end_value, val: i:1, type: <class 'str'>
-converted value: 1, type:<class 'int'>
+name: name, val: drain_source_range, type: <class 'str'>
+converted value: drain_source_range, type:<class 'str'>
+
+name: range_mode, val: i:0, type: <class 'str'>
+converted value: 0, type:<class 'int'>
 
 name: start_units, val: i:0, type: <class 'str'>
 converted value: 0, type:<class 'int'>
 
-name: range_mode, val: i:0, type: <class 'str'>
+name: end_value, val: i:1, type: <class 'str'>
+converted value: 1, type:<class 'int'>
+
+name: start_value, val: i:0, type: <class 'str'>
+converted value: 0, type:<class 'int'>
+
+name: points, val: i:10, type: <class 'str'>
+converted value: 10, type:<class 'int'>
+
+name: end_units, val: i:0, type: <class 'str'>
 converted value: 0, type:<class 'int'>
 
 name: name, val: front_gate_range, type: <class 'str'>
 converted value: front_gate_range, type:<class 'str'>
 
-name: start_value, val: i:0, type: <class 'str'>
-converted value: 0, type:<class 'int'>
-
-name: points, val: i:10, type: <class 'str'>
-converted value: 10, type:<class 'int'>
-
-name: end_units, val: i:0, type: <class 'str'>
-converted value: 0, type:<class 'int'>
-
-name: end_value, val: i:1, type: <class 'str'>
-converted value: 1, type:<class 'int'>
-
-name: start_units, val: i:0, type: <class 'str'>
-converted value: 0, type:<class 'int'>
-
-name: range_mode, val: i:0, type: <class 'str'>
-converted value: 0, type:<class 'int'>
-
 name: name, val: HardwareSettings, type: <class 'str'>
 converted value: HardwareSettings, type:<class 'str'>
 
-name: gate_potentiometer_channel, val: i:0, type: <class 'str'>
-converted value: 0, type:<class 'int'>
-
 name: arduino_controller_resource, val: , type: <class 'str'>
-converted value: , type:<class 'str'>
-
-name: dsa_resource, val: , type: <class 'str'>
-converted value: , type:<class 'str'>
-
-name: main_gate_multimeter_resource, val: , type: <class 'str'>
 converted value: , type:<class 'str'>
 
 name: sample_multimeter_resource, val: , type: <class 'str'>
 converted value: , type:<class 'str'>
 
+name: gate_potentiometer_channel, val: i:0, type: <class 'str'>
+converted value: 0, type:<class 'int'>
+
+name: main_gate_multimeter_resource, val: , type: <class 'str'>
+converted value: , type:<class 'str'>
+
 name: sample_potentiometer_channel, val: i:0, type: <class 'str'>
 converted value: 0, type:<class 'int'>
+
+name: dsa_resource, val: , type: <class 'str'>
+converted value: , type:<class 'str'>
 
 ['Settings', 'ExperimentSettings']
 ['Settings', 'ExperimentSettings']
 ['Settings', 'HardwareSettings']
+simulating hardware init
 True
 0
 False
 ['front_gate_range']
 ['drain_source_range']
-performing single measurement
+simulating single measurement vds:0 vg:0
+simulating single measurement vds:0.111111 vg:0
+simulating single measurement vds:0.222222 vg:0
+simulating single measurement vds:0.333333 vg:0
+simulating single measurement vds:0.444444 vg:0
+simulating single measurement vds:0.555555 vg:0
+simulating single measurement vds:0.666666 vg:0
+simulating single measurement vds:0.777777 vg:0
+simulating single measurement vds:0.888888 vg:0
+simulating single measurement vds:0.999999 vg:0
+simulating single measurement vds:0 vg:0.111111
+simulating single measurement vds:0.111111 vg:0.111111
+simulating single measurement vds:0.222222 vg:0.111111
+simulating single measurement vds:0.333333 vg:0.111111
+simulating single measurement vds:0.444444 vg:0.111111
+simulating single measurement vds:0.555555 vg:0.111111
+simulating single measurement vds:0.666666 vg:0.111111
+simulating single measurement vds:0.777777 vg:0.111111
+simulating single measurement vds:0.888888 vg:0.111111
+simulating single measurement vds:0.999999 vg:0.111111
+simulating single measurement vds:0 vg:0.222222
+simulating single measurement vds:0.111111 vg:0.222222
+simulating single measurement vds:0.222222 vg:0.222222
+simulating single measurement vds:0.333333 vg:0.222222
+simulating single measurement vds:0.444444 vg:0.222222
+simulating single measurement vds:0.555555 vg:0.222222
+simulating single measurement vds:0.666666 vg:0.222222
+simulating single measurement vds:0.777777 vg:0.222222
+simulating single measurement vds:0.888888 vg:0.222222
+simulating single measurement vds:0.999999 vg:0.222222
+simulating single measurement vds:0 vg:0.333333
+simulating single measurement vds:0.111111 vg:0.333333
+simulating single measurement vds:0.222222 vg:0.333333
+simulating single measurement vds:0.333333 vg:0.333333
+simulating single measurement vds:0.444444 vg:0.333333
+simulating single measurement vds:0.555555 vg:0.333333
+simulating single measurement vds:0.666666 vg:0.333333
+simulating single measurement vds:0.777777 vg:0.333333
+simulating single measurement vds:0.888888 vg:0.333333
+simulating single measurement vds:0.999999 vg:0.333333
+simulating single measurement vds:0 vg:0.444444
+simulating single measurement vds:0.111111 vg:0.444444
+simulating single measurement vds:0.222222 vg:0.444444
+simulating single measurement vds:0.333333 vg:0.444444
+simulating single measurement vds:0.444444 vg:0.444444
+simulating single measurement vds:0.555555 vg:0.444444
+simulating single measurement vds:0.666666 vg:0.444444
+simulating single measurement vds:0.777777 vg:0.444444
+simulating single measurement vds:0.888888 vg:0.444444
+simulating single measurement vds:0.999999 vg:0.444444
+simulating single measurement vds:0 vg:0.555555
+simulating single measurement vds:0.111111 vg:0.555555
+simulating single measurement vds:0.222222 vg:0.555555
+simulating single measurement vds:0.333333 vg:0.555555
+simulating single measurement vds:0.444444 vg:0.555555
+simulating single measurement vds:0.555555 vg:0.555555
+simulating single measurement vds:0.666666 vg:0.555555
+simulating single measurement vds:0.777777 vg:0.555555
+simulating single measurement vds:0.888888 vg:0.555555
+simulating single measurement vds:0.999999 vg:0.555555
+simulating single measurement vds:0 vg:0.666666
+simulating single measurement vds:0.111111 vg:0.666666
+simulating single measurement vds:0.222222 vg:0.666666
+simulating single measurement vds:0.333333 vg:0.666666
+simulating single measurement vds:0.444444 vg:0.666666
+simulating single measurement vds:0.555555 vg:0.666666
+simulating single measurement vds:0.666666 vg:0.666666
+simulating single measurement vds:0.777777 vg:0.666666
+simulating single measurement vds:0.888888 vg:0.666666
+simulating single measurement vds:0.999999 vg:0.666666
+simulating single measurement vds:0 vg:0.777777
+simulating single measurement vds:0.111111 vg:0.777777
+simulating single measurement vds:0.222222 vg:0.777777
+simulating single measurement vds:0.333333 vg:0.777777
+simulating single measurement vds:0.444444 vg:0.777777
+simulating single measurement vds:0.555555 vg:0.777777
+simulating single measurement vds:0.666666 vg:0.777777
+simulating single measurement vds:0.777777 vg:0.777777
+simulating single measurement vds:0.888888 vg:0.777777
+simulating single measurement vds:0.999999 vg:0.777777
+simulating single measurement vds:0 vg:0.888888
+simulating single measurement vds:0.111111 vg:0.888888
+simulating single measurement vds:0.222222 vg:0.888888
+simulating single measurement vds:0.333333 vg:0.888888
+simulating single measurement vds:0.444444 vg:0.888888
+simulating single measurement vds:0.555555 vg:0.888888
+simulating single measurement vds:0.666666 vg:0.888888
+simulating single measurement vds:0.777777 vg:0.888888
+simulating single measurement vds:0.888888 vg:0.888888
+simulating single measurement vds:0.999999 vg:0.888888
+simulating single measurement vds:0 vg:0.999999
+simulating single measurement vds:0.111111 vg:0.999999
+simulating single measurement vds:0.222222 vg:0.999999
+simulating single measurement vds:0.333333 vg:0.999999
+simulating single measurement vds:0.444444 vg:0.999999
+simulating single measurement vds:0.555555 vg:0.999999
+simulating single measurement vds:0.666666 vg:0.999999
+simulating single measurement vds:0.777777 vg:0.999999
+simulating single measurement vds:0.888888 vg:0.999999
+simulating single measurement vds:0.999999 vg:0.999999
