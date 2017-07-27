@@ -18,7 +18,7 @@ class StatusObject(QtCore.QObject):
     message_arrived = QtCore.pyqtSignal(str)
     value_changed = QtCore.pyqtSignal(str,object)
     multiple_param_changed = QtCore.pyqtSignal(dict)
-    measurement_info_changed = QtCore.pyqtSignal(MeasurementInfo)
+    #measurement_info_changed = QtCore.pyqtSignal(MeasurementInfo)
     refresh_measurement_start_data = QtCore.pyqtSignal(MeasurementInfo)
     refresh_measurement_end_data = QtCore.pyqtSignal(MeasurementInfo)
 
@@ -31,8 +31,8 @@ class StatusObject(QtCore.QObject):
     def send_value_changed(self, parameter, value):
         self.value_changed.emit(parameter,value)
 
-    def send_measurement_info_changed(self, measurement_info):
-        self.measurement_info_changed.emit(measurement_info)
+    #def send_measurement_info_changed(self, measurement_info):
+    #    self.measurement_info_changed.emit(measurement_info)
 
     def send_refresh_measurement_start_data(self, measurement_info):
         self.refresh_measurement_start_data.emit(measurement_info)
@@ -64,7 +64,7 @@ class MainView(mainViewBase,mainViewForm):
        self._status_object.refresh_measurement_start_data.connect(self._on_refresh_measurement_start_data)
        self._status_object.refresh_measurement_end_data.connect(self._on_refresh_measurement_end_data)
 
-       self._status_object.measurement_info_changed.connect(self._on_measurement_info_changed)
+       #self._status_object.measurement_info_changed.connect(self._on_measurement_info_changed)
        self._status_object.multiple_param_changed.connect(self._on_multiple_param_changed)
 
        self._experiment_controller = ExperimentController(self._spectrumPlotWidget, status_object = self._status_object)
@@ -98,27 +98,25 @@ class MainView(mainViewBase,mainViewForm):
         self.popMenu.exec_(self.folderBrowseButton.mapToGlobal(point))
     
 
-    def __ui_set_measurement_info(self, measurement_info):
-        print("updating ui")
-        print(measurement_info.start_sample_voltage)
-        print(measurement_info.end_sample_voltage)
-
-        self.sample_voltage_start.setText(str(measurement_info.start_sample_voltage))
-        self.sample_voltage_end.setText(str(measurement_info.end_sample_voltage))
-        
-        self.front_gate_voltage_start.setText(str(measurement_info.start_gate_voltage))
-        self.front_gate_voltage_end.setText(str(measurement_info.end_gate_voltage))
+   
+    def __update_view(self):
+        self._viewModel.layoutChanged.emit()
 
     def __ui_set_measurement_name(self, measurement_name):
         #self.ui_measurementName.setText(measurement_name)
         self._settings.measurement_name = measurement_name
+        self.__update_view()
+        #index = self._viewModel.createIndex(
+        #self._viewModel.index(
 
     def __ui_set_experiment_name(self, experiment_name):
         self._settings.experiment_name = experiment_name
+        self.__update_view()
         #self.ui_experimentName.setText(experiment_name)
 
     def __ui_set_measurement_couter(self,measurement_counter):
         self._settings.measurement_count = measurement_counter
+        self.__update_view()
         #print("setting measurement counter {0}".format(measurement_counter))
         #self.ui_measurementCount.setValue(int(measurement_counter))
     
@@ -132,11 +130,22 @@ class MainView(mainViewBase,mainViewForm):
             self.sample_voltage_end.setText(str(measurement_info.end_sample_voltage))
             self.front_gate_voltage_end.setText(str(measurement_info.end_gate_voltage))
 
-    def _on_measurement_info_changed(self, measurement_info):
-        print("measurement info changed")
-        if isinstance(measurement_info, MeasurementInfo):
-            print("measurement_info :{0}".format(measurement_info))
-            self.__ui_set_measurement_info(measurement_info)
+
+    #def __ui_set_measurement_info(self, measurement_info):
+    #    print("updating ui")
+    #    print(measurement_info.start_sample_voltage)
+    #    print(measurement_info.end_sample_voltage)
+
+    #    self.sample_voltage_start.setText(str(measurement_info.start_sample_voltage))
+    #    self.sample_voltage_end.setText(str(measurement_info.end_sample_voltage))
+        
+    #    self.front_gate_voltage_start.setText(str(measurement_info.start_gate_voltage))
+    #    self.front_gate_voltage_end.setText(str(measurement_info.end_gate_voltage))
+    #def _on_measurement_info_changed(self, measurement_info):
+    #    print("measurement info changed")
+    #    if isinstance(measurement_info, MeasurementInfo):
+    #        print("measurement_info :{0}".format(measurement_info))
+    #        self.__ui_set_measurement_info(measurement_info)
 
     def _on_multiple_param_changed(self, params):
         if isinstance(params,dict):
@@ -301,7 +310,8 @@ class MainView(mainViewBase,mainViewForm):
     @QtCore.pyqtSlot()
     def on_folderBrowseButton_clicked(self):
         print("Select folder")
-        folder_name = os.path.abspath(QtGui.QFileDialog.getExistingDirectory(self, "Select Folder"))
+        
+        folder_name = os.path.abspath(QtGui.QFileDialog.getExistingDirectory(self,caption="Select Folder", directory = self._settings.working_directory))
         
         msg = QtGui.QMessageBox()
         msg.setIcon(QtGui.QMessageBox.Information)

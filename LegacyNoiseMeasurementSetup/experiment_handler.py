@@ -57,9 +57,11 @@ class ExperimentController(QtCore.QObject):
         self._processing_thread.experimentFinished.connect(self._on_experiment_finished)
         self._processing_thread.measurementStarted.connect(self._on_measurement_started)
         self._processing_thread.measurementFinished.connect(self._on_measurement_finished)
-        self._processing_thread.measurementDataArrived.connect(self._on_measurement_info_arrived)
+        #self._processing_thread.measurementDataArrived.connect(self._on_measurement_info_arrived)
+
         self._processing_thread.startMeasurementDataArrived.connect(self._on_start_measurement_info_received)
         self._processing_thread.endMeasurementDataArrived.connect(self._on_end_measurement_info_received)
+        
         self._processing_thread.resulting_spectrum_update.connect(self._on_update_resulting_spectrum)
 
 
@@ -102,10 +104,10 @@ class ExperimentController(QtCore.QObject):
         print("end measurement_info_arrived")
         self._status_object.send_refresh_measurement_end_data(measurement_info)
 
-    def _on_measurement_info_arrived(self,measurement_info):
-        print("measurement_info_arrived")
-        self._status_object.send_measurement_info_changed(measurement_info)
-        #if isinstance(data_dict, dict):
+    #def _on_measurement_info_arrived(self,measurement_info):
+    #    print("measurement_info_arrived")
+    #    self._status_object.send_measurement_info_changed(measurement_info)
+    #    #if isinstance(data_dict, dict):
         #    for k,v in data_dict.items():
                 #self._status_object.send_value_changed(k,v)
 
@@ -450,6 +452,18 @@ class Experiment:
     def switch_transistor(self,transistor):
         raise NotImplementedError()
 
+    def prepare_to_set_voltages(self):
+        raise NotImplementedError()
+
+    def prepare_to_measure_voltages(self):
+        raise NotImplementedError()
+
+    def prepare_to_measure_spectrum(self):
+        raise NotImplementedError()
+
+    def prepare_to_measure_timetrace(self):
+        raise NotImplementedError()
+
     def set_front_gate_voltage(self,voltage):
         raise NotImplementedError()
 
@@ -623,8 +637,8 @@ class SimulateExperiment(Experiment):
         self.open_measurement()
         print("simulating single measurement vds:{0} vg:{1}".format(drain_source_voltage, gate_voltage))
         #self.send_measurement_info()
-        self._measurement_info.start_sample_voltage = 0.1
-        self._measurement_info.start_main_voltage = 0.2
+        self._measurement_info.start_sample_voltage = np.random.random_sample()
+        self._measurement_info.start_main_voltage = np.random.random_sample()
         
         self.send_start_measurement_info()
 
@@ -649,8 +663,8 @@ class SimulateExperiment(Experiment):
         self._experiment_writer.write_measurement_info(self._measurement_info)
         #self.get_resulting_spectrum()
         #self.send_measurement_info()
-        self._measurement_info.end_sample_voltage = 0.2
-        self._measurement_info.end_main_voltage = 0.4
+        self._measurement_info.end_sample_voltage = np.random.random_sample()
+        self._measurement_info.end_main_voltage = np.random.random_sample()
         
         self.send_end_measurement_info()
         
