@@ -58,7 +58,11 @@ class ExperimentController(QtCore.QObject):
         self._processing_thread.measurementStarted.connect(self._on_measurement_started)
         self._processing_thread.measurementFinished.connect(self._on_measurement_finished)
         self._processing_thread.measurementDataArrived.connect(self._on_measurement_info_arrived)
+        self._processing_thread.startMeasurementDataArrived.connect(self._on_start_measurement_info_received)
+        self._processing_thread.endMeasurementDataArrived.connect(self._on_end_measurement_info_received)
         self._processing_thread.resulting_spectrum_update.connect(self._on_update_resulting_spectrum)
+
+
         self._processing_thread.commandReceived.connect(self._command_received)
 
     def __init_experiment_thread(self):
@@ -89,6 +93,14 @@ class ExperimentController(QtCore.QObject):
 
     def _on_measurement_finished(self):
         print("Measurement finished")
+
+    def _on_start_measurement_info_received(self,measurement_info):
+        print("start measurement_info_arrived")
+        self._status_object.send_refresh_measurement_start_data(measurement_info)
+
+    def _on_end_measurement_info_received(self,measurement_info):
+        print("end measurement_info_arrived")
+        self._status_object.send_refresh_measurement_end_data(measurement_info)
 
     def _on_measurement_info_arrived(self,measurement_info):
         print("measurement_info_arrived")
@@ -154,6 +166,8 @@ class ProcessingThread(QtCore.QThread):
     measurementStarted = QtCore.pyqtSignal(dict)
     measurementFinished = QtCore.pyqtSignal()
     measurementDataArrived = QtCore.pyqtSignal(MeasurementInfo)
+    startMeasurementDataArrived = QtCore.pyqtSignal(MeasurementInfo)
+    endMeasurementDataArrived = QtCore.pyqtSignal(MeasurementInfo)
     resulting_spectrum_update = QtCore.pyqtSignal(dict)
 
     def __init__(self, input_data_queue = None,visualization_queue = None, parent = None):
@@ -495,6 +509,12 @@ class Experiment:
     def send_measurement_info(self):
         self._send_command_with_param(ExperimentCommands.MEASUREMENT_INFO, self._measurement_info)
 
+    def send_start_measurement_info(self):
+        self._send_command_with_param(ExperimentCommands.MEASUREMENT_INFO_START, self._measurement_info)
+
+    def send_end_measurement_info(self):
+        self._send_command_with_param(ExperimentCommands.MEASUREMENT_INFO_END, self._measurement_info)
+
     def update_spectrum(self, data,rang = 0, averages = 1):
         #range numeration from 0:   0 - 0 to 1600HZ
         #                           1 - 0 to 102,4KHZ
@@ -596,7 +616,11 @@ class SimulateExperiment(Experiment):
     def single_value_measurement(self, drain_source_voltage, gate_voltage):
         self.open_measurement()
         print("simulating single measurement vds:{0} vg:{1}".format(drain_source_voltage, gate_voltage))
-        self.send_measurement_info()
+        #self.send_measurement_info()
+        self._measurement_info.start_sample_voltage = 0.1
+        self._measurement_info.start_main_voltage = 0.2
+        
+        self.send_start_measurement_info()
 
         counter = 0
         max_counter = 100
@@ -618,7 +642,11 @@ class SimulateExperiment(Experiment):
         self._experiment_writer.write_measurement(data)   ##.write_measurement()
         self._experiment_writer.write_measurement_info(self._measurement_info)
         #self.get_resulting_spectrum()
-        self.send_measurement_info()
+        #self.send_measurement_info()
+        self._measurement_info.end_sample_voltage = 0.2
+        self._measurement_info.end_main_voltage = 0.4
+        
+        self.send_end_measurement_info()
         
         self.close_measurement()
 

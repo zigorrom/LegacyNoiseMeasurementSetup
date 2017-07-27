@@ -61,6 +61,9 @@ class MainView(mainViewBase,mainViewForm):
        self._status_object.message_arrived.connect(self._on_message_arrived)
        self._status_object.value_changed.connect(self._on_parameter_changed)
        
+       self._status_object.refresh_measurement_start_data.connect(self._on_refresh_measurement_start_data)
+       self._status_object.refresh_measurement_end_data.connect(self._on_refresh_measurement_end_data)
+
        self._status_object.measurement_info_changed.connect(self._on_measurement_info_changed)
        self._status_object.multiple_param_changed.connect(self._on_multiple_param_changed)
 
@@ -120,10 +123,14 @@ class MainView(mainViewBase,mainViewForm):
         #self.ui_measurementCount.setValue(int(measurement_counter))
     
     def  _on_refresh_measurement_start_data(self, measurement_info):
-        pass
+        if isinstance(measurement_info, MeasurementInfo):
+            self.sample_voltage_start.setText(str(measurement_info.start_sample_voltage))
+            self.front_gate_voltage_start.setText(str(measurement_info.start_gate_voltage))
       
     def  _on_refresh_measurement_end_data(self, measurement_info):
-        pass
+        if isinstance(measurement_info, MeasurementInfo):
+            self.sample_voltage_end.setText(str(measurement_info.end_sample_voltage))
+            self.front_gate_voltage_end.setText(str(measurement_info.end_gate_voltage))
 
     def _on_measurement_info_changed(self, measurement_info):
         print("measurement info changed")
