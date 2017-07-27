@@ -220,6 +220,12 @@ class ProcessingThread(QtCore.QThread):
                 elif cmd is ExperimentCommands.MEASUREMENT_INFO:
                     self.measurementDataArrived.emit(param)
 
+                elif cmd is ExperimentCommands.MEASUREMENT_INFO_START:
+                    self.startMeasurementDataArrived.emit(param)
+
+                elif cmd is ExperimentCommands.MEASUREMENT_INFO_END:
+                    self.endMeasurementDataArrived.emit(param)
+
                 elif cmd is ExperimentCommands.DATA:
                     self._visualization_queue.append(data)   
                      
