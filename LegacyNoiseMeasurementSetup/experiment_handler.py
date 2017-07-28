@@ -155,6 +155,7 @@ class ExperimentController(QtCore.QObject):
         self._experiment_thread.stop()
         self._experiment_thread.join()
         self._input_data_queue.join()
+        #self._input_data_queue
         self._processing_thread.stop()
         self._running = False
 
@@ -343,7 +344,7 @@ class Experiment:
         for rng, vals in spectrum_ranges.items():
             start,stop,step = vals
             start_freq, stop_freq = linking_frequencies[rng]
-            start_freq_idx =  math.ceil((start_freq-start)/step)
+            start_freq_idx =  math.ceil((start_freq-start)/step) 
             stop_freq_idx = math.floor((stop_freq-start)/step)
             result[rng] = (start_freq_idx, stop_freq_idx)
         return result

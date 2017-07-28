@@ -13,6 +13,12 @@ class SettingsModel(QtCore.QAbstractItemModel):
         super(SettingsModel, self).__init__(parent)
         self._rootNode = root
 
+    def _on_model_changed(self, row, column, parent):
+        index = self.index(row, column,parent)
+        self.dataChanged.emit(index, index)
+
+    #index
+
     """INPUTS: QModelIndex"""
     """OUTPUT: int"""
     def rowCount(self, parent):
