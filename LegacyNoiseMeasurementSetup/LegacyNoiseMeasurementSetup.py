@@ -103,22 +103,23 @@ class MainView(mainViewBase,mainViewForm):
         self._viewModel.layoutChanged.emit()
 
     def __ui_set_measurement_name(self, measurement_name):
-        #self.ui_measurementName.setText(measurement_name)
-        self._settings.measurement_name = measurement_name
-        self.__update_view()
+        self.ui_measurementName.setText(measurement_name)
+        
+        #self._settings.measurement_name = measurement_name
+        #self.__update_view()
         #index = self._viewModel.createIndex(
         #self._viewModel.index(
 
     def __ui_set_experiment_name(self, experiment_name):
-        self._settings.experiment_name = experiment_name
-        self.__update_view()
-        #self.ui_experimentName.setText(experiment_name)
+        #self._settings.experiment_name = experiment_name
+        #self.__update_view()
+        self.ui_experimentName.setText(experiment_name)
 
     def __ui_set_measurement_couter(self,measurement_counter):
-        self._settings.measurement_count = measurement_counter
-        self.__update_view()
+        #self._settings.measurement_count = measurement_counter
+        #self.__update_view()
         #print("setting measurement counter {0}".format(measurement_counter))
-        #self.ui_measurementCount.setValue(int(measurement_counter))
+        self.ui_measurementCount.setValue(int(measurement_counter))
     
     def  _on_refresh_measurement_start_data(self, measurement_info):
         if isinstance(measurement_info, MeasurementInfo):

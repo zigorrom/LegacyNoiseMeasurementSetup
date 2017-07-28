@@ -12,10 +12,13 @@ class SettingsModel(QtCore.QAbstractItemModel):
     def __init__(self, root, parent=None):
         super(SettingsModel, self).__init__(parent)
         self._rootNode = root
+        #if self._rootNode:
+            #self._rootNode.addObserver(
 
     def _on_model_changed(self, row, column, parent):
-        index = self.index(row, column,parent)
-        self.dataChanged.emit(index, index)
+        if isinstance(row,int) and isinstance(column, int):
+            index = self.index(row, column,parent)
+            self.dataChanged.emit(index, index)
 
     #index
 
