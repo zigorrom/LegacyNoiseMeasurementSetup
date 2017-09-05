@@ -5,6 +5,12 @@ from configuration import Configuration
 from hp34401a_multimeter import HP34401A,HP34401A_FUNCTIONS
 from hp35670a_dsa import HP3567A, HP35670A_MODES,HP35670A_CALC, HP35670A_TRACES,HP35670A_INPUTS
 from arduino_controller import ArduinoController
+from fans_smu import HybridSMU_System
+from fans_controller import FANS_AO_channel, FANS_CONTROLLER
+from fans_constants import *
+from hp35670a_dsa import HP3567A
+
+
 from motorized_potentiometer import MotorizedPotentiometer
 import numpy as np
 from n_enum import enum
@@ -689,7 +695,41 @@ class PerformExperiment(Experiment):
         self.gs_mult = HP34401A(resource)
         self._fans_smu = HybridSMU_System(self._fans_controller, AO_BOX_CHANNELS.ao_ch_1, AO_BOX_CHANNELS.ao_ch_4, self.ds_mult, AO_BOX_CHANNELS.ao_ch_9, AO_BOX_CHANNELS.ao_ch_12, self.gs_mult, self.ds_mult, 5000)
         #self._fans_smu = ManualSMU(self._fans_controller, AO_BOX_CHANNELS.ao_ch_1, AO_BOX_CHANNELS.ao_ch_4,AO_BOX_CHANNELS.ao_ch_9, AO_BOX_CHANNELS.ao_ch_12, 5000)
-        
+        resource = "GPIB0::6::INSTR"
+        self.analyzer = HP3567A(resource)
+        self.init_analyzer()
+
+    def init_analyzer(self):
+        dev = self.analyzer
+        dev.abort()
+        dev.calibrate()
+        #dev.set_source_voltage(6.6)
+        #dev.output_state(True)
+        #time.sleep(2)
+        #dev.output_state(False)
+        #print(HP35670A_MODES.FFT)
+        dev.select_instrument_mode(HP35670A_MODES.FFT)
+        dev.switch_input(HP35670A_INPUTS.INP2, False)
+        dev.select_active_traces(HP35670A_CALC.CALC1, HP35670A_TRACES.A)
+        #dev.select_real_format(64)
+        dev.select_ascii_format()
+        dev.select_power_spectrum_function(HP35670A_CALC.CALC1)
+        dev.select_voltage_unit(HP35670A_CALC.CALC1)
+        dev.switch_calibration(False)
+        #dev.set_average_count(50)
+        #dev.set_display_update_rate(1)
+        #dev.set_frequency_resolution(1600)
+        #dev.set_frequency_start(0)
+        #dev.set_frequency_stop(102.4,"KHZ")
+
+        #print(dev.get_points_number(HP35670A_CALC.CALC1))
+
+
+        #dev.init_instrument()
+        #dev.wait_operation_complete()
+
+        #print(dev.get_data(HP35670A_CALC.CALC1))
+        pass
 
     def switch_transistor(self, transistor):
         print("performing switch transistor")
@@ -709,25 +749,52 @@ class PerformExperiment(Experiment):
         self.open_measurement()
         print("performing single measurement")
 
+        #self.set_drain_source_voltage(drain_source_voltage)
+        #self.set_front_gate_voltage(gate_voltage)
+        #self.set_drain_source_voltage(drain_source_voltage)
+
+
         self._measurement_info.start_sample_voltage = np.random.random_sample()
         self._measurement_info.start_main_voltage = np.random.random_sample()
         
         self.send_start_measurement_info()
 
-        counter = 0
-        max_counter = 100
+        screen_update = 10;
+        total_averaging = 100;
+        dev = self.analyzer
+        #self._spectrum_ranges = {0: (1,1600,1),1:(64,102400,64)}
+        for rng, (start,stop,step) in self._spectrum_ranges.items():
+            self.analyzer.set_average_count(screen_update)
+            self.analyzer.set_display_update_rate(screen_update)
+            dev.set_frequency_resolution(step)
+            dev.set_frequency_start(0)
+            dev.set_frequency_stop(102.4,"KHZ")
+
+        #dev.set_average_count(50)
+        #dev.set_display_update_rate(1)
+        #dev.set_frequency_resolution(1600)
+        #dev.set_frequency_start(0)
+        #dev.set_frequency_stop(102.4,"KHZ")
+
+        #print(dev.get_points_number(HP35670A_CALC.CALC1))
+
+
+        #dev.init_instrument()
+        #dev.wait_operation_complete()
+
+        #print(dev.get_data(HP35670A_CALC.CALC1))
+
+
+        #while counter < max_counter: #(not need_exit()) and counter < max_counter:
+        #    data = 10**-3 * np.random.random(1600)
+        #    self.update_spectrum(data,0)
+        #    self.update_spectrum(data,1)
+        #    counter+=1
+        #    time.sleep(0.02)
         
-        while counter < max_counter: #(not need_exit()) and counter < max_counter:
-            data = 10**-3 * np.random.random(1600)
-            self.update_spectrum(data,0)
-            self.update_spectrum(data,1)
-            counter+=1
-            time.sleep(0.02)
         
-        #frequency, spectrum = self.update_resulting_spectrum()
         data = self.update_resulting_spectrum()
-        #data = np.vstack(self.update_resulting_spectrum()).transpose()
-        #freq,spectrum = np.vstack(self.update_resulting_spectrum()).transpose()
+        
         
 
         data = data.transpose()
@@ -744,6 +811,18 @@ class PerformExperiment(Experiment):
 
         self.close_measurement()
 
+
+    #   
+
+
+
+
+
+
+
+
+
+
     def non_gated_single_value_measurement(self, drain_source_voltage):
         self.open_measurement()
         print("performing non gated single measurement")
@@ -755,7 +834,8 @@ class PerformExperiment(Experiment):
 if __name__ == "__main__":
     
     cfg = Configuration()
-    exp = SimulateExperiment(None,None)
+    #exp = SimulateExperiment(None,None)
+    exp = PerformExperiment(None,None)
     exp.initialize_settings(cfg)
     exp.initialize_hardware()
     exp.initialize_calibration()
