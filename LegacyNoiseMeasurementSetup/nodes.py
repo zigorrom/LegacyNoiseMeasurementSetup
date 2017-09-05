@@ -467,6 +467,8 @@ class HardwareSettingsNew(Node):
         self.__gate_relay_channel = 0
 
 
+
+
     def typeInfo(self):
         return "HardwareSettings"
 
