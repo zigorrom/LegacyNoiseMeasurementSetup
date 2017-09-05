@@ -681,20 +681,67 @@ class PerformExperiment(Experiment):
         Experiment.__init__(self,False, input_data_queue, stop_event)  
 
     def initialize_hardware(self):
-        pass
+        resource = "USB0::0x0957::0x1718::TW52524501::INSTR"    #self._gpib_resources[selected_resource]
+        self._fans_controller = FANS_CONTROLLER(resource)
+        resource = "GPIB0::23::INSTR" #self._gpib_resources[selected_resource]
+        self.ds_mult = HP34401A(resource)
+        resource = "GPIB0::22::INSTR"
+        self.gs_mult = HP34401A(resource)
+        self._fans_smu = HybridSMU_System(self._fans_controller, AO_BOX_CHANNELS.ao_ch_1, AO_BOX_CHANNELS.ao_ch_4, self.ds_mult, AO_BOX_CHANNELS.ao_ch_9, AO_BOX_CHANNELS.ao_ch_12, self.gs_mult, self.ds_mult, 5000)
+        #self._fans_smu = ManualSMU(self._fans_controller, AO_BOX_CHANNELS.ao_ch_1, AO_BOX_CHANNELS.ao_ch_4,AO_BOX_CHANNELS.ao_ch_9, AO_BOX_CHANNELS.ao_ch_12, 5000)
+        
 
     def switch_transistor(self, transistor):
         print("performing switch transistor")
 
     def set_front_gate_voltage(self, voltage):
         print("performing setting fg voltage: {0}".format(voltage))
+        self._fans_smu.smu_set_gate_voltage(voltage)
+        print("done setting ds value")
+
     
     def set_drain_source_voltage(self, voltage):
         print("performing setting ds voltage: {0}".format(voltage))
+        self._fans_smu.smu_set_drain_source_voltage(voltage)
+        print("done setting gs value")
 
     def single_value_measurement(self, drain_source_voltage, gate_voltage):
         self.open_measurement()
         print("performing single measurement")
+
+        self._measurement_info.start_sample_voltage = np.random.random_sample()
+        self._measurement_info.start_main_voltage = np.random.random_sample()
+        
+        self.send_start_measurement_info()
+
+        counter = 0
+        max_counter = 100
+        
+        while counter < max_counter: #(not need_exit()) and counter < max_counter:
+            data = 10**-3 * np.random.random(1600)
+            self.update_spectrum(data,0)
+            self.update_spectrum(data,1)
+            counter+=1
+            time.sleep(0.02)
+        
+        #frequency, spectrum = self.update_resulting_spectrum()
+        data = self.update_resulting_spectrum()
+        #data = np.vstack(self.update_resulting_spectrum()).transpose()
+        #freq,spectrum = np.vstack(self.update_resulting_spectrum()).transpose()
+        
+
+        data = data.transpose()
+        self._experiment_writer.write_measurement(data)   ##.write_measurement()
+        self._experiment_writer.write_measurement_info(self._measurement_info)
+        #self.get_resulting_spectrum()
+        #self.send_measurement_info()
+        self._measurement_info.end_sample_voltage = np.random.random_sample()
+        self._measurement_info.end_main_voltage = np.random.random_sample()
+        
+        self.send_end_measurement_info()
+        
+
+
         self.close_measurement()
 
     def non_gated_single_value_measurement(self, drain_source_voltage):

@@ -133,6 +133,7 @@ class VoltageControlView(mainViewBase,mainViewForm):
         print("setting ds value clicked")
         value = self.ui_ds_value.value()
         self._fans_smu.smu_set_drain_source_voltage(value)
+        print("done setting ds value")
 
     @QtCore.pyqtSlot()
     def on_ui_gs_set_value_clicked(self):
@@ -141,6 +142,7 @@ class VoltageControlView(mainViewBase,mainViewForm):
         print("setting gs value clicked")
         value = self.ui_gs_value.value()
         self._fans_smu.smu_set_gate_voltage(value)
+        print("done setting gs value")
 
 
 if __name__ == "__main__":
