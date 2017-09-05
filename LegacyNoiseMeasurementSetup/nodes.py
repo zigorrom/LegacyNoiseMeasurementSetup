@@ -452,6 +452,130 @@ class HardwareSettings(Node):
         elif column is 7: self.sample_potentiometer_channel = value
         elif column is 8: self.gate_potentiometer_channel = value
 
+
+
+class HardwareSettingsNew(Node):
+    def __init__(self, name = 'hardware_settings', parent = None):
+        super().__init__(name, parent)
+        self.__dynamic_signal_analyzer_resource = ""
+        self.__main_sample_multimeter_resource = ""
+        self.__gate_multimeter_resource = ""
+        self.__fans_controller_resource = ""
+        self.__sample_motor_channel = 0
+        self.__sample_relay_channel = 0
+        self.__gate_motor_channel = 0
+        self.__gate_relay_channel = 0
+
+
+    def typeInfo(self):
+        return "HardwareSettings"
+
+    @classmethod
+    def typeInfo(cls):
+        return "HardwareSettings"
+
+
+    #self.__dynamic_signal_analyzer_resource = ""
+    @property
+    def dsa_resource(self):
+        return self.__dynamic_signal_analyzer_resource
+
+    @dsa_resource.setter
+    def dsa_resource(self,value):
+        self.__dynamic_signal_analyzer_resource = value
+
+    
+    #self.__gate_multimeter_resource = ""
+    @property
+    def gate_multimeter_resource(self):
+        return self.__gate_multimeter_resource
+
+    @main_gate_multimeter_resource.setter
+    def gate_multimeter_resource(self,value):
+        self.__gate_multimeter_resource = value
+
+    #self.__main_sample_multimeter_resource = ""
+    @property
+    def main_sample_multimeter_resource(self):
+        return self.__main_sample_multimeter_resource
+    
+    @sample_multimeter_resource.setter
+    def main_sample_multimeter_resource(self,value):
+        self.__main_sample_multimeter_resource = value
+
+    #self.__fans_controller_resource = ""
+    @property
+    def fans_controller_resource(self):
+        return self.__fans_controller_resource
+
+    @fans_controller_resource.setter
+    def fans_controller_resource(self,value):
+        self.__fans_controller_resource = value
+
+    
+   #self.__sample_motor_channel = 0
+    @property
+    def sample_motor_channel(self):
+        return self.__sample_motor_channel
+
+    @sample_motor_channel.setter
+    def sample_motor_channel(self,value):
+        self.__sample_motor_channel = value
+
+
+    #self.__sample_relay_channel = 0
+    @property
+    def sample_relay_channel(self):
+        return self.__sample_relay_channel
+
+    @sample_relay_channel.setter
+    def sample_relay_channel(self,value):
+        self.__sample_relay_channel = value
+
+
+    #self.__gate_motor_channel = 0
+    @property
+    def gate_motor_channel(self):
+        return self.__gate_motor_channel
+
+    @gate_motor_channel.setter
+    def gate_motor_channel(self,value):
+        self.__gate_motor_channel = value
+
+    #self.__gate_relay_channel = 0
+    @property
+    def gate_relay_channel(self):
+        return self.__gate_relay_channel
+
+    @gate_relay_channel.setter
+    def gate_relay_channel(self,value):
+        self.__gate_relay_channel = value
+  
+    def data(self, column):
+        ret = super().data(column)
+        if column is 2: ret = self.dsa_resource
+        elif column is 3: ret = self.main_sample_multimeter_resource
+        elif column is 4: ret = self.gate_multimeter_resource
+        elif column is 5: ret = self.fans_controller_resource
+        elif column is 6: ret = self.sample_motor_channel
+        elif column is 7: ret = self.sample_relay_channel
+        elif column is 8: ret = self.gate_motor_channel
+        elif column is 9: ret = self.gate_relay_channel
+        
+        return ret
+
+    def setData(self, column, value):
+        super().setData(column, value)
+        if column is 2: self.dsa_resource = value
+        elif column is 3: self.main_sample_multimeter_resource = value
+        elif column is 4: self.gate_multimeter_resource = value
+        elif column is 5: self.fans_controller_resource = value
+        elif column is 6: self.sample_motor_channel = value
+        elif column is 7: self.sample_relay_channel = value
+        elif column is 8: self.gate_motor_channel = value
+        elif column is 9: self.gate_relay_channel = value
+        
+
        
 class ValueRange(Node):
     def __init__(self,name = "range", parent = None):
