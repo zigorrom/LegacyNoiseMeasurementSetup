@@ -302,7 +302,7 @@ class Experiment:
         self._data_handler = None
         self._stop_event = stop_event
         self._measurement_info = None
-        self._spectrum_ranges = {0: (1,1600,1),1:(64,102400,64)}
+        self._spectrum_ranges = {0: (0,1600,1),1:(0,102400,64)}
         self._spectrum_linking_frequencies = {0:(1,1600),1:(1600,102400)}
         self._frequencies = self._get_frequencies(self._spectrum_ranges)
         self._frequency_indexes = self._get_frequency_linking_indexes(self._spectrum_ranges, self._spectrum_linking_frequencies)
@@ -589,8 +589,8 @@ class Experiment:
         result_freq = np.hstack(list_of_frequency_slices)
         result_data = np.hstack(list_of_spectrum_slices)
         data = np.vstack((result_freq,result_data))
-        if self._calibration:
-            data = self._calibration.apply_calibration(data)
+        #if self._calibration:
+        #    data = self._calibration.apply_calibration(data)
 
         return data #(result_freq,result_data)
         #frequencies = np.vstack(
@@ -749,9 +749,9 @@ class PerformExperiment(Experiment):
         self.open_measurement()
         print("performing single measurement")
 
-        #self.set_drain_source_voltage(drain_source_voltage)
-        #self.set_front_gate_voltage(gate_voltage)
-        #self.set_drain_source_voltage(drain_source_voltage)
+        self.set_drain_source_voltage(drain_source_voltage)
+        self.set_front_gate_voltage(gate_voltage)
+        self.set_drain_source_voltage(drain_source_voltage)
 
 
         self._measurement_info.start_sample_voltage = np.random.random_sample()
@@ -759,44 +759,34 @@ class PerformExperiment(Experiment):
         
         self.send_start_measurement_info()
 
-        screen_update = 10;
-        total_averaging = 100;
+        counter = 0
+        screen_update = 2;
+        total_averaging = 10;
         dev = self.analyzer
+        
         #self._spectrum_ranges = {0: (1,1600,1),1:(64,102400,64)}
         for rng, (start,stop,step) in self._spectrum_ranges.items():
-            self.analyzer.set_average_count(screen_update)
-            self.analyzer.set_display_update_rate(screen_update)
-            dev.set_frequency_resolution(step)
-            dev.set_frequency_start(0)
-            dev.set_frequency_stop(102.4,"KHZ")
+            dev.set_average_count(screen_update)
+            dev.set_display_update_rate(screen_update)
+            resolution = int(stop/step)
+            dev.set_frequency_resolution(resolution)
+            dev.set_frequency_start(start)
+            dev.set_frequency_stop(stop)
+                
+            print(dev.get_points_number(HP35670A_CALC.CALC1))
+            while counter < total_averaging:
+                dev.init_instrument()
+                dev.wait_operation_complete()
+                data = dev.get_data(HP35670A_CALC.CALC1)
+                self.update_spectrum(data, rng, screen_update)
+                counter += screen_update
 
-        #dev.set_average_count(50)
-        #dev.set_display_update_rate(1)
-        #dev.set_frequency_resolution(1600)
-        #dev.set_frequency_start(0)
-        #dev.set_frequency_stop(102.4,"KHZ")
-
-        #print(dev.get_points_number(HP35670A_CALC.CALC1))
-
-
-        #dev.init_instrument()
-        #dev.wait_operation_complete()
-
-        #print(dev.get_data(HP35670A_CALC.CALC1))
-
-
-        #while counter < max_counter: #(not need_exit()) and counter < max_counter:
-        #    data = 10**-3 * np.random.random(1600)
-        #    self.update_spectrum(data,0)
-        #    self.update_spectrum(data,1)
-        #    counter+=1
-        #    time.sleep(0.02)
+            counter = 0
+                
         
         
         data = self.update_resulting_spectrum()
         
-        
-
         data = data.transpose()
         self._experiment_writer.write_measurement(data)   ##.write_measurement()
         self._experiment_writer.write_measurement_info(self._measurement_info)

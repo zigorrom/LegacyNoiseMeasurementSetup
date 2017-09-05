@@ -2,13 +2,19 @@ reading file
 name: name, val: Settings, type: <class 'str'>
 converted value: Settings, type:<class 'str'>
 
-name: experiment_name, val: NewExperiment, type: <class 'str'>
-converted value: NewExperiment, type:<class 'str'>
+name: overload_rejecion, val: bool:False, type: <class 'str'>
+False
+5
+False
+converted value: False, type:<class 'bool'>
 
-name: load_resistance, val: i:5000, type: <class 'str'>
-converted value: 5000, type:<class 'int'>
+name: calibrate_before_measurement, val: bool:False, type: <class 'str'>
+False
+5
+False
+converted value: False, type:<class 'bool'>
 
-name: simulate_experiment, val: bool:True, type: <class 'str'>
+name: use_second_amplifier, val: bool:True, type: <class 'str'>
 True
 4
 True
@@ -20,59 +26,11 @@ True
 True
 converted value: True, type:<class 'bool'>
 
-name: use_homemade_amplifier, val: bool:True, type: <class 'str'>
-True
-4
-True
-converted value: True, type:<class 'bool'>
-
-name: calibrate_before_measurement, val: bool:False, type: <class 'str'>
-False
-5
-False
-converted value: False, type:<class 'bool'>
-
 name: transistor_list, val: , type: <class 'str'>
 converted value: , type:<class 'str'>
 
-name: meas_characteristic_type, val: i:0, type: <class 'str'>
-converted value: 0, type:<class 'int'>
-
-name: measurement_name, val: SecondExp, type: <class 'str'>
-converted value: SecondExp, type:<class 'str'>
-
-name: use_automated_voltage_control, val: bool:True, type: <class 'str'>
-True
-4
-True
-converted value: True, type:<class 'bool'>
-
-name: working_directory, val: D:\I.Zadorozhnyi\temp\20170905, type: <class 'str'>
-converted value: D:\I.Zadorozhnyi\temp\20170905, type:<class 'str'>
-
-name: use_transistor_selector, val: bool:False, type: <class 'str'>
-False
-5
-False
-converted value: False, type:<class 'bool'>
-
-name: drain_source_voltage, val: i:0, type: <class 'str'>
-converted value: 0, type:<class 'int'>
-
-name: use_set_vfg_range, val: bool:True, type: <class 'str'>
-True
-4
-True
-converted value: True, type:<class 'bool'>
-
-name: front_gate_voltage, val: i:0, type: <class 'str'>
-converted value: 0, type:<class 'int'>
-
-name: second_amp_coeff, val: i:100, type: <class 'str'>
-converted value: 100, type:<class 'int'>
-
-name: name, val: ExperimentSettings, type: <class 'str'>
-converted value: ExperimentSettings, type:<class 'str'>
+name: load_resistance, val: i:5000, type: <class 'str'>
+converted value: 5000, type:<class 'int'>
 
 name: display_refresh, val: i:10, type: <class 'str'>
 converted value: 10, type:<class 'int'>
@@ -80,13 +38,7 @@ converted value: 10, type:<class 'int'>
 name: averages, val: i:100, type: <class 'str'>
 converted value: 100, type:<class 'int'>
 
-name: use_second_amplifier, val: bool:True, type: <class 'str'>
-True
-4
-True
-converted value: True, type:<class 'bool'>
-
-name: overload_rejecion, val: bool:False, type: <class 'str'>
+name: need_measure_temperature, val: bool:False, type: <class 'str'>
 False
 5
 False
@@ -98,22 +50,76 @@ False
 False
 converted value: False, type:<class 'bool'>
 
-name: measurement_count, val: i:80, type: <class 'str'>
-converted value: 80, type:<class 'int'>
+name: measurement_count, val: i:1, type: <class 'str'>
+converted value: 1, type:<class 'int'>
 
-name: need_measure_temperature, val: bool:False, type: <class 'str'>
+name: use_set_vfg_range, val: bool:True, type: <class 'str'>
+True
+4
+True
+converted value: True, type:<class 'bool'>
+
+name: use_automated_voltage_control, val: bool:True, type: <class 'str'>
+True
+4
+True
+converted value: True, type:<class 'bool'>
+
+name: experiment_name, val: NewExperiment, type: <class 'str'>
+converted value: NewExperiment, type:<class 'str'>
+
+name: working_directory, val: D:\I.Zadorozhnyi\temp\20170905, type: <class 'str'>
+converted value: D:\I.Zadorozhnyi\temp\20170905, type:<class 'str'>
+
+name: use_transistor_selector, val: bool:False, type: <class 'str'>
 False
 5
 False
 converted value: False, type:<class 'bool'>
 
+name: use_homemade_amplifier, val: bool:True, type: <class 'str'>
+True
+4
+True
+converted value: True, type:<class 'bool'>
+
+name: name, val: ExperimentSettings, type: <class 'str'>
+converted value: ExperimentSettings, type:<class 'str'>
+
+name: meas_characteristic_type, val: i:0, type: <class 'str'>
+converted value: 0, type:<class 'int'>
+
 name: homemade_amp_coeff, val: i:178, type: <class 'str'>
 converted value: 178, type:<class 'int'>
+
+name: measurement_name, val: test_exp, type: <class 'str'>
+converted value: test_exp, type:<class 'str'>
+
+name: drain_source_voltage, val: f:0.1, type: <class 'str'>
+converted value: 0.1, type:<class 'float'>
+
+name: second_amp_coeff, val: i:100, type: <class 'str'>
+converted value: 100, type:<class 'int'>
+
+name: front_gate_voltage, val: i:0, type: <class 'str'>
+converted value: 0, type:<class 'int'>
+
+name: simulate_experiment, val: bool:False, type: <class 'str'>
+False
+5
+False
+converted value: False, type:<class 'bool'>
+
+name: range_mode, val: i:0, type: <class 'str'>
+converted value: 0, type:<class 'int'>
 
 name: points, val: i:10, type: <class 'str'>
 converted value: 10, type:<class 'int'>
 
-name: start_units, val: i:0, type: <class 'str'>
+name: end_value, val: i:1, type: <class 'str'>
+converted value: 1, type:<class 'int'>
+
+name: end_units, val: i:0, type: <class 'str'>
 converted value: 0, type:<class 'int'>
 
 name: start_value, val: i:0, type: <class 'str'>
@@ -122,19 +128,19 @@ converted value: 0, type:<class 'int'>
 name: name, val: drain_source_range, type: <class 'str'>
 converted value: drain_source_range, type:<class 'str'>
 
-name: range_mode, val: i:0, type: <class 'str'>
+name: start_units, val: i:0, type: <class 'str'>
 converted value: 0, type:<class 'int'>
 
-name: end_value, val: i:1, type: <class 'str'>
-converted value: 1, type:<class 'int'>
-
-name: end_units, val: i:0, type: <class 'str'>
+name: range_mode, val: i:0, type: <class 'str'>
 converted value: 0, type:<class 'int'>
 
 name: points, val: i:10, type: <class 'str'>
 converted value: 10, type:<class 'int'>
 
-name: start_units, val: i:0, type: <class 'str'>
+name: end_value, val: i:1, type: <class 'str'>
+converted value: 1, type:<class 'int'>
+
+name: end_units, val: i:0, type: <class 'str'>
 converted value: 0, type:<class 'int'>
 
 name: start_value, val: i:0, type: <class 'str'>
@@ -143,45 +149,66 @@ converted value: 0, type:<class 'int'>
 name: name, val: front_gate_range, type: <class 'str'>
 converted value: front_gate_range, type:<class 'str'>
 
-name: range_mode, val: i:0, type: <class 'str'>
+name: start_units, val: i:0, type: <class 'str'>
 converted value: 0, type:<class 'int'>
 
-name: end_value, val: i:1, type: <class 'str'>
-converted value: 1, type:<class 'int'>
-
-name: end_units, val: i:0, type: <class 'str'>
-converted value: 0, type:<class 'int'>
+name: main_gate_multimeter_resource, val: , type: <class 'str'>
+converted value: , type:<class 'str'>
 
 name: gate_potentiometer_channel, val: i:0, type: <class 'str'>
+converted value: 0, type:<class 'int'>
+
+name: sample_potentiometer_channel, val: i:0, type: <class 'str'>
 converted value: 0, type:<class 'int'>
 
 name: dsa_resource, val: ASRL1::INSTR, type: <class 'str'>
 converted value: ASRL1::INSTR, type:<class 'str'>
 
-name: name, val: HardwareSettings, type: <class 'str'>
-converted value: HardwareSettings, type:<class 'str'>
-
-name: main_gate_multimeter_resource, val: , type: <class 'str'>
+name: arduino_controller_resource, val: , type: <class 'str'>
 converted value: , type:<class 'str'>
 
 name: sample_multimeter_resource, val: , type: <class 'str'>
 converted value: , type:<class 'str'>
 
-name: sample_potentiometer_channel, val: i:0, type: <class 'str'>
-converted value: 0, type:<class 'int'>
-
-name: arduino_controller_resource, val: , type: <class 'str'>
-converted value: , type:<class 'str'>
+name: name, val: HardwareSettings, type: <class 'str'>
+converted value: HardwareSettings, type:<class 'str'>
 
 ['Settings', 'ExperimentSettings']
 ['Settings', 'ExperimentSettings']
 ['Settings', 'HardwareSettings']
-simulating hardware init
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+writing to device: ABORT
+querying from device: *CAL?
+writing to device: INST:SEL FFT
+writing to device: :INP2 OFF
+writing to device: :CALC1:ACTIVE A
+writing to device: FORM:DATA ASC, 12
+writing to device: CALC1:FEED 'XFR:POW 1'
+writing to device: CALC1:UNIT:VOLT 'V2/Hz'
+writing to device: CAL:AUTO OFF
 True
 0
 False
 ['front_gate_range']
 ['drain_source_range']
-simulating single measurement vds:0 vg:0
-simulating single measurement vds:0 vg:0.111111
-simulating single measurement vds:0 vg:0.222222
+performing single measurement
+writing to device: SENS:AVERAGE:COUNT 10
+writing to device: SENS:AVERAGE:IRES:RATE 10
+writing to device: FREQ:RES 1
+writing to device: SENS:FREQ:STAR 1
+writing to device: SENS:FREQ:STOP 1600 HZ
+querying from device: CALC1:DATA:HEAD:POIN?
++1601
+writing to device: :INIT
+writing to device: *WAI
+querying from device: CALC1:DATA?
+writing to device: :INIT
+writing to device: *WAI
+querying from device: CALC1:DATA?

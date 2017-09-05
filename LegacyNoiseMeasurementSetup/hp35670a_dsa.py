@@ -1,6 +1,7 @@
 ﻿import time
 from n_enum import enum
 from communication_layer import VisaInstrument, instrument_await_function
+import numpy as np
 
 HP35670A_MODES = enum("FFT", "OCT", "ORD", "SINE", "HIST", "CORR")
 HP35670A_INPUTS = enum("INP1","INP2")
@@ -96,7 +97,9 @@ class HP3567A(VisaInstrument):
     @instrument_await_function
     def get_data(self,calc):
         assert calc in HP35670A_CALC.indexes
-        return self.query("{}:DATA?".format(HP35670A_CALC[calc]) )
+        data = self.query("{}:DATA?".format(HP35670A_CALC[calc]))
+        res = np.fromstring(data,sep=",")
+        return res
 
 
     def abort(self):
