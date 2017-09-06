@@ -27,22 +27,22 @@
    <item row="1" column="0">
     <widget class="QLabel" name="label_2">
      <property name="text">
-      <string>Main/Gate Multimeter</string>
+      <string>Sample/Main Multimeter</string>
      </property>
     </widget>
    </item>
    <item row="1" column="1">
-    <widget class="QComboBox" name="ui_main_gate"/>
+    <widget class="QComboBox" name="ui_sample_main"/>
    </item>
    <item row="2" column="0">
     <widget class="QLabel" name="label_3">
      <property name="text">
-      <string>Sample Multimeter</string>
+      <string>Gate Multimeter</string>
      </property>
     </widget>
    </item>
    <item row="2" column="1">
-    <widget class="QComboBox" name="ui_sample"/>
+    <widget class="QComboBox" name="ui_gate"/>
    </item>
    <item row="3" column="0">
     <widget class="QLabel" name="label_4">
