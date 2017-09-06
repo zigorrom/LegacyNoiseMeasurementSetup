@@ -334,9 +334,8 @@ class MainView(mainViewBase,mainViewForm):
     def closeEvent(self,event):
         self._config.save_config()
 
-    
 
-HardwareSettingsBase, HardwareSettingsForm = uic.loadUiType("UI_HardwareSettings.ui")
+HardwareSettingsBase, HardwareSettingsForm = uic.loadUiType("UI_HardwareSettings_new.ui")
 class HardwareSettingsView(HardwareSettingsBase, HardwareSettingsForm):
     def __init__(self,parent = None):
         super(HardwareSettingsBase,self).__init__(parent)
@@ -344,9 +343,9 @@ class HardwareSettingsView(HardwareSettingsBase, HardwareSettingsForm):
         gpib_resources = get_available_gpib_resources()
         com_resources = get_available_com_resources()
         self.ui_analyzer.addItems(gpib_resources)
-        self.ui_main_gate.addItems(gpib_resources)
-        self.ui_sample.addItems(gpib_resources)
-        self.ui_arduino.addItems(com_resources)
+        self.ui_sample_main.addItems(gpib_resources)
+        self.ui_gate.addItems(gpib_resources)
+        self.ui_fans_controller.addItems(com_resources)
         self._dataMapper = QtGui.QDataWidgetMapper()
 
     def setSelection(self, current):
@@ -358,12 +357,43 @@ class HardwareSettingsView(HardwareSettingsBase, HardwareSettingsForm):
         self._viewModel = model
         self._dataMapper.setModel(self._viewModel)
         self._dataMapper.addMapping(self.ui_analyzer ,2)
-        self._dataMapper.addMapping(self.ui_main_gate ,3)
-        self._dataMapper.addMapping(self.ui_sample ,4)
-        #5 skipped in Hardware Settings node
-        self._dataMapper.addMapping(self.ui_arduino ,6)
-        self._dataMapper.addMapping(self.ui_sample_channel ,7,"currentIndex")
-        self._dataMapper.addMapping(self.ui_gate_channel ,8,"currentIndex")
+        self._dataMapper.addMapping(self.ui_sample_main ,3)
+        self._dataMapper.addMapping(self.ui_gate ,4)
+        self._dataMapper.addMapping(self.ui_fans_controller, 5)
+        self._dataMapper.addMapping(self.ui_sample_channel, 6)
+        self._dataMapper.addMapping(self.ui_sample_relay, 7)
+        self._dataMapper.addMapping(self.ui_gate_channel, 8)    
+        self._dataMapper.addMapping(self.ui_gate_relay, 9)
+
+#HardwareSettingsBase, HardwareSettingsForm = uic.loadUiType("UI_HardwareSettings.ui")
+#class HardwareSettingsView(HardwareSettingsBase, HardwareSettingsForm):
+#    def __init__(self,parent = None):
+#        super(HardwareSettingsBase,self).__init__(parent)
+#        self.setupUi(self)
+#        gpib_resources = get_available_gpib_resources()
+#        com_resources = get_available_com_resources()
+#        self.ui_analyzer.addItems(gpib_resources)
+#        self.ui_main_gate.addItems(gpib_resources)
+#        self.ui_sample.addItems(gpib_resources)
+#        self.ui_arduino.addItems(com_resources)
+#        self._dataMapper = QtGui.QDataWidgetMapper()
+
+#    def setSelection(self, current):
+#        parent = current.parent()
+#        self._dataMapper.setRootIndex(parent)
+#        self._dataMapper.setCurrentModelIndex(current)
+
+#    def setModel(self, model):
+#        self._viewModel = model
+#        self._dataMapper.setModel(self._viewModel)
+#        self._dataMapper.addMapping(self.ui_analyzer ,2)
+#        self._dataMapper.addMapping(self.ui_main_gate ,3)
+#        self._dataMapper.addMapping(self.ui_sample ,4)
+#        #5 skipped in Hardware Settings node
+#        self._dataMapper.addMapping(self.ui_arduino ,6)
+#        self._dataMapper.addMapping(self.ui_sample_channel ,7,"currentIndex")
+#        self._dataMapper.addMapping(self.ui_gate_channel ,8,"currentIndex")
+
 
 
 DUTselectorViewBase, DUTselectorViewForm = uic.loadUiType("UI_TransistorSelector.ui")
