@@ -253,6 +253,14 @@ class ProcessingThread(QtCore.QThread):
 MeasurementTypes = enum("spectrum", "timetrace", "time_spectrum")
 
 
+class LoggingQueuedStream:
+    def __init__(self, data_queue = None):
+        self._log_queue = data_queue
+
+    def write(self, txt):
+        self._log_queue.q.put_nowait({COMMAND:ExperimentCommands.MESSAGE, PARAMETER:txt})
+        
+
 
 class ExperimentHandler(Process):
     def __init__(self, input_data_queue = None):
@@ -265,7 +273,7 @@ class ExperimentHandler(Process):
         self._exit.set()
 
     def run(self):
-        sys.stdout = open("log.txt", "w")
+        sys.stdout = open("log.txt", "w")#LoggingQueuedStream(self._input_data_queue) #open("log.txt", "w")
         cfg = Configuration()
         exp_settings = cfg.get_node_from_path("Settings.ExperimentSettings")
         assert isinstance(exp_settings, ExperimentSettings)
