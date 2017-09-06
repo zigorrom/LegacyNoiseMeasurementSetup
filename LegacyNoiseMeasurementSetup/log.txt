@@ -2,11 +2,83 @@ reading file
 name: name, val: Settings, type: <class 'str'>
 converted value: Settings, type:<class 'str'>
 
+name: use_second_amplifier, val: bool:True, type: <class 'str'>
+True
+4
+True
+converted value: True, type:<class 'bool'>
+
+name: use_set_vds_range, val: bool:False, type: <class 'str'>
+False
+5
+False
+converted value: False, type:<class 'bool'>
+
+name: use_transistor_selector, val: bool:False, type: <class 'str'>
+False
+5
+False
+converted value: False, type:<class 'bool'>
+
+name: need_measure_temperature, val: bool:False, type: <class 'str'>
+False
+5
+False
+converted value: False, type:<class 'bool'>
+
+name: meas_characteristic_type, val: i:0, type: <class 'str'>
+converted value: 0, type:<class 'int'>
+
+name: measurement_count, val: i:0, type: <class 'str'>
+converted value: 0, type:<class 'int'>
+
 name: overload_rejecion, val: bool:False, type: <class 'str'>
 False
 5
 False
 converted value: False, type:<class 'bool'>
+
+name: use_automated_voltage_control, val: bool:False, type: <class 'str'>
+False
+5
+False
+converted value: False, type:<class 'bool'>
+
+name: display_refresh, val: i:10, type: <class 'str'>
+converted value: 10, type:<class 'int'>
+
+name: use_set_vfg_range, val: bool:True, type: <class 'str'>
+True
+4
+True
+converted value: True, type:<class 'bool'>
+
+name: experiment_name, val: new_exp, type: <class 'str'>
+converted value: new_exp, type:<class 'str'>
+
+name: measurement_name, val: meas_, type: <class 'str'>
+converted value: meas_, type:<class 'str'>
+
+name: second_amp_coeff, val: i:100, type: <class 'str'>
+converted value: 100, type:<class 'int'>
+
+name: simulate_experiment, val: bool:False, type: <class 'str'>
+False
+5
+False
+converted value: False, type:<class 'bool'>
+
+name: drain_source_voltage, val: i:0, type: <class 'str'>
+converted value: 0, type:<class 'int'>
+
+name: use_homemade_amplifier, val: bool:True, type: <class 'str'>
+True
+4
+True
+converted value: True, type:<class 'bool'>
+
+name: front_gate_voltage, val: i:0, type: <class 'str'>
+converted value: 0, type:<class 'int'>
 
 name: calibrate_before_measurement, val: bool:False, type: <class 'str'>
 False
@@ -14,11 +86,17 @@ False
 False
 converted value: False, type:<class 'bool'>
 
-name: use_second_amplifier, val: bool:True, type: <class 'str'>
-True
-4
-True
-converted value: True, type:<class 'bool'>
+name: name, val: ExperimentSettings, type: <class 'str'>
+converted value: ExperimentSettings, type:<class 'str'>
+
+name: homemade_amp_coeff, val: i:178, type: <class 'str'>
+converted value: 178, type:<class 'int'>
+
+name: load_resistance, val: i:5000, type: <class 'str'>
+converted value: 5000, type:<class 'int'>
+
+name: working_directory, val: D:\I.Zadorozhnyi\temp\20170905, type: <class 'str'>
+converted value: D:\I.Zadorozhnyi\temp\20170905, type:<class 'str'>
 
 name: meas_gated_structure, val: bool:True, type: <class 'str'>
 True
@@ -29,101 +107,11 @@ converted value: True, type:<class 'bool'>
 name: transistor_list, val: , type: <class 'str'>
 converted value: , type:<class 'str'>
 
-name: load_resistance, val: i:5000, type: <class 'str'>
-converted value: 5000, type:<class 'int'>
-
-name: display_refresh, val: i:10, type: <class 'str'>
-converted value: 10, type:<class 'int'>
-
 name: averages, val: i:100, type: <class 'str'>
 converted value: 100, type:<class 'int'>
 
-name: need_measure_temperature, val: bool:False, type: <class 'str'>
-False
-5
-False
-converted value: False, type:<class 'bool'>
-
-name: use_set_vds_range, val: bool:False, type: <class 'str'>
-False
-5
-False
-converted value: False, type:<class 'bool'>
-
-name: measurement_count, val: i:1, type: <class 'str'>
-converted value: 1, type:<class 'int'>
-
-name: use_set_vfg_range, val: bool:True, type: <class 'str'>
-True
-4
-True
-converted value: True, type:<class 'bool'>
-
-name: use_automated_voltage_control, val: bool:True, type: <class 'str'>
-True
-4
-True
-converted value: True, type:<class 'bool'>
-
-name: experiment_name, val: NewExperiment, type: <class 'str'>
-converted value: NewExperiment, type:<class 'str'>
-
-name: working_directory, val: D:\I.Zadorozhnyi\temp\20170905, type: <class 'str'>
-converted value: D:\I.Zadorozhnyi\temp\20170905, type:<class 'str'>
-
-name: use_transistor_selector, val: bool:False, type: <class 'str'>
-False
-5
-False
-converted value: False, type:<class 'bool'>
-
-name: use_homemade_amplifier, val: bool:True, type: <class 'str'>
-True
-4
-True
-converted value: True, type:<class 'bool'>
-
-name: name, val: ExperimentSettings, type: <class 'str'>
-converted value: ExperimentSettings, type:<class 'str'>
-
-name: meas_characteristic_type, val: i:0, type: <class 'str'>
-converted value: 0, type:<class 'int'>
-
-name: homemade_amp_coeff, val: i:178, type: <class 'str'>
-converted value: 178, type:<class 'int'>
-
-name: measurement_name, val: test_exp, type: <class 'str'>
-converted value: test_exp, type:<class 'str'>
-
-name: drain_source_voltage, val: f:0.1, type: <class 'str'>
-converted value: 0.1, type:<class 'float'>
-
-name: second_amp_coeff, val: i:100, type: <class 'str'>
-converted value: 100, type:<class 'int'>
-
-name: front_gate_voltage, val: i:0, type: <class 'str'>
-converted value: 0, type:<class 'int'>
-
-name: simulate_experiment, val: bool:False, type: <class 'str'>
-False
-5
-False
-converted value: False, type:<class 'bool'>
-
-name: range_mode, val: i:0, type: <class 'str'>
-converted value: 0, type:<class 'int'>
-
 name: points, val: i:10, type: <class 'str'>
 converted value: 10, type:<class 'int'>
-
-name: end_value, val: i:1, type: <class 'str'>
-converted value: 1, type:<class 'int'>
-
-name: end_units, val: i:0, type: <class 'str'>
-converted value: 0, type:<class 'int'>
-
-name: start_value, val: i:0, type: <class 'str'>
-converted value: 0, type:<class 'int'>
 
 name: name, val: drain_source_range, type: <class 'str'>
 converted value: drain_source_range, type:<class 'str'>
@@ -131,14 +119,11 @@ converted value: drain_source_range, type:<class 'str'>
 name: start_units, val: i:0, type: <class 'str'>
 converted value: 0, type:<class 'int'>
 
-name: range_mode, val: i:0, type: <class 'str'>
-converted value: 0, type:<class 'int'>
-
-name: points, val: i:10, type: <class 'str'>
-converted value: 10, type:<class 'int'>
-
 name: end_value, val: i:1, type: <class 'str'>
 converted value: 1, type:<class 'int'>
+
+name: range_mode, val: i:0, type: <class 'str'>
+converted value: 0, type:<class 'int'>
 
 name: end_units, val: i:0, type: <class 'str'>
 converted value: 0, type:<class 'int'>
@@ -146,23 +131,26 @@ converted value: 0, type:<class 'int'>
 name: start_value, val: i:0, type: <class 'str'>
 converted value: 0, type:<class 'int'>
 
+name: points, val: i:10, type: <class 'str'>
+converted value: 10, type:<class 'int'>
+
 name: name, val: front_gate_range, type: <class 'str'>
 converted value: front_gate_range, type:<class 'str'>
 
 name: start_units, val: i:0, type: <class 'str'>
 converted value: 0, type:<class 'int'>
 
-name: main_gate_multimeter_resource, val: , type: <class 'str'>
-converted value: , type:<class 'str'>
+name: end_value, val: i:1, type: <class 'str'>
+converted value: 1, type:<class 'int'>
 
-name: gate_potentiometer_channel, val: i:0, type: <class 'str'>
+name: range_mode, val: i:0, type: <class 'str'>
 converted value: 0, type:<class 'int'>
 
-name: sample_potentiometer_channel, val: i:0, type: <class 'str'>
+name: end_units, val: i:0, type: <class 'str'>
 converted value: 0, type:<class 'int'>
 
-name: dsa_resource, val: ASRL1::INSTR, type: <class 'str'>
-converted value: ASRL1::INSTR, type:<class 'str'>
+name: start_value, val: i:0, type: <class 'str'>
+converted value: 0, type:<class 'int'>
 
 name: arduino_controller_resource, val: , type: <class 'str'>
 converted value: , type:<class 'str'>
@@ -170,8 +158,20 @@ converted value: , type:<class 'str'>
 name: sample_multimeter_resource, val: , type: <class 'str'>
 converted value: , type:<class 'str'>
 
+name: main_gate_multimeter_resource, val: , type: <class 'str'>
+converted value: , type:<class 'str'>
+
+name: dsa_resource, val: USB0::0x0957::0x1718::TW52524501::INSTR, type: <class 'str'>
+converted value: USB0::0x0957::0x1718::TW52524501::INSTR, type:<class 'str'>
+
 name: name, val: HardwareSettings, type: <class 'str'>
 converted value: HardwareSettings, type:<class 'str'>
+
+name: gate_potentiometer_channel, val: i:0, type: <class 'str'>
+converted value: 0, type:<class 'int'>
+
+name: sample_potentiometer_channel, val: i:0, type: <class 'str'>
+converted value: 0, type:<class 'int'>
 
 ['Settings', 'ExperimentSettings']
 ['Settings', 'ExperimentSettings']
@@ -199,16 +199,1972 @@ False
 ['front_gate_range']
 ['drain_source_range']
 performing single measurement
+performing setting ds voltage: 0
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+value to write 10001000
+writing to device: TRIG:COUN 1
+writing to device: TRIG:COUN 1
+writing to device: TRIG:COUN 1
+querying from device: MEAS:VOLTAGE:DC?
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.1000774; goal: 0;to set: 3.153307568650453;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.10006381; goal: 0;to set: 3.152727006708506;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.095738223; goal: 0;to set: 2.9640772157989126;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.084359785; goal: 0;to set: 2.438284903291056;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.071710267; goal: 0;to set: 1.8356474111843495;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.060568754; goal: 0;to set: 1.3362824809091496;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.052034717; goal: 0;to set: 1.0038996420089434;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.045812346; goal: 0;to set: 0.7999799769517342;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.041251879; goal: 0;to set: 0.6738879788821368;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.037687769; goal: 0;to set: 0.5896203213978612;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.034235834; goal: 0;to set: 0.5199029159502029;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.03200176; goal: 0;to set: 0.4808803545189413;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.029614185; goal: 0;to set: 0.44429087110398946;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.028665963; goal: 0;to set: 0.4311785722648276;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.027224139; goal: 0;to set: 0.41273575353744363;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.025372064; goal: 0;to set: 0.39160226241128626;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.023734163; goal: 0;to set: 0.37520188067197946;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.022183136; goal: 0;to set: 0.36155007033057096;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.021030123; goal: 0;to set: 0.3525266410002308;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.019766625; goal: 0;to set: 0.3436848818970226;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.018510354; goal: 0;to set: 0.33592305949457835;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.017300585; goal: 0;to set: 0.3293639274185347;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.016765764; goal: 0;to set: 0.32673640482153576;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.015708914; goal: 0;to set: 0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.014469504; goal: 0;to set: 0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.013629912; goal: 0;to set: 0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.013071668; goal: 0;to set: 0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.011946809; goal: 0;to set: 0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.010855065; goal: 0;to set: 0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.010394994; goal: 0;to set: 0.3;
+querying from device: MEAS:VOLTAGE:DC?
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008781118, trust_error: 0.01, count: 0, value: 0.008781118
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008655125, trust_error: 0.01, count: 1, value: 0.008655125
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008594079, trust_error: 0.01, count: 2, value: 0.008594079
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008560588, trust_error: 0.01, count: 3, value: 0.008560588
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008545311, trust_error: 0.01, count: 4, value: 0.008545311
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008533924, trust_error: 0.01, count: 5, value: 0.008533924
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008522904, trust_error: 0.01, count: 6, value: 0.008522904
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008515774, trust_error: 0.01, count: 7, value: 0.008515774
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008510846, trust_error: 0.01, count: 8, value: 0.008510846
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008508015, trust_error: 0.01, count: 9, value: 0.008508015
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008505477, trust_error: 0.01, count: 10, value: 0.008505477
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008503328, trust_error: 0.01, count: 11, value: 0.008503328
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008502006, trust_error: 0.01, count: 12, value: 0.008502006
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008500874, trust_error: 0.01, count: 13, value: 0.008500874
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008500423, trust_error: 0.01, count: 14, value: 0.008500423
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008499783, trust_error: 0.01, count: 15, value: 0.008499783
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008499584, trust_error: 0.01, count: 16, value: 0.008499584
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008499375, trust_error: 0.01, count: 17, value: 0.008499375
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008498945, trust_error: 0.01, count: 18, value: 0.008498945
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008498588, trust_error: 0.01, count: 19, value: 0.008498588
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008498525, trust_error: 0.01, count: 20, value: 0.008498525
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008498001, trust_error: 0.01, count: 21, value: 0.008498001
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008497477, trust_error: 0.01, count: 22, value: 0.008497477
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008497256, trust_error: 0.01, count: 23, value: 0.008497256
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008497152, trust_error: 0.01, count: 24, value: 0.008497152
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008497036, trust_error: 0.01, count: 25, value: 0.008497036
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008496827, trust_error: 0.01, count: 26, value: 0.008496827
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008496292, trust_error: 0.01, count: 27, value: 0.008496292
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008496208, trust_error: 0.01, count: 28, value: 0.008496208
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.00849603, trust_error: 0.01, count: 29, value: 0.00849603
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008495642, trust_error: 0.01, count: 30, value: 0.008495642
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008495631, trust_error: 0.01, count: 31, value: 0.008495631
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.00849518, trust_error: 0.01, count: 32, value: 0.00849518
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008495044, trust_error: 0.01, count: 33, value: 0.008495044
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008494646, trust_error: 0.01, count: 34, value: 0.008494646
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008494415, trust_error: 0.01, count: 35, value: 0.008494415
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008494289, trust_error: 0.01, count: 36, value: 0.008494289
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008493744, trust_error: 0.01, count: 37, value: 0.008493744
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008493786, trust_error: 0.01, count: 38, value: 0.008493786
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008493765, trust_error: 0.01, count: 39, value: 0.008493765
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008493817, trust_error: 0.01, count: 40, value: 0.008493817
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008493513, trust_error: 0.01, count: 41, value: 0.008493513
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008493052, trust_error: 0.01, count: 42, value: 0.008493052
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008493314, trust_error: 0.01, count: 43, value: 0.008493314
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008492863, trust_error: 0.01, count: 44, value: 0.008492863
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008492916, trust_error: 0.01, count: 45, value: 0.008492916
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008492716, trust_error: 0.01, count: 46, value: 0.008492716
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008492528, trust_error: 0.01, count: 47, value: 0.008492528
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008492234, trust_error: 0.01, count: 48, value: 0.008492234
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008492213, trust_error: 0.01, count: 49, value: 0.008492213
+done setting gs value
+performing setting fg voltage: 0
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+value to write 10001000
+writing to device: TRIG:COUN 1
+writing to device: TRIG:COUN 1
+writing to device: TRIG:COUN 1
+querying from device: MEAS:VOLTAGE:DC?
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.11002794; goal: 0;to set: 3.555761317187831;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.10992902; goal: 0;to set: 3.5519933929590404;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.10679448; goal: 0;to set: 3.4301143891614454;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.09966771; goal: 0;to set: 3.1357710667538092;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.089613948; goal: 0;to set: 2.685389599445028;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.07944229; goal: 0;to set: 2.2034585081593914;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.068861873; goal: 0;to set: 1.7031075870727257;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.059413873; goal: 0;to set: 1.2882105125179129;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.050965823; goal: 0;to set: 0.9663740342322269;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.044103032; goal: 0;to set: 0.7503361756622517;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.038602089; goal: 0;to set: 0.6100401600388894;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.034204712; goal: 0;to set: 0.5193268091179535;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.031086757; goal: 0;to set: 0.46624410448182196;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.028309958; goal: 0;to set: 0.42645875291120827;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.026048427; goal: 0;to set: 0.39899437458060305;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.024311159; goal: 0;to set: 0.3807413513471358;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.022733675; goal: 0;to set: 0.36619282548709187;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.021294571; goal: 0;to set: 0.35451399633830594;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.020044703; goal: 0;to set: 0.34553968659784395;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.018995718; goal: 0;to set: 0.33880389672380673;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.018122008; goal: 0;to set: 0.33372227073610095;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.017307874; goal: 0;to set: 0.3294008659488368;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.01651035; goal: 0;to set: 0.32553838923971057;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.01576252; goal: 0;to set: 0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.01496713; goal: 0;to set: 0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.01416391; goal: 0;to set: 0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.013453996; goal: 0;to set: 0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.012799628; goal: 0;to set: 0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.01215734; goal: 0;to set: 0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.01155637; goal: 0;to set: 0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.0109748; goal: 0;to set: 0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.010386238; goal: 0;to set: 0.3;
+querying from device: MEAS:VOLTAGE:DC?
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.009223017, trust_error: 0.01, count: 0, value: 0.009223017
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008818518, trust_error: 0.01, count: 1, value: 0.008818518
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008584991, trust_error: 0.01, count: 2, value: 0.008584991
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008461688, trust_error: 0.01, count: 3, value: 0.008461688
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008397789, trust_error: 0.01, count: 4, value: 0.008397789
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008364714, trust_error: 0.01, count: 5, value: 0.008364714
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008346463, trust_error: 0.01, count: 6, value: 0.008346463
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008335808, trust_error: 0.01, count: 7, value: 0.008335808
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008321899, trust_error: 0.01, count: 8, value: 0.008321899
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008310453, trust_error: 0.01, count: 9, value: 0.008310453
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008302806, trust_error: 0.01, count: 10, value: 0.008302806
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008297273, trust_error: 0.01, count: 11, value: 0.008297273
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008293065, trust_error: 0.01, count: 12, value: 0.008293065
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008291977, trust_error: 0.01, count: 13, value: 0.008291977
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008292161, trust_error: 0.01, count: 14, value: 0.008292161
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008291987, trust_error: 0.01, count: 15, value: 0.008291987
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008292541, trust_error: 0.01, count: 16, value: 0.008292541
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008294338, trust_error: 0.01, count: 17, value: 0.008294338
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008298443, trust_error: 0.01, count: 18, value: 0.008298443
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008304654, trust_error: 0.01, count: 19, value: 0.008304654
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008310751, trust_error: 0.01, count: 20, value: 0.008310751
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.00831421, trust_error: 0.01, count: 21, value: 0.00831421
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008314847, trust_error: 0.01, count: 22, value: 0.008314847
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008314929, trust_error: 0.01, count: 23, value: 0.008314929
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008315647, trust_error: 0.01, count: 24, value: 0.008315647
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008314539, trust_error: 0.01, count: 25, value: 0.008314539
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008312732, trust_error: 0.01, count: 26, value: 0.008312732
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008310063, trust_error: 0.01, count: 27, value: 0.008310063
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008307836, trust_error: 0.01, count: 28, value: 0.008307836
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008306214, trust_error: 0.01, count: 29, value: 0.008306214
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008305085, trust_error: 0.01, count: 30, value: 0.008305085
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008304572, trust_error: 0.01, count: 31, value: 0.008304572
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008304695, trust_error: 0.01, count: 32, value: 0.008304695
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008304448, trust_error: 0.01, count: 33, value: 0.008304448
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008303709, trust_error: 0.01, count: 34, value: 0.008303709
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008304038, trust_error: 0.01, count: 35, value: 0.008304038
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008303956, trust_error: 0.01, count: 36, value: 0.008303956
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008303935, trust_error: 0.01, count: 37, value: 0.008303935
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008303442, trust_error: 0.01, count: 38, value: 0.008303442
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008304079, trust_error: 0.01, count: 39, value: 0.008304079
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008304407, trust_error: 0.01, count: 40, value: 0.008304407
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008304387, trust_error: 0.01, count: 41, value: 0.008304387
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008304264, trust_error: 0.01, count: 42, value: 0.008304264
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008303894, trust_error: 0.01, count: 43, value: 0.008303894
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008303525, trust_error: 0.01, count: 44, value: 0.008303525
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.00830334, trust_error: 0.01, count: 45, value: 0.00830334
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008303196, trust_error: 0.01, count: 46, value: 0.008303196
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008303155, trust_error: 0.01, count: 47, value: 0.008303155
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008303155, trust_error: 0.01, count: 48, value: 0.008303155
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.008303463, trust_error: 0.01, count: 49, value: 0.008303463
+done setting ds value
+performing setting ds voltage: 0
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+value to write 10001000
+writing to device: TRIG:COUN 1
+writing to device: TRIG:COUN 1
+writing to device: TRIG:COUN 1
+querying from device: MEAS:VOLTAGE:DC?
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.008486436; goal: 0;to set: 0.3;
+querying from device: MEAS:VOLTAGE:DC?
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.007570918, trust_error: 0.01, count: 0, value: 0.007570918
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.007549045, trust_error: 0.01, count: 1, value: 0.007549045
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.007536473, trust_error: 0.01, count: 2, value: 0.007536473
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.007527802, trust_error: 0.01, count: 3, value: 0.007527802
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.007522633, trust_error: 0.01, count: 4, value: 0.007522633
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.00751933, trust_error: 0.01, count: 5, value: 0.00751933
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.007517442, trust_error: 0.01, count: 6, value: 0.007517442
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0075161, trust_error: 0.01, count: 7, value: 0.0075161
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.007514884, trust_error: 0.01, count: 8, value: 0.007514884
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.007514506, trust_error: 0.01, count: 9, value: 0.007514506
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.007514129, trust_error: 0.01, count: 10, value: 0.007514129
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.007513814, trust_error: 0.01, count: 11, value: 0.007513814
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.007513668, trust_error: 0.01, count: 12, value: 0.007513668
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.007513489, trust_error: 0.01, count: 13, value: 0.007513489
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.007513374, trust_error: 0.01, count: 14, value: 0.007513374
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.00751351, trust_error: 0.01, count: 15, value: 0.00751351
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.007513332, trust_error: 0.01, count: 16, value: 0.007513332
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.007513479, trust_error: 0.01, count: 17, value: 0.007513479
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.007513353, trust_error: 0.01, count: 18, value: 0.007513353
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.00751351, trust_error: 0.01, count: 19, value: 0.00751351
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.007513709, trust_error: 0.01, count: 20, value: 0.007513709
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.007513458, trust_error: 0.01, count: 21, value: 0.007513458
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.00751328, trust_error: 0.01, count: 22, value: 0.00751328
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.007513185, trust_error: 0.01, count: 23, value: 0.007513185
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.007513479, trust_error: 0.01, count: 24, value: 0.007513479
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.007513709, trust_error: 0.01, count: 25, value: 0.007513709
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.007513395, trust_error: 0.01, count: 26, value: 0.007513395
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0075135, trust_error: 0.01, count: 27, value: 0.0075135
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.007513217, trust_error: 0.01, count: 28, value: 0.007513217
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.007513311, trust_error: 0.01, count: 29, value: 0.007513311
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.007513248, trust_error: 0.01, count: 30, value: 0.007513248
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.007513007, trust_error: 0.01, count: 31, value: 0.007513007
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.007513468, trust_error: 0.01, count: 32, value: 0.007513468
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.007513437, trust_error: 0.01, count: 33, value: 0.007513437
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.007513332, trust_error: 0.01, count: 34, value: 0.007513332
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.007513238, trust_error: 0.01, count: 35, value: 0.007513238
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0075135, trust_error: 0.01, count: 36, value: 0.0075135
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.00751308, trust_error: 0.01, count: 37, value: 0.00751308
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.00751308, trust_error: 0.01, count: 38, value: 0.00751308
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.007513185, trust_error: 0.01, count: 39, value: 0.007513185
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.007513143, trust_error: 0.01, count: 40, value: 0.007513143
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.007513416, trust_error: 0.01, count: 41, value: 0.007513416
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.007512934, trust_error: 0.01, count: 42, value: 0.007512934
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.007513269, trust_error: 0.01, count: 43, value: 0.007513269
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.007513384, trust_error: 0.01, count: 44, value: 0.007513384
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.007513112, trust_error: 0.01, count: 45, value: 0.007513112
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.007513605, trust_error: 0.01, count: 46, value: 0.007513605
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.007513143, trust_error: 0.01, count: 47, value: 0.007513143
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.00751307, trust_error: 0.01, count: 48, value: 0.00751307
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.007513206, trust_error: 0.01, count: 49, value: 0.007513206
+done setting gs value
 writing to device: SENS:AVERAGE:COUNT 10
 writing to device: SENS:AVERAGE:IRES:RATE 10
-writing to device: FREQ:RES 1
-writing to device: SENS:FREQ:STAR 1
-writing to device: SENS:FREQ:STOP 1600 HZ
+writing to device: FREQ:RES 1600
+writing to device: SENS:FREQ:STAR 0
+writing to device: SENS:FREQ:STOP 1600
 querying from device: CALC1:DATA:HEAD:POIN?
 +1601
 writing to device: :INIT
 writing to device: *WAI
 querying from device: CALC1:DATA?
+writing to device: SENS:AVERAGE:COUNT 10
+writing to device: SENS:AVERAGE:IRES:RATE 10
+writing to device: FREQ:RES 1600
+writing to device: SENS:FREQ:STAR 0
+writing to device: SENS:FREQ:STOP 102400
+querying from device: CALC1:DATA:HEAD:POIN?
++1601
+writing to device: :INIT
+writing to device: *WAI
+querying from device: CALC1:DATA?
+performing single measurement
+performing setting ds voltage: 0
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+value to write 10001000
+writing to device: TRIG:COUN 1
+writing to device: TRIG:COUN 1
+writing to device: TRIG:COUN 1
+querying from device: MEAS:VOLTAGE:DC?
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.007513154; goal: 0;to set: 0.3;
+querying from device: MEAS:VOLTAGE:DC?
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006267482, trust_error: 0.01, count: 0, value: 0.006267482
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006234569, trust_error: 0.01, count: 1, value: 0.006234569
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006214447, trust_error: 0.01, count: 2, value: 0.006214447
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006201539, trust_error: 0.01, count: 3, value: 0.006201539
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006193329, trust_error: 0.01, count: 4, value: 0.006193329
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006188066, trust_error: 0.01, count: 5, value: 0.006188066
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006184993, trust_error: 0.01, count: 6, value: 0.006184993
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006182792, trust_error: 0.01, count: 7, value: 0.006182792
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006181575, trust_error: 0.01, count: 8, value: 0.006181575
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006180569, trust_error: 0.01, count: 9, value: 0.006180569
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006180306, trust_error: 0.01, count: 10, value: 0.006180306
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006180002, trust_error: 0.01, count: 11, value: 0.006180002
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006179468, trust_error: 0.01, count: 12, value: 0.006179468
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006179614, trust_error: 0.01, count: 13, value: 0.006179614
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.00617951, trust_error: 0.01, count: 14, value: 0.00617951
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006179635, trust_error: 0.01, count: 15, value: 0.006179635
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006179405, trust_error: 0.01, count: 16, value: 0.006179405
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006179237, trust_error: 0.01, count: 17, value: 0.006179237
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006179447, trust_error: 0.01, count: 18, value: 0.006179447
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0061793, trust_error: 0.01, count: 19, value: 0.0061793
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0061793, trust_error: 0.01, count: 20, value: 0.0061793
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006179447, trust_error: 0.01, count: 21, value: 0.006179447
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006179289, trust_error: 0.01, count: 22, value: 0.006179289
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006179478, trust_error: 0.01, count: 23, value: 0.006179478
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006179006, trust_error: 0.01, count: 24, value: 0.006179006
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006179226, trust_error: 0.01, count: 25, value: 0.006179226
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006179573, trust_error: 0.01, count: 26, value: 0.006179573
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006179101, trust_error: 0.01, count: 27, value: 0.006179101
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.00617952, trust_error: 0.01, count: 28, value: 0.00617952
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006179373, trust_error: 0.01, count: 29, value: 0.006179373
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006179279, trust_error: 0.01, count: 30, value: 0.006179279
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006179164, trust_error: 0.01, count: 31, value: 0.006179164
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006179206, trust_error: 0.01, count: 32, value: 0.006179206
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006179499, trust_error: 0.01, count: 33, value: 0.006179499
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006179153, trust_error: 0.01, count: 34, value: 0.006179153
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.00617931, trust_error: 0.01, count: 35, value: 0.00617931
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0061793, trust_error: 0.01, count: 36, value: 0.0061793
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006179164, trust_error: 0.01, count: 37, value: 0.006179164
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0061793, trust_error: 0.01, count: 38, value: 0.0061793
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006179352, trust_error: 0.01, count: 39, value: 0.006179352
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006179363, trust_error: 0.01, count: 40, value: 0.006179363
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006179164, trust_error: 0.01, count: 41, value: 0.006179164
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006179017, trust_error: 0.01, count: 42, value: 0.006179017
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006179206, trust_error: 0.01, count: 43, value: 0.006179206
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006179258, trust_error: 0.01, count: 44, value: 0.006179258
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006179247, trust_error: 0.01, count: 45, value: 0.006179247
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006179226, trust_error: 0.01, count: 46, value: 0.006179226
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006178996, trust_error: 0.01, count: 47, value: 0.006178996
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006179331, trust_error: 0.01, count: 48, value: 0.006179331
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006179373, trust_error: 0.01, count: 49, value: 0.006179373
+done setting gs value
+performing setting fg voltage: 0.111111
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+value to write 10001000
+writing to device: TRIG:COUN 1
+writing to device: TRIG:COUN 1
+writing to device: TRIG:COUN 1
+querying from device: MEAS:VOLTAGE:DC?
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.008319579; goal: 0.111111;to set: -3.2676311959917856;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.008308493; goal: 0.111111;to set: -3.268091439135928;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.009480246; goal: 0.111111;to set: -3.219138833096388;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.015124748; goal: 0.111111;to set: -2.975093797525835;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.023763124; goal: 0.111111;to set: -2.5795221894605396;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.033757265; goal: 0.111111;to set: -2.103506809813989;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.043563711; goal: 0.111111;to set: -1.6428471114335554;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.052593187; goal: 0.111111;to set: -1.2515217381414265;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.060483665; goal: 0.111111;to set: -0.9546998063796845;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.066727175; goal: 0.111111;to set: -0.7582965889924864;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.07172632; goal: 0.111111;to set: -0.628173807646025;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.075868797; goal: 0.111111;to set: -0.5390334405023998;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.07888561; goal: 0.111111;to set: -0.4845752682254467;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.081541698; goal: 0.111111;to set: -0.4436523159989596;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.08356657; goal: 0.111111;to set: -0.41667933362025256;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.085335408; goal: 0.111111;to set: -0.39596802358912075;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.08676268; goal: 0.111111;to set: -0.3811068944436773;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.088448836; goal: 0.111111;to set: -0.36557730414543776;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.08989578; goal: 0.111111;to set: -0.35391259251031393;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.09097942; goal: 0.111111;to set: -0.3461295730486045;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.09200023; goal: 0.111111;to set: -0.3395083336348339;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.092725529; goal: 0.111111;to set: -0.335205332704108;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.0935939; goal: 0.111111;to set: -0.33047427329837653;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.094529595; goal: 0.111111;to set: -0.32586803342084547;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.09510348; goal: 0.111111;to set: -0.32328462665551694;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.095885019; goal: 0.111111;to set: -0.32004935531660017;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.09647326; goal: 0.111111;to set: -0.31782120154561166;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.097248725; goal: 0.111111;to set: -0.31514338784611606;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.09811748; goal: 0.111111;to set: -0.3124768121949133;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.098922652; goal: 0.111111;to set: -0.3103020522520934;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.09959843; goal: 0.111111;to set: -0.308684194392872;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.10021884; goal: 0.111111;to set: -0.3073562426040679;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.10085736; goal: 0.111111;to set: -0.3061382011792917;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.1018087; goal: 0.111111;to set: -0.30458454704388416;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.10285711; goal: 0.111111;to set: -0.3032033673606076;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.10380887; goal: 0.111111;to set: -0.3022184746680443;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.10449484; goal: 0.111111;to set: -0.30165031594021574;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.1049553; goal: 0.111111;to set: -0.30132924765979485;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.10568502; goal: 0.111111;to set: -0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.10630697; goal: 0.111111;to set: -0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.10688105; goal: 0.111111;to set: -0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.10722898; goal: 0.111111;to set: -0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.10786997; goal: 0.111111;to set: -0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.10838342; goal: 0.111111;to set: -0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.10910439; goal: 0.111111;to set: -0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.10988269; goal: 0.111111;to set: -0.3;
+querying from device: MEAS:VOLTAGE:DC?
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 9.22700000000054e-05, trust_error: 0.001, count: 0, value: 0.11120327
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0006213699999999961, trust_error: 0.001, count: 1, value: 0.11173237
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0009210199999999946, trust_error: 0.001, count: 2, value: 0.11203202
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.001090250000000001, trust_error: 0.001, count: 3, value: 0.11220125
+current: 0.11220125; goal: 0.111111;to set: -0.300001537282899;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.11229832; goal: 0.111111;to set: 0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.11234824; goal: 0.111111;to set: 0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.11237171; goal: 0.111111;to set: 0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.11238386; goal: 0.111111;to set: 0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.11239065; goal: 0.111111;to set: 0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.11239457; goal: 0.111111;to set: 0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.11239704; goal: 0.111111;to set: 0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.11239724; goal: 0.111111;to set: 0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.11239807; goal: 0.111111;to set: 0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.11239765; goal: 0.111111;to set: 0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.11239827; goal: 0.111111;to set: 0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.11239415; goal: 0.111111;to set: 0.3;
+querying from device: MEAS:VOLTAGE:DC?
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0005685599999999957, trust_error: 0.001, count: 0, value: 0.11167956
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0003569300000000053, trust_error: 0.001, count: 1, value: 0.11146793
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.00023689999999999822, trust_error: 0.001, count: 2, value: 0.1113479
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.00016855000000000342, trust_error: 0.001, count: 3, value: 0.11127955
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.00013035999999999603, trust_error: 0.001, count: 4, value: 0.11124136
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.00010771999999999171, trust_error: 0.001, count: 5, value: 0.11121872
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 9.433000000000358e-05, trust_error: 0.001, count: 6, value: 0.11120533
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 8.774999999999755e-05, trust_error: 0.001, count: 7, value: 0.11119875
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 8.321999999999496e-05, trust_error: 0.001, count: 8, value: 0.11119422
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 8.207999999999827e-05, trust_error: 0.001, count: 9, value: 0.11119308
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 7.951000000000485e-05, trust_error: 0.001, count: 10, value: 0.11119051
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 7.930000000000437e-05, trust_error: 0.001, count: 11, value: 0.1111903
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 7.868999999999238e-05, trust_error: 0.001, count: 12, value: 0.11118969
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 7.888999999999813e-05, trust_error: 0.001, count: 13, value: 0.11118989
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 7.888999999999813e-05, trust_error: 0.001, count: 14, value: 0.11118989
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 7.806999999999953e-05, trust_error: 0.001, count: 15, value: 0.11118907
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 7.828000000000002e-05, trust_error: 0.001, count: 16, value: 0.11118928
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 7.806999999999953e-05, trust_error: 0.001, count: 17, value: 0.11118907
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 7.81700000000024e-05, trust_error: 0.001, count: 18, value: 0.11118917
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 7.888999999999813e-05, trust_error: 0.001, count: 19, value: 0.11118989
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 7.847999999999189e-05, trust_error: 0.001, count: 20, value: 0.11118948
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 7.868999999999238e-05, trust_error: 0.001, count: 21, value: 0.11118969
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 7.878999999999525e-05, trust_error: 0.001, count: 22, value: 0.11118979
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 7.868999999999238e-05, trust_error: 0.001, count: 23, value: 0.11118969
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 7.868999999999238e-05, trust_error: 0.001, count: 24, value: 0.11118969
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 7.806999999999953e-05, trust_error: 0.001, count: 25, value: 0.11118907
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 7.888999999999813e-05, trust_error: 0.001, count: 26, value: 0.11118989
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 7.930000000000437e-05, trust_error: 0.001, count: 27, value: 0.1111903
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 7.847999999999189e-05, trust_error: 0.001, count: 28, value: 0.11118948
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 7.920000000000149e-05, trust_error: 0.001, count: 29, value: 0.1111902
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 7.909999999999862e-05, trust_error: 0.001, count: 30, value: 0.1111901
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 7.888999999999813e-05, trust_error: 0.001, count: 31, value: 0.11118989
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 7.847999999999189e-05, trust_error: 0.001, count: 32, value: 0.11118948
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 7.857999999999477e-05, trust_error: 0.001, count: 33, value: 0.11118958
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 7.888999999999813e-05, trust_error: 0.001, count: 34, value: 0.11118989
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 7.888999999999813e-05, trust_error: 0.001, count: 35, value: 0.11118989
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 7.806999999999953e-05, trust_error: 0.001, count: 36, value: 0.11118907
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 7.806999999999953e-05, trust_error: 0.001, count: 37, value: 0.11118907
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 7.941000000000198e-05, trust_error: 0.001, count: 38, value: 0.11119041
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 7.909999999999862e-05, trust_error: 0.001, count: 39, value: 0.1111901
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 7.888999999999813e-05, trust_error: 0.001, count: 40, value: 0.11118989
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 7.888999999999813e-05, trust_error: 0.001, count: 41, value: 0.11118989
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 7.878999999999525e-05, trust_error: 0.001, count: 42, value: 0.11118979
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 7.909999999999862e-05, trust_error: 0.001, count: 43, value: 0.1111901
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 7.930000000000437e-05, trust_error: 0.001, count: 44, value: 0.1111903
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 7.857999999999477e-05, trust_error: 0.001, count: 45, value: 0.11118958
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 7.868999999999238e-05, trust_error: 0.001, count: 46, value: 0.11118969
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 7.930000000000437e-05, trust_error: 0.001, count: 47, value: 0.1111903
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 7.981999999999434e-05, trust_error: 0.001, count: 48, value: 0.11119082
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 7.930000000000437e-05, trust_error: 0.001, count: 49, value: 0.1111903
+done setting ds value
+performing setting ds voltage: 0
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+value to write 10001000
+writing to device: TRIG:COUN 1
+writing to device: TRIG:COUN 1
+writing to device: TRIG:COUN 1
+querying from device: MEAS:VOLTAGE:DC?
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.006179499; goal: 0;to set: 0.3;
+querying from device: MEAS:VOLTAGE:DC?
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006161129, trust_error: 0.01, count: 0, value: 0.006161129
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0061603, trust_error: 0.01, count: 1, value: 0.0061603
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006159545, trust_error: 0.01, count: 2, value: 0.006159545
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006159021, trust_error: 0.01, count: 3, value: 0.006159021
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158843, trust_error: 0.01, count: 4, value: 0.006158843
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158602, trust_error: 0.01, count: 5, value: 0.006158602
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158319, trust_error: 0.01, count: 6, value: 0.006158319
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158224, trust_error: 0.01, count: 7, value: 0.006158224
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158539, trust_error: 0.01, count: 8, value: 0.006158539
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158392, trust_error: 0.01, count: 9, value: 0.006158392
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158077, trust_error: 0.01, count: 10, value: 0.006158077
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158298, trust_error: 0.01, count: 11, value: 0.006158298
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158119, trust_error: 0.01, count: 12, value: 0.006158119
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158287, trust_error: 0.01, count: 13, value: 0.006158287
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158161, trust_error: 0.01, count: 14, value: 0.006158161
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158245, trust_error: 0.01, count: 15, value: 0.006158245
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158182, trust_error: 0.01, count: 16, value: 0.006158182
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.00615814, trust_error: 0.01, count: 17, value: 0.00615814
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158182, trust_error: 0.01, count: 18, value: 0.006158182
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158266, trust_error: 0.01, count: 19, value: 0.006158266
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006157973, trust_error: 0.01, count: 20, value: 0.006157973
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158161, trust_error: 0.01, count: 21, value: 0.006158161
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158287, trust_error: 0.01, count: 22, value: 0.006158287
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158193, trust_error: 0.01, count: 23, value: 0.006158193
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158287, trust_error: 0.01, count: 24, value: 0.006158287
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158046, trust_error: 0.01, count: 25, value: 0.006158046
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158287, trust_error: 0.01, count: 26, value: 0.006158287
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158308, trust_error: 0.01, count: 27, value: 0.006158308
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158224, trust_error: 0.01, count: 28, value: 0.006158224
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158067, trust_error: 0.01, count: 29, value: 0.006158067
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158098, trust_error: 0.01, count: 30, value: 0.006158098
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158203, trust_error: 0.01, count: 31, value: 0.006158203
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158308, trust_error: 0.01, count: 32, value: 0.006158308
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158098, trust_error: 0.01, count: 33, value: 0.006158098
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158077, trust_error: 0.01, count: 34, value: 0.006158077
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158518, trust_error: 0.01, count: 35, value: 0.006158518
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158119, trust_error: 0.01, count: 36, value: 0.006158119
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158287, trust_error: 0.01, count: 37, value: 0.006158287
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158392, trust_error: 0.01, count: 38, value: 0.006158392
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158381, trust_error: 0.01, count: 39, value: 0.006158381
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006157993, trust_error: 0.01, count: 40, value: 0.006157993
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158203, trust_error: 0.01, count: 41, value: 0.006158203
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006157931, trust_error: 0.01, count: 42, value: 0.006157931
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158077, trust_error: 0.01, count: 43, value: 0.006158077
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.00615791, trust_error: 0.01, count: 44, value: 0.00615791
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158056, trust_error: 0.01, count: 45, value: 0.006158056
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158077, trust_error: 0.01, count: 46, value: 0.006158077
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158077, trust_error: 0.01, count: 47, value: 0.006158077
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158182, trust_error: 0.01, count: 48, value: 0.006158182
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.006158161, trust_error: 0.01, count: 49, value: 0.006158161
+done setting gs value
+writing to device: SENS:AVERAGE:COUNT 10
+writing to device: SENS:AVERAGE:IRES:RATE 10
+writing to device: FREQ:RES 1600
+writing to device: SENS:FREQ:STAR 0
+writing to device: SENS:FREQ:STOP 1600
+querying from device: CALC1:DATA:HEAD:POIN?
++1601
+writing to device: :INIT
+writing to device: *WAI
+querying from device: CALC1:DATA?
+writing to device: SENS:AVERAGE:COUNT 10
+writing to device: SENS:AVERAGE:IRES:RATE 10
+writing to device: FREQ:RES 1600
+writing to device: SENS:FREQ:STAR 0
+writing to device: SENS:FREQ:STOP 102400
+querying from device: CALC1:DATA:HEAD:POIN?
++1601
+writing to device: :INIT
+writing to device: *WAI
+querying from device: CALC1:DATA?
+performing single measurement
+performing setting ds voltage: 0
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+value to write 10001000
+writing to device: TRIG:COUN 1
+writing to device: TRIG:COUN 1
+writing to device: TRIG:COUN 1
+querying from device: MEAS:VOLTAGE:DC?
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.006158245; goal: 0;to set: 0.3;
+querying from device: MEAS:VOLTAGE:DC?
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004922841, trust_error: 0.01, count: 0, value: 0.004922841
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.00489431, trust_error: 0.01, count: 1, value: 0.00489431
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004876464, trust_error: 0.01, count: 2, value: 0.004876464
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004865056, trust_error: 0.01, count: 3, value: 0.004865056
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004858293, trust_error: 0.01, count: 4, value: 0.004858293
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004853868, trust_error: 0.01, count: 5, value: 0.004853868
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004850785, trust_error: 0.01, count: 6, value: 0.004850785
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004849003, trust_error: 0.01, count: 7, value: 0.004849003
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004847996, trust_error: 0.01, count: 8, value: 0.004847996
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004847252, trust_error: 0.01, count: 9, value: 0.004847252
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004846759, trust_error: 0.01, count: 10, value: 0.004846759
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004846476, trust_error: 0.01, count: 11, value: 0.004846476
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004846287, trust_error: 0.01, count: 12, value: 0.004846287
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004846413, trust_error: 0.01, count: 13, value: 0.004846413
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004846098, trust_error: 0.01, count: 14, value: 0.004846098
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.00484613, trust_error: 0.01, count: 15, value: 0.00484613
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004846119, trust_error: 0.01, count: 16, value: 0.004846119
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004846497, trust_error: 0.01, count: 17, value: 0.004846497
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004846098, trust_error: 0.01, count: 18, value: 0.004846098
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004846329, trust_error: 0.01, count: 19, value: 0.004846329
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004846077, trust_error: 0.01, count: 20, value: 0.004846077
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004846182, trust_error: 0.01, count: 21, value: 0.004846182
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004846203, trust_error: 0.01, count: 22, value: 0.004846203
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004846172, trust_error: 0.01, count: 23, value: 0.004846172
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004846077, trust_error: 0.01, count: 24, value: 0.004846077
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004846035, trust_error: 0.01, count: 25, value: 0.004846035
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004845909, trust_error: 0.01, count: 26, value: 0.004845909
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004846329, trust_error: 0.01, count: 27, value: 0.004846329
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004846339, trust_error: 0.01, count: 28, value: 0.004846339
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004846486, trust_error: 0.01, count: 29, value: 0.004846486
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004846109, trust_error: 0.01, count: 30, value: 0.004846109
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004846056, trust_error: 0.01, count: 31, value: 0.004846056
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004845909, trust_error: 0.01, count: 32, value: 0.004845909
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004846287, trust_error: 0.01, count: 33, value: 0.004846287
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004846109, trust_error: 0.01, count: 34, value: 0.004846109
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004846213, trust_error: 0.01, count: 35, value: 0.004846213
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004846245, trust_error: 0.01, count: 36, value: 0.004846245
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004846245, trust_error: 0.01, count: 37, value: 0.004846245
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004846276, trust_error: 0.01, count: 38, value: 0.004846276
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004846518, trust_error: 0.01, count: 39, value: 0.004846518
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004846203, trust_error: 0.01, count: 40, value: 0.004846203
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004846245, trust_error: 0.01, count: 41, value: 0.004846245
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004845888, trust_error: 0.01, count: 42, value: 0.004845888
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004846434, trust_error: 0.01, count: 43, value: 0.004846434
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004846161, trust_error: 0.01, count: 44, value: 0.004846161
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004846067, trust_error: 0.01, count: 45, value: 0.004846067
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004846371, trust_error: 0.01, count: 46, value: 0.004846371
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.004846318, trust_error: 0.01, count: 47, value: 0.004846318
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.00484635, trust_error: 0.01, count: 48, value: 0.00484635
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.00484658, trust_error: 0.01, count: 49, value: 0.00484658
+done setting gs value
+performing setting fg voltage: 0.222222
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+value to write 10001000
+writing to device: TRIG:COUN 1
+writing to device: TRIG:COUN 1
+writing to device: TRIG:COUN 1
+querying from device: MEAS:VOLTAGE:DC?
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.11120925; goal: 0.222222;to set: -3.59300942275649;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.11120142; goal: 0.222222;to set: -3.5933036481853606;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.11236801; goal: 0.222222;to set: -3.549132233448597;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.11838737; goal: 0.222222;to set: -3.310694859609244;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.12731831; goal: 0.222222;to set: -2.9268427631653844;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.13767371; goal: 0.222222;to set: -2.4472392812650843;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.14834304; goal: 0.222222;to set: -1.9379686640483111;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.15821958; goal: 0.222222;to set: -1.4839814614977724;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.16712724; goal: 0.222222;to set: -1.1166705766455776;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.17457495; goal: 0.222222;to set: -0.8563862628640919;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.18075018; goal: 0.222222;to set: -0.6794999608252237;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.18581592; goal: 0.222222;to set: -0.5623799330405586;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.18973454; goal: 0.222222;to set: -0.4889646090725073;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.19278786; goal: 0.222222;to set: -0.4417401537900476;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.19514296; goal: 0.222222;to set: -0.41097767842657085;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.19700849; goal: 0.222222;to set: -0.38992258432129123;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.19853546; goal: 0.222222;to set: -0.37475603189229556;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.19962374; goal: 0.222222;to set: -0.3650304229679353;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.20091817; goal: 0.222222;to set: -0.35458445499246327;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.20208239; goal: 0.222222;to set: -0.34618434754332217;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.2030957; goal: 0.222222;to set: -0.33960405922790926;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.20405991; goal: 0.222222;to set: -0.33394518982497257;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.20503092; goal: 0.222222;to set: -0.328812668149876;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.20572142; goal: 0.222222;to set: -0.3254932816854508;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.20652567; goal: 0.222222;to set: -0.3219580091737111;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.20717222; goal: 0.222222;to set: -0.3193636597113416;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.20794661; goal: 0.222222;to set: -0.31653397261774163;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.20849959; goal: 0.222222;to set: -0.3146907937946475;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.20928449; goal: 0.222222;to set: -0.31231650582039805;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.210038; goal: 0.222222;to set: -0.31029105080153574;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.21070544; goal: 0.222222;to set: -0.3086932129913542;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.21146934; goal: 0.222222;to set: -0.3070775510161914;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.21217425; goal: 0.222222;to set: -0.30577618368801396;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.21284571; goal: 0.222222;to set: -0.304694724388761;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.21355474; goal: 0.222222;to set: -0.303708836207492;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.21415085; goal: 0.222222;to set: -0.30299538621664723;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.21489364; goal: 0.222222;to set: -0.30224245817371376;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.21544364; goal: 0.222222;to set: -0.30177465326301434;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.2161819; goal: 0.222222;to set: -0.30125577418720884;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.21680868; goal: 0.222222;to set: -0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.21749095; goal: 0.222222;to set: -0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.21811897; goal: 0.222222;to set: -0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.21874184; goal: 0.222222;to set: -0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.21933229; goal: 0.222222;to set: -0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.21994662; goal: 0.222222;to set: -0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.22060556; goal: 0.222222;to set: -0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.22120517; goal: 0.222222;to set: -0.3;
+querying from device: MEAS:VOLTAGE:DC?
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0002499099999999921, trust_error: 0.001, count: 0, value: 0.22247191
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0005673699999999837, trust_error: 0.001, count: 1, value: 0.22278937
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0007466899999999943, trust_error: 0.001, count: 2, value: 0.22296869
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.000849729999999993, trust_error: 0.001, count: 3, value: 0.22307173
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0009078899999999945, trust_error: 0.001, count: 4, value: 0.22312989
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0009406200000000031, trust_error: 0.001, count: 5, value: 0.22316262
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0009595599999999982, trust_error: 0.001, count: 6, value: 0.22318156
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0009712899999999858, trust_error: 0.001, count: 7, value: 0.22319329
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0009772700000000023, trust_error: 0.001, count: 8, value: 0.22319927
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0009806599999999943, trust_error: 0.001, count: 9, value: 0.22320266
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0009838500000000083, trust_error: 0.001, count: 10, value: 0.22320585
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0009852899999999998, trust_error: 0.001, count: 11, value: 0.22320729
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0009857100000000008, trust_error: 0.001, count: 12, value: 0.22320771
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0009862200000000099, trust_error: 0.001, count: 13, value: 0.22320822
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.000986739999999986, trust_error: 0.001, count: 14, value: 0.22320874
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.000987249999999995, trust_error: 0.001, count: 15, value: 0.22320925
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.000987349999999998, trust_error: 0.001, count: 16, value: 0.22320935
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.000987349999999998, trust_error: 0.001, count: 17, value: 0.22320935
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0009881800000000052, trust_error: 0.001, count: 18, value: 0.22321018
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0009878700000000018, trust_error: 0.001, count: 19, value: 0.22320987
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0009877600000000042, trust_error: 0.001, count: 20, value: 0.22320976
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.000987349999999998, trust_error: 0.001, count: 21, value: 0.22320935
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0009881800000000052, trust_error: 0.001, count: 22, value: 0.22321018
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.000988280000000008, trust_error: 0.001, count: 23, value: 0.22321028
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0009879700000000047, trust_error: 0.001, count: 24, value: 0.22320997
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0009877600000000042, trust_error: 0.001, count: 25, value: 0.22320976
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0009880700000000076, trust_error: 0.001, count: 26, value: 0.22321007
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0009876600000000013, trust_error: 0.001, count: 27, value: 0.22320966
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0009884900000000085, trust_error: 0.001, count: 28, value: 0.22321049
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0009878700000000018, trust_error: 0.001, count: 29, value: 0.22320987
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.000987349999999998, trust_error: 0.001, count: 30, value: 0.22320935
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0009880700000000076, trust_error: 0.001, count: 31, value: 0.22321007
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0009874599999999956, trust_error: 0.001, count: 32, value: 0.22320946
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.000988280000000008, trust_error: 0.001, count: 33, value: 0.22321028
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0009881800000000052, trust_error: 0.001, count: 34, value: 0.22321018
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0009884900000000085, trust_error: 0.001, count: 35, value: 0.22321049
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0009885899999999836, trust_error: 0.001, count: 36, value: 0.22321059
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0009880700000000076, trust_error: 0.001, count: 37, value: 0.22321007
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.000988380000000011, trust_error: 0.001, count: 38, value: 0.22321038
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0009884900000000085, trust_error: 0.001, count: 39, value: 0.22321049
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0009886899999999865, trust_error: 0.001, count: 40, value: 0.22321069
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0009884900000000085, trust_error: 0.001, count: 41, value: 0.22321049
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0009881800000000052, trust_error: 0.001, count: 42, value: 0.22321018
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0009894099999999961, trust_error: 0.001, count: 43, value: 0.22321141
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0009887899999999894, trust_error: 0.001, count: 44, value: 0.22321079
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0009890999999999928, trust_error: 0.001, count: 45, value: 0.2232111
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0009885899999999836, trust_error: 0.001, count: 46, value: 0.22321059
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0009886899999999865, trust_error: 0.001, count: 47, value: 0.22321069
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0009890999999999928, trust_error: 0.001, count: 48, value: 0.2232111
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0009886899999999865, trust_error: 0.001, count: 49, value: 0.22321069
+done setting ds value
+performing setting ds voltage: 0
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+value to write 10001000
+writing to device: TRIG:COUN 1
+writing to device: TRIG:COUN 1
+writing to device: TRIG:COUN 1
+querying from device: MEAS:VOLTAGE:DC?
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.00484635; goal: 0;to set: 0.3;
+querying from device: MEAS:VOLTAGE:DC?
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003813575, trust_error: 0.01, count: 0, value: 0.003813575
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003765583, trust_error: 0.01, count: 1, value: 0.003765583
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003741666, trust_error: 0.01, count: 2, value: 0.003741666
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003726923, trust_error: 0.01, count: 3, value: 0.003726923
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003718231, trust_error: 0.01, count: 4, value: 0.003718231
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003712778, trust_error: 0.01, count: 5, value: 0.003712778
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003709475, trust_error: 0.01, count: 6, value: 0.003709475
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003706812, trust_error: 0.01, count: 7, value: 0.003706812
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003705784, trust_error: 0.01, count: 8, value: 0.003705784
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003705113, trust_error: 0.01, count: 9, value: 0.003705113
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003704316, trust_error: 0.01, count: 10, value: 0.003704316
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003703887, trust_error: 0.01, count: 11, value: 0.003703887
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.00370396, trust_error: 0.01, count: 12, value: 0.00370396
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003703876, trust_error: 0.01, count: 13, value: 0.003703876
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003704012, trust_error: 0.01, count: 14, value: 0.003704012
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003704044, trust_error: 0.01, count: 15, value: 0.003704044
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003703803, trust_error: 0.01, count: 16, value: 0.003703803
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003703813, trust_error: 0.01, count: 17, value: 0.003703813
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003703708, trust_error: 0.01, count: 18, value: 0.003703708
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.00370375, trust_error: 0.01, count: 19, value: 0.00370375
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.00370352, trust_error: 0.01, count: 20, value: 0.00370352
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003703834, trust_error: 0.01, count: 21, value: 0.003703834
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003703603, trust_error: 0.01, count: 22, value: 0.003703603
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003703897, trust_error: 0.01, count: 23, value: 0.003703897
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003703666, trust_error: 0.01, count: 24, value: 0.003703666
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003703708, trust_error: 0.01, count: 25, value: 0.003703708
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003703687, trust_error: 0.01, count: 26, value: 0.003703687
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003703834, trust_error: 0.01, count: 27, value: 0.003703834
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003703624, trust_error: 0.01, count: 28, value: 0.003703624
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003703792, trust_error: 0.01, count: 29, value: 0.003703792
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003703603, trust_error: 0.01, count: 30, value: 0.003703603
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003703624, trust_error: 0.01, count: 31, value: 0.003703624
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003703478, trust_error: 0.01, count: 32, value: 0.003703478
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003703499, trust_error: 0.01, count: 33, value: 0.003703499
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003703362, trust_error: 0.01, count: 34, value: 0.003703362
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003703635, trust_error: 0.01, count: 35, value: 0.003703635
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003703614, trust_error: 0.01, count: 36, value: 0.003703614
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003703499, trust_error: 0.01, count: 37, value: 0.003703499
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003703415, trust_error: 0.01, count: 38, value: 0.003703415
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003703331, trust_error: 0.01, count: 39, value: 0.003703331
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.00370331, trust_error: 0.01, count: 40, value: 0.00370331
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003703436, trust_error: 0.01, count: 41, value: 0.003703436
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003703331, trust_error: 0.01, count: 42, value: 0.003703331
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003703415, trust_error: 0.01, count: 43, value: 0.003703415
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003703478, trust_error: 0.01, count: 44, value: 0.003703478
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003703394, trust_error: 0.01, count: 45, value: 0.003703394
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003703247, trust_error: 0.01, count: 46, value: 0.003703247
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003703373, trust_error: 0.01, count: 47, value: 0.003703373
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003703058, trust_error: 0.01, count: 48, value: 0.003703058
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003703142, trust_error: 0.01, count: 49, value: 0.003703142
+done setting gs value
+writing to device: SENS:AVERAGE:COUNT 10
+writing to device: SENS:AVERAGE:IRES:RATE 10
+writing to device: FREQ:RES 1600
+writing to device: SENS:FREQ:STAR 0
+writing to device: SENS:FREQ:STOP 1600
+querying from device: CALC1:DATA:HEAD:POIN?
++1601
+writing to device: :INIT
+writing to device: *WAI
+querying from device: CALC1:DATA?
+writing to device: SENS:AVERAGE:COUNT 10
+writing to device: SENS:AVERAGE:IRES:RATE 10
+writing to device: FREQ:RES 1600
+writing to device: SENS:FREQ:STAR 0
+writing to device: SENS:FREQ:STOP 102400
+querying from device: CALC1:DATA:HEAD:POIN?
++1601
+writing to device: :INIT
+writing to device: *WAI
+querying from device: CALC1:DATA?
+performing single measurement
+performing setting ds voltage: 0
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+value to write 10001000
+writing to device: TRIG:COUN 1
+writing to device: TRIG:COUN 1
+writing to device: TRIG:COUN 1
+querying from device: MEAS:VOLTAGE:DC?
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.003702775; goal: 0;to set: 0.3;
+querying from device: MEAS:VOLTAGE:DC?
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003520643, trust_error: 0.01, count: 0, value: 0.003520643
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003516942, trust_error: 0.01, count: 1, value: 0.003516942
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003514446, trust_error: 0.01, count: 2, value: 0.003514446
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003512601, trust_error: 0.01, count: 3, value: 0.003512601
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003511594, trust_error: 0.01, count: 4, value: 0.003511594
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003511238, trust_error: 0.01, count: 5, value: 0.003511238
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003510755, trust_error: 0.01, count: 6, value: 0.003510755
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003510231, trust_error: 0.01, count: 7, value: 0.003510231
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003510315, trust_error: 0.01, count: 8, value: 0.003510315
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003510147, trust_error: 0.01, count: 9, value: 0.003510147
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003510315, trust_error: 0.01, count: 10, value: 0.003510315
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003510063, trust_error: 0.01, count: 11, value: 0.003510063
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003509854, trust_error: 0.01, count: 12, value: 0.003509854
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003509896, trust_error: 0.01, count: 13, value: 0.003509896
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003510042, trust_error: 0.01, count: 14, value: 0.003510042
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003510084, trust_error: 0.01, count: 15, value: 0.003510084
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003510032, trust_error: 0.01, count: 16, value: 0.003510032
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003509833, trust_error: 0.01, count: 17, value: 0.003509833
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003510021, trust_error: 0.01, count: 18, value: 0.003510021
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003510063, trust_error: 0.01, count: 19, value: 0.003510063
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003509958, trust_error: 0.01, count: 20, value: 0.003509958
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003510042, trust_error: 0.01, count: 21, value: 0.003510042
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003510252, trust_error: 0.01, count: 22, value: 0.003510252
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003509749, trust_error: 0.01, count: 23, value: 0.003509749
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003509822, trust_error: 0.01, count: 24, value: 0.003509822
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003510189, trust_error: 0.01, count: 25, value: 0.003510189
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003510084, trust_error: 0.01, count: 26, value: 0.003510084
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003509969, trust_error: 0.01, count: 27, value: 0.003509969
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003509833, trust_error: 0.01, count: 28, value: 0.003509833
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003509749, trust_error: 0.01, count: 29, value: 0.003509749
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003509979, trust_error: 0.01, count: 30, value: 0.003509979
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003510126, trust_error: 0.01, count: 31, value: 0.003510126
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003510053, trust_error: 0.01, count: 32, value: 0.003510053
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003509833, trust_error: 0.01, count: 33, value: 0.003509833
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003510042, trust_error: 0.01, count: 34, value: 0.003510042
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003510126, trust_error: 0.01, count: 35, value: 0.003510126
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003509875, trust_error: 0.01, count: 36, value: 0.003509875
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003509927, trust_error: 0.01, count: 37, value: 0.003509927
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003509917, trust_error: 0.01, count: 38, value: 0.003509917
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003510063, trust_error: 0.01, count: 39, value: 0.003510063
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003509979, trust_error: 0.01, count: 40, value: 0.003509979
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003510116, trust_error: 0.01, count: 41, value: 0.003510116
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003510137, trust_error: 0.01, count: 42, value: 0.003510137
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003510189, trust_error: 0.01, count: 43, value: 0.003510189
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003510042, trust_error: 0.01, count: 44, value: 0.003510042
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003510021, trust_error: 0.01, count: 45, value: 0.003510021
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003510189, trust_error: 0.01, count: 46, value: 0.003510189
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003510095, trust_error: 0.01, count: 47, value: 0.003510095
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003510168, trust_error: 0.01, count: 48, value: 0.003510168
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.003509875, trust_error: 0.01, count: 49, value: 0.003509875
+done setting gs value
+performing setting fg voltage: 0.333333
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+value to write 10001000
+writing to device: TRIG:COUN 1
+writing to device: TRIG:COUN 1
+writing to device: TRIG:COUN 1
+querying from device: MEAS:VOLTAGE:DC?
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.22322881; goal: 0.333333;to set: -3.5586624298355853;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.22338404; goal: 0.333333;to set: -3.552753308586062;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.22692775; goal: 0.333333;to set: -3.4146476045478806;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.23450115; goal: 0.333333;to set: -3.0997728191335265;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.24440783; goal: 0.333333;to set: -2.653343272713317;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.25530468; goal: 0.333333;to set: -2.135774208456127;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.26587427; goal: 0.333333;to set: -1.6388112790977933;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.27517519; goal: 0.333333;to set: -1.236937124407568;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.28298101; goal: 0.333333;to set: -0.9452784408411121;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.28929961; goal: 0.333333;to set: -0.7483737470446084;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.29429147; goal: 0.333333;to set: -0.6201480153192565;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.29829696; goal: 0.333333;to set: -0.5350349407253976;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.30140638; goal: 0.333333;to set: -0.4796492875595053;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.30389169; goal: 0.333333;to set: -0.441841182275577;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.30596456; goal: 0.333333;to set: -0.4145017308319776;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.30783318; goal: 0.333333;to set: -0.39297029339094625;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.30939556; goal: 0.333333;to set: -0.3771243623609637;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.31069822; goal: 0.333333;to set: -0.3653425906326966;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.31174118; goal: 0.333333;to set: -0.35680580890394964;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.31281605; goal: 0.333333;to set: -0.34880660178206657;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.31384419; goal: 0.333333;to set: -0.3418820529182973;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.31490249; goal: 0.333333;to set: -0.33546308153393056;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.31591395; goal: 0.333333;to set: -0.329968078745547;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.316995; goal: 0.333333;to set: -0.3247503670784413;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.31805021; goal: 0.333333;to set: -0.3202738083308647;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.31877622; goal: 0.333333;to set: -0.31752803602186663;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.31953744; goal: 0.333333;to set: -0.3149263663703836;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.32014467; goal: 0.333333;to set: -0.3130451535909664;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.32097547; goal: 0.333333;to set: -0.310736212307801;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.32184303; goal: 0.333333;to set: -0.30863322894623035;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.32256894; goal: 0.333333;to set: -0.30710005773862115;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.32333345; goal: 0.333333;to set: -0.30569353776545505;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.32398844; goal: 0.333333;to set: -0.3046472624300183;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.32469892; goal: 0.333333;to set: -0.3036664318588622;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.3255593; goal: 0.333333;to set: -0.3026764196846887;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.32646824; goal: 0.333333;to set: -0.30184336127105915;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.32734588; goal: 0.333333;to set: -0.30122302560468395;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.32808713; goal: 0.333333;to set: -0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.32875777; goal: 0.333333;to set: -0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.32937981; goal: 0.333333;to set: -0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.32984385; goal: 0.333333;to set: -0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.33050276; goal: 0.333333;to set: -0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.33120129; goal: 0.333333;to set: -0.3;
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.33187522; goal: 0.333333;to set: -0.3;
+querying from device: MEAS:VOLTAGE:DC?
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.00011300999999996897, trust_error: 0.001, count: 0, value: 0.33321999
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0003447500000000048, trust_error: 0.001, count: 1, value: 0.33367775
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0005866500000000219, trust_error: 0.001, count: 2, value: 0.33391965
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0007155300000000198, trust_error: 0.001, count: 3, value: 0.33404853
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.000783160000000005, trust_error: 0.001, count: 4, value: 0.33411616
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0008189800000000247, trust_error: 0.001, count: 5, value: 0.33415198
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0008350400000000091, trust_error: 0.001, count: 6, value: 0.33416804
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0008434800000000076, trust_error: 0.001, count: 7, value: 0.33417648
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0008460499999999871, trust_error: 0.001, count: 8, value: 0.33417905
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0008463599999999905, trust_error: 0.001, count: 9, value: 0.33417936
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0008447100000000263, trust_error: 0.001, count: 10, value: 0.33417771
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0008440900000000195, trust_error: 0.001, count: 11, value: 0.33417709
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0008416199999999874, trust_error: 0.001, count: 12, value: 0.33417462
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0008408000000000304, trust_error: 0.001, count: 13, value: 0.3341738
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0008395700000000117, trust_error: 0.001, count: 14, value: 0.33417257
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.000837919999999992, trust_error: 0.001, count: 15, value: 0.33417092
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0008368900000000346, trust_error: 0.001, count: 16, value: 0.33416989
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0008350400000000091, trust_error: 0.001, count: 17, value: 0.33416804
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0008346200000000081, trust_error: 0.001, count: 18, value: 0.33416762
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0008331799999999889, trust_error: 0.001, count: 19, value: 0.33416618
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0008325700000000325, trust_error: 0.001, count: 20, value: 0.33416557
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0008317400000000252, trust_error: 0.001, count: 21, value: 0.33416474
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.000831330000000019, trust_error: 0.001, count: 22, value: 0.33416433
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.000830300000000006, trust_error: 0.001, count: 23, value: 0.3341633
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0008296799999999993, trust_error: 0.001, count: 24, value: 0.33416268
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0008288599999999868, trust_error: 0.001, count: 25, value: 0.33416186
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0008276200000000289, trust_error: 0.001, count: 26, value: 0.33416062
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0008276200000000289, trust_error: 0.001, count: 27, value: 0.33416062
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0008263900000000102, trust_error: 0.001, count: 28, value: 0.33415939
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0008261800000000097, trust_error: 0.001, count: 29, value: 0.33415918
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0008257700000000034, trust_error: 0.001, count: 30, value: 0.33415877
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.000824949999999991, trust_error: 0.001, count: 31, value: 0.33415795
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0008245399999999847, trust_error: 0.001, count: 32, value: 0.33415754
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0008243299999999842, trust_error: 0.001, count: 33, value: 0.33415733
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0008228900000000205, trust_error: 0.001, count: 34, value: 0.33415589
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0008226800000000201, trust_error: 0.001, count: 35, value: 0.33415568
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0008220700000000081, trust_error: 0.001, count: 36, value: 0.33415507
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0008216500000000071, trust_error: 0.001, count: 37, value: 0.33415465
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0008210399999999951, trust_error: 0.001, count: 38, value: 0.33415404
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0008208299999999946, trust_error: 0.001, count: 39, value: 0.33415383
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0008202099999999879, trust_error: 0.001, count: 40, value: 0.33415321
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0008198000000000372, trust_error: 0.001, count: 41, value: 0.3341528
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0008196000000000314, trust_error: 0.001, count: 42, value: 0.3341526
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0008193900000000309, trust_error: 0.001, count: 43, value: 0.33415239
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0008193900000000309, trust_error: 0.001, count: 44, value: 0.33415239
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0008189800000000247, trust_error: 0.001, count: 45, value: 0.33415198
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.000818360000000018, trust_error: 0.001, count: 46, value: 0.33415136
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0008179500000000117, trust_error: 0.001, count: 47, value: 0.33415095
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0008181500000000175, trust_error: 0.001, count: 48, value: 0.33415115
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.000818360000000018, trust_error: 0.001, count: 49, value: 0.33415136
+done setting ds value
+performing setting ds voltage: 0
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+value to write 10001000
+writing to device: TRIG:COUN 1
+writing to device: TRIG:COUN 1
+writing to device: TRIG:COUN 1
+querying from device: MEAS:VOLTAGE:DC?
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.00351021; goal: 0;to set: 0.3;
+querying from device: MEAS:VOLTAGE:DC?
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.00226884, trust_error: 0.01, count: 0, value: 0.00226884
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002237048, trust_error: 0.01, count: 1, value: 0.002237048
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002216874, trust_error: 0.01, count: 2, value: 0.002216874
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002204239, trust_error: 0.01, count: 3, value: 0.002204239
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002196574, trust_error: 0.01, count: 4, value: 0.002196574
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002191384, trust_error: 0.01, count: 5, value: 0.002191384
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002188154, trust_error: 0.01, count: 6, value: 0.002188154
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002186162, trust_error: 0.01, count: 7, value: 0.002186162
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002185124, trust_error: 0.01, count: 8, value: 0.002185124
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002184359, trust_error: 0.01, count: 9, value: 0.002184359
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002183656, trust_error: 0.01, count: 10, value: 0.002183656
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002183331, trust_error: 0.01, count: 11, value: 0.002183331
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002183069, trust_error: 0.01, count: 12, value: 0.002183069
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002183048, trust_error: 0.01, count: 13, value: 0.002183048
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002183027, trust_error: 0.01, count: 14, value: 0.002183027
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002182608, trust_error: 0.01, count: 15, value: 0.002182608
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002182859, trust_error: 0.01, count: 16, value: 0.002182859
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002182754, trust_error: 0.01, count: 17, value: 0.002182754
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002182419, trust_error: 0.01, count: 18, value: 0.002182419
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002182587, trust_error: 0.01, count: 19, value: 0.002182587
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002182859, trust_error: 0.01, count: 20, value: 0.002182859
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002182692, trust_error: 0.01, count: 21, value: 0.002182692
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002182754, trust_error: 0.01, count: 22, value: 0.002182754
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002182765, trust_error: 0.01, count: 23, value: 0.002182765
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002182482, trust_error: 0.01, count: 24, value: 0.002182482
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002182503, trust_error: 0.01, count: 25, value: 0.002182503
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002182975, trust_error: 0.01, count: 26, value: 0.002182975
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002182796, trust_error: 0.01, count: 27, value: 0.002182796
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.00218265, trust_error: 0.01, count: 28, value: 0.00218265
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002182859, trust_error: 0.01, count: 29, value: 0.002182859
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002182733, trust_error: 0.01, count: 30, value: 0.002182733
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002182712, trust_error: 0.01, count: 31, value: 0.002182712
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002182838, trust_error: 0.01, count: 32, value: 0.002182838
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.00218288, trust_error: 0.01, count: 33, value: 0.00218288
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002182524, trust_error: 0.01, count: 34, value: 0.002182524
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002182712, trust_error: 0.01, count: 35, value: 0.002182712
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002182629, trust_error: 0.01, count: 36, value: 0.002182629
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002182482, trust_error: 0.01, count: 37, value: 0.002182482
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002182754, trust_error: 0.01, count: 38, value: 0.002182754
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002182608, trust_error: 0.01, count: 39, value: 0.002182608
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002182671, trust_error: 0.01, count: 40, value: 0.002182671
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002182817, trust_error: 0.01, count: 41, value: 0.002182817
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002182545, trust_error: 0.01, count: 42, value: 0.002182545
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002182545, trust_error: 0.01, count: 43, value: 0.002182545
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002182587, trust_error: 0.01, count: 44, value: 0.002182587
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002182712, trust_error: 0.01, count: 45, value: 0.002182712
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002183048, trust_error: 0.01, count: 46, value: 0.002183048
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002182461, trust_error: 0.01, count: 47, value: 0.002182461
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002182692, trust_error: 0.01, count: 48, value: 0.002182692
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.002182608, trust_error: 0.01, count: 49, value: 0.002182608
+done setting gs value
+writing to device: SENS:AVERAGE:COUNT 10
+writing to device: SENS:AVERAGE:IRES:RATE 10
+writing to device: FREQ:RES 1600
+writing to device: SENS:FREQ:STAR 0
+writing to device: SENS:FREQ:STOP 1600
+querying from device: CALC1:DATA:HEAD:POIN?
++1601
+writing to device: :INIT
+writing to device: *WAI
+querying from device: CALC1:DATA?
+writing to device: SENS:AVERAGE:COUNT 10
+writing to device: SENS:AVERAGE:IRES:RATE 10
+writing to device: FREQ:RES 1600
+writing to device: SENS:FREQ:STAR 0
+writing to device: SENS:FREQ:STOP 102400
+querying from device: CALC1:DATA:HEAD:POIN?
++1601
 writing to device: :INIT
 writing to device: *WAI
 querying from device: CALC1:DATA?

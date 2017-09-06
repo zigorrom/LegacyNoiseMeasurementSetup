@@ -760,7 +760,7 @@ class PerformExperiment(Experiment):
         self.send_start_measurement_info()
 
         counter = 0
-        screen_update = 2;
+        screen_update = 10;
         total_averaging = 10;
         dev = self.analyzer
         
