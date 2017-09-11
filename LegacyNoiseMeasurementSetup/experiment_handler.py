@@ -695,21 +695,21 @@ class PerformExperiment(Experiment):
         Experiment.__init__(self,False, input_data_queue, stop_event)  
 
     def initialize_hardware(self):
-        assert isinstance(self.__hardware_settings, HardwareSettings)
+        assert isinstance(self.hardware_settings, HardwareSettings)
 
-        resource = self.__hardware_settings.fans_controller_resource
+        resource = self.hardware_settings.fans_controller_resource
         #resource =  "USB0::0x0957::0x1718::TW52524501::INSTR"    #self._gpib_resources[selected_resource]
         self._fans_controller = FANS_CONTROLLER(resource)
-        resource = self.__hardware_settings.main_sample_multimeter_resource
+        resource = self.hardware_settings.main_sample_multimeter_resource
         #resource = "GPIB0::23::INSTR" #self._gpib_resources[selected_resource]
         self.ds_mult = HP34401A(resource)
-        resource = self.__hardware_settings.gate_multimeter_resource
+        resource = self.hardware_settings.gate_multimeter_resource
         self.gs_mult = HP34401A(resource)
 
-        sample_motor_pin = self.__hardware_settings.sample_motor_channel
-        gate_motor_pin = self.__hardware_settings.gate_motor_channel
-        sample_relay = self.__hardware_settings.sample_relay_channel
-        gate_relay = self.__hardware_settings.gate_relay_channel
+        sample_motor_pin = self.hardware_settings.sample_motor_channel
+        gate_motor_pin = self.hardware_settings.gate_motor_channel
+        sample_relay = self.hardware_settings.sample_relay_channel
+        gate_relay = self.hardware_settings.gate_relay_channel
 
         self._fans_smu = HybridSMU_System(self._fans_controller, AO_BOX_CHANNELS.ao_ch_1, AO_BOX_CHANNELS.ao_ch_4, self.ds_mult, AO_BOX_CHANNELS.ao_ch_9, AO_BOX_CHANNELS.ao_ch_12, self.gs_mult, self.ds_mult, 5000)
         #self._fans_smu = ManualSMU(self._fans_controller, AO_BOX_CHANNELS.ao_ch_1, AO_BOX_CHANNELS.ao_ch_4,AO_BOX_CHANNELS.ao_ch_9, AO_BOX_CHANNELS.ao_ch_12, 5000)
