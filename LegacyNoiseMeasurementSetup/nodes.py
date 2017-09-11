@@ -524,6 +524,7 @@ class HardwareSettings(Node):
 
     @sample_motor_channel.setter
     def sample_motor_channel(self,value):
+        value = int(value)
         self.__sample_motor_channel = value
 
 
@@ -534,6 +535,7 @@ class HardwareSettings(Node):
 
     @sample_relay_channel.setter
     def sample_relay_channel(self,value):
+        value = int(value)
         self.__sample_relay_channel = value
 
 
@@ -544,6 +546,7 @@ class HardwareSettings(Node):
 
     @gate_motor_channel.setter
     def gate_motor_channel(self,value):
+        value = int(value)
         self.__gate_motor_channel = value
 
     #self.__gate_relay_channel = 0
@@ -553,6 +556,7 @@ class HardwareSettings(Node):
 
     @gate_relay_channel.setter
     def gate_relay_channel(self,value):
+        value = int(value)
         self.__gate_relay_channel = value
   
     def data(self, column):

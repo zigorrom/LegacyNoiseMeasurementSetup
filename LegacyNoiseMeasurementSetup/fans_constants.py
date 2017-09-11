@@ -1,4 +1,4 @@
-from n_enum import enum
+﻿from n_enum import enum
 from agilent_u2542a import *
 from agilent_u2542a_constants import *
 
@@ -37,6 +37,11 @@ NUMBER_OF_SWITCH_CHANNELS = 8
 BOX_AO_CHANNEL_MAP = dict((i , AO_CHANNELS.AO_202 if i<NUMBER_OF_SWITCH_CHANNELS else AO_CHANNELS.AO_201)  for i in range(16))
 
 AO_BOX_CHANNELS = enum(*["ao_ch_{0}".format(i) for i in range(1,17)])
+
+def get_ao_box_channel_from_number(number):
+    if number<1 or number>16:
+        return None
+    return AO_BOX_CHANNELS[number-1]
 
 FANS_AI_FUNCTIONS = enum("DrainSourceVoltage","MainVoltage","GateVoltage")
 

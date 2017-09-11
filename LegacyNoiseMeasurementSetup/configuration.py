@@ -8,11 +8,14 @@ configuration_filename = "config.exp"
 
 class Configuration(object):
     
-    def __init__(self):
+    def __init__(self, text = None):
 
         self.rootNode = None
-        fileExist = self._config_file_exist()
-        if fileExist:
+        if text:
+            print("configuration from variable")
+            self.rootNode = self._load_config_text(text)
+
+        elif self._config_file_exist():
             print("reading file")
             self.rootNode = self._read_config_file()
         else:
@@ -29,6 +32,12 @@ class Configuration(object):
     
     def _config_file_exist(self):
         return os.path.isfile(configuration_filename)
+
+    def _load_config_text(self,text):
+        if text:
+            serializer = XmlNodeSerializer()
+            node = serializer.deserialize(text)
+            return node
 
     def _read_config_file(self):
         with open(configuration_filename,"r") as cfg:

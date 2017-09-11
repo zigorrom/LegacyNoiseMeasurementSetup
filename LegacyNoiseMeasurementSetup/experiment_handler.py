@@ -69,7 +69,7 @@ class ExperimentController(QtCore.QObject):
         self._processing_thread.endMeasurementDataArrived.connect(self._on_end_measurement_info_received)
         
         self._processing_thread.resulting_spectrum_update.connect(self._on_update_resulting_spectrum)
-
+        self._processing_thread.log_message_received.connect(self._on_log_message_received)
 
         self._processing_thread.commandReceived.connect(self._command_received)
 
@@ -78,6 +78,11 @@ class ExperimentController(QtCore.QObject):
 
     def _command_received(self,cmd):
         self._status_object.send_message("Command received: {0}".format(ExperimentCommands[cmd]))
+
+    def _on_log_message_received(self, message):
+        print("received log message")
+        print(message)
+        self._status_object.send_message(message)
 
     def _on_experiment_started(self, params): #experiment_name = "", **kwargs):
         
@@ -178,6 +183,7 @@ class ProcessingThread(QtCore.QThread):
     startMeasurementDataArrived = QtCore.pyqtSignal(MeasurementInfo)
     endMeasurementDataArrived = QtCore.pyqtSignal(MeasurementInfo)
     resulting_spectrum_update = QtCore.pyqtSignal(dict)
+    log_message_received = QtCore.pyqtSignal(str)
 
     def __init__(self, input_data_queue = None,visualization_queue = None, parent = None):
         super().__init__(parent)
@@ -240,6 +246,11 @@ class ProcessingThread(QtCore.QThread):
                      
                 elif cmd is ExperimentCommands.SPECTRUM_DATA:
                     self.resulting_spectrum_update.emit(data)
+                
+                elif cmd is ExperimentCommands.LOG_MESSAGE:
+                    self.log_message_received.emit(param)
+
+
 
             except EOFError as e:
                 print(str(e))
@@ -258,8 +269,11 @@ class LoggingQueuedStream:
         self._log_queue = data_queue
 
     def write(self, txt):
-        self._log_queue.q.put_nowait({COMMAND:ExperimentCommands.MESSAGE, PARAMETER:txt})
+        if self._log_queue:
+            self._log_queue.put_nowait({COMMAND:ExperimentCommands.LOG_MESSAGE, PARAMETER:txt})
         
+    def flush(self):
+        pass
 
 
 class ExperimentHandler(Process):
@@ -273,7 +287,11 @@ class ExperimentHandler(Process):
         self._exit.set()
 
     def run(self):
-        sys.stdout = open("log.txt", "w")#LoggingQueuedStream(self._input_data_queue) #open("log.txt", "w")
+        if self._input_data_queue:
+            sys.stdout = LoggingQueuedStream(self._input_data_queue) #open("log.txt", "w")
+        else:
+            sys.stdout = open("log.txt", "w")
+
         cfg = Configuration()
         exp_settings = cfg.get_node_from_path("Settings.ExperimentSettings")
         assert isinstance(exp_settings, ExperimentSettings)
@@ -455,6 +473,7 @@ class Experiment:
         else:
             raise ValueError("range handlers are not properly defined")
 
+
     def non_gated_structure_meaurement_function(self):
         if self.__exp_settings.use_set_vds_range:
              for vds in self.__exp_settings.vds_range:
@@ -464,7 +483,15 @@ class Experiment:
         else:
             self.non_gated_single_value_measurement(self.__exp_settings.drain_source_voltage)
 
+
+    def handle_measurement_abort(self):
+        raise NotImplementedError()
+
     def switch_transistor(self,transistor):
+        raise NotImplementedError()
+
+    #value: sample or main
+    def switch_voltage_measurement_relay_to(self, value):
         raise NotImplementedError()
 
     def prepare_to_set_voltages(self):
@@ -472,6 +499,8 @@ class Experiment:
 
     def prepare_to_measure_voltages(self):
         raise NotImplementedError()
+
+    
 
     def prepare_to_measure_spectrum(self):
         raise NotImplementedError()
@@ -485,10 +514,46 @@ class Experiment:
     def set_drain_source_voltage(self,voltage):
         raise NotImplementedError()
 
-    def single_value_measurement(self, drain_source_voltage, gate_voltage):
+    def perform_single_value_measurement(self):
+        
+
         raise NotImplementedError()
 
+    def perform_non_gated_single_value_measurement(self):
+        raise NotImplementedError()
+
+
+    ##replace name to prepare_single_value_measurement
+    def single_value_measurement(self, drain_source_voltage, gate_voltage):
+        if self.need_exit:
+            return
+        #assert isinstance(self.experiment_settings, ExperimentSettings)
+        if not self.experiment_settings.use_automated_voltage_control:
+            self.perform_single_value_measurement()
+        else:
+
+            self.prepare_to_set_voltages()
+
+            self.set_drain_source_voltage(drain_source_voltage)
+            self.set_front_gate_voltage(gate_voltage)
+            #specific of measurement setup!!!
+            self.set_drain_source_voltage(drain_source_voltage)
+
+            self.prepare_to_measure_voltages()
+
+            self.perform_single_value_measurement()
+
+        raise NotImplementedError()
+
+
+
+    ##replace name to prepare_non_gated_single_value_measurement
     def non_gated_single_value_measurement(self, drain_source_voltage):
+        if self.need_exit:
+            return
+
+
+
         raise NotImplementedError()
 
     def _send_command(self,command):
@@ -608,7 +673,8 @@ class Experiment:
         print(self.__exp_settings.meas_gated_structure)
         print(self.__exp_settings.meas_characteristic_type)
         print(self.__exp_settings.use_transistor_selector)
-       
+        print(self.__exp_settings.use_automated_voltage_control)
+
         if not self.__exp_settings.meas_gated_structure:# non gated structure measurement
             func = self.non_gated_structure_meaurement_function
         elif self.__exp_settings.meas_characteristic_type == 0: #output curve
@@ -706,14 +772,14 @@ class PerformExperiment(Experiment):
         resource = self.hardware_settings.gate_multimeter_resource
         self.gs_mult = HP34401A(resource)
 
-        sample_motor_pin = self.hardware_settings.sample_motor_channel
-        gate_motor_pin = self.hardware_settings.gate_motor_channel
-        sample_relay = self.hardware_settings.sample_relay_channel
-        gate_relay = self.hardware_settings.gate_relay_channel
+        sample_motor_pin = get_ao_box_channel_from_number(self.hardware_settings.sample_motor_channel)
+        gate_motor_pin = get_ao_box_channel_from_number(self.hardware_settings.gate_motor_channel)
+        sample_relay = get_ao_box_channel_from_number(self.hardware_settings.sample_relay_channel)
+        gate_relay = get_ao_box_channel_from_number(self.hardware_settings.gate_relay_channel)
 
         self._fans_smu = HybridSMU_System(self._fans_controller, AO_BOX_CHANNELS.ao_ch_1, AO_BOX_CHANNELS.ao_ch_4, self.ds_mult, AO_BOX_CHANNELS.ao_ch_9, AO_BOX_CHANNELS.ao_ch_12, self.gs_mult, self.ds_mult, 5000)
         #self._fans_smu = ManualSMU(self._fans_controller, AO_BOX_CHANNELS.ao_ch_1, AO_BOX_CHANNELS.ao_ch_4,AO_BOX_CHANNELS.ao_ch_9, AO_BOX_CHANNELS.ao_ch_12, 5000)
-        resource = "GPIB0::6::INSTR"
+        resource = self.hardware_settings.dsa_resource
         self.analyzer = HP3567A(resource)
         self.init_analyzer()
 
@@ -777,14 +843,17 @@ class PerformExperiment(Experiment):
         
         self.send_start_measurement_info()
 
-        counter = 0
-        screen_update = 10;
-        total_averaging = 10;
+        assert isinstance(self.experiment_settings, ExperimentSettings)
+
+        #counter = 0
+        screen_update = self.experiment_settings.display_refresh  #10;
+        total_averaging = self.experiment_settings.averages;
         dev = self.analyzer
         
         #self._spectrum_ranges = {0: (1,1600,1),1:(64,102400,64)}
         for rng, (start,stop,step) in self._spectrum_ranges.items():
-            dev.set_average_count(screen_update)
+            #dev.set_average_count(screen_update)
+            dev.set_average_count(total_averaging)
             dev.set_display_update_rate(screen_update)
             resolution = int(stop/step)
             dev.set_frequency_resolution(resolution)
@@ -792,14 +861,20 @@ class PerformExperiment(Experiment):
             dev.set_frequency_stop(stop)
                 
             print(dev.get_points_number(HP35670A_CALC.CALC1))
-            while counter < total_averaging:
-                dev.init_instrument()
-                dev.wait_operation_complete()
-                data = dev.get_data(HP35670A_CALC.CALC1)
-                self.update_spectrum(data, rng, screen_update)
-                counter += screen_update
 
-            counter = 0
+            dev.init_instrument()
+            dev.wait_operation_complete()
+            data = dev.get_data(HP35670A_CALC.CALC1)
+            self.update_spectrum(data, rng, screen_update)
+
+            #while counter < total_averaging:
+            #    dev.init_instrument()
+            #    dev.wait_operation_complete()
+            #    data = dev.get_data(HP35670A_CALC.CALC1)
+            #    self.update_spectrum(data, rng, screen_update)
+            #    counter += screen_update
+
+            #counter = 0
                 
         
         
@@ -843,12 +918,20 @@ if __name__ == "__main__":
     
     cfg = Configuration()
     #exp = SimulateExperiment(None,None)
-    exp = PerformExperiment(None,None)
-    exp.initialize_settings(cfg)
-    exp.initialize_hardware()
-    exp.initialize_calibration()
 
-    exp.perform_experiment()
+    eh = ExperimentHandler(None)
+    eh.run()
+    
+    #exp = PerformExperiment(None,None)
+    #exp.initialize_settings(cfg)
+    #exp.initialize_hardware()
+    #exp.initialize_calibration()
+
+    #exp.perform_experiment()
+
+
+
+
 
     #cfg = Configuration()
     #exp = ExperimentProcess(simulate = True)

@@ -174,9 +174,11 @@ class MainView(mainViewBase,mainViewForm):
         #idx = QtCore.QModelIndex()
         #self._viewModel.dataChanged.emit(idx,idx)
         
-    def _on_message_arrived(self,message, timeout = 1000):
+    def _on_message_arrived(self,message, timeout = 0):
         #assert isinstance(self.statusbar, QtGui.QStatusBar)
+        #print("in message handler\n ******************************************")
         self.statusbar.showMessage(message, timeout)
+
         #print("message_arrived")
 
 
@@ -341,11 +343,11 @@ class HardwareSettingsView(HardwareSettingsBase, HardwareSettingsForm):
         super(HardwareSettingsBase,self).__init__(parent)
         self.setupUi(self)
         gpib_resources = get_available_gpib_resources()
-        com_resources = get_available_com_resources()
+        #com_resources = get_available_com_resources()
         self.ui_analyzer.addItems(gpib_resources)
         self.ui_sample_main.addItems(gpib_resources)
         self.ui_gate.addItems(gpib_resources)
-        self.ui_fans_controller.addItems(com_resources)
+        self.ui_fans_controller.addItems(gpib_resources)
         self._dataMapper = QtGui.QDataWidgetMapper()
 
     def setSelection(self, current):

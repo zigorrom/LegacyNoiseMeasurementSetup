@@ -27,6 +27,8 @@ class SpectrumPlotWidget:
         self.create_plot()
         self.create_curves()
 
+        self.roi = None
+        self.create_roi()
         
 
     def create_curves(self):
@@ -46,6 +48,9 @@ class SpectrumPlotWidget:
         for rang, curve in self.curves.items():
             curve.clear()
 
+    def create_roi(self):
+        self.roi = pg.LineROI([0.2, -17], [4, -17],width = 0, pen=pg.mkPen('b'))
+        self.plot.addItem(self.roi)
 
     def create_plot(self):
         """Create main spectrum plot"""
