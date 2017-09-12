@@ -80,9 +80,10 @@ class ExperimentController(QtCore.QObject):
         self._status_object.send_message("Command received: {0}".format(ExperimentCommands[cmd]))
 
     def _on_log_message_received(self, message):
-        print("received log message")
-        print(message)
-        self._status_object.send_message(message)
+        if message:
+            print("received log message")
+            print(message)
+            self._status_object.send_message(message)
 
     def _on_experiment_started(self, params): #experiment_name = "", **kwargs):
         
