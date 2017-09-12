@@ -31,12 +31,89 @@ class MeasurementInfo:
 
         self._load_resistance = load_resistance
 
+    def update_start_values(self, main_voltage, sample_voltage, gate_voltage):
+        self.start_main_voltage = main_voltage
+        self.start_gate_voltage = gate_voltage
+        self.start_sample_voltage = sample_voltage
+        current, sample_resistance, equivalent_resistance = self._calculate_current_resistance(main_voltage, sample_voltage, self._load_resistance)
+        self.sample_current_start = current
+        self.sample_resistance_start = sample_resistance
+        self.equivalent_resistance_start = equivalent_resistance
+
+
+
+    def update_end_values(self, main_voltage, sample_voltage, gate_voltage):
+        self.end_main_voltage = main_voltage
+        self.end_gate_voltage = gate_voltage
+        self.end_sample_voltage = sample_voltage
+        current, sample_resistance, equivalent_resistance = self._calculate_current_resistance(main_voltage, sample_voltage, self._load_resistance)
+        self.sample_current_end = current
+        self.sample_resistance_end = sample_resistance
+        self.equivalent_resistance_end = equivalent_resistance
+
 
     def _calculate_current_resistance(self, main_voltage, sample_voltage, load_resistance):
         current = (main_voltage-sample_voltage)/load_resistance
         sample_resistance = sample_voltage/current
         equivalent_resistance = sample_resistance*load_resistance/(sample_resistance+load_resistance)
         return current, sample_resistance, equivalent_resistance
+
+
+    @property
+    def sample_current_start(self):
+        return self._sample_current_start
+
+    @sample_current_start.setter
+    def sample_current_start(self,value):
+        self._sample_current_start = value
+
+    @property
+    def sample_current_end(self):
+        return self._sample_current_end
+
+    @sample_current_end.setter
+    def sample_current_end(self,value):
+        self._sample_current_end = value
+
+
+    @property
+    def equivalent_resistance_start(self):
+        return self._equivalent_resistance_start
+
+    @equivalent_resistance_start.setter
+    def equivalent_resistance_start(self,value):
+        self._equivalent_resistance_start = value
+
+    @property
+    def equivalent_resistance_end(self):
+        return self._equivalent_resistance_end
+
+    @equivalent_resistance_end.setter
+    def equivalent_resistance_end(self,value):
+        self._equivalent_resistance_end = value
+
+
+    @property
+    def sample_resistance_start(self):
+        return self._sample_resistance_start
+
+    @sample_resistance_start.setter
+    def sample_resistance_start(self,value):
+        self._sample_resistance_start = value
+
+    @property
+    def sample_resistance_end(self):
+        return self._sample_resistance_end
+
+    @sample_resistance_end.setter
+    def sample_resistance_end(self,value):
+        self._sample_resistance_end = value
+
+
+
+
+
+
 
     @property
     def measurement_count(self):
@@ -136,10 +213,10 @@ class MeasurementInfo:
 
     def __str__(self):
         list = [self.start_sample_voltage, 
-                self._sample_current_start,
+                self.sample_current_start,
                 self._equivalent_resistance_start,
                 generate_measurement_info_filename(self.measurement_filename, self.measurement_count,self._measurement_file_extension),
-                None,
+                self._load_resistance,
                 self.end_main_voltage,
                 self.start_sample_voltage,
                 self.start_main_voltage,
