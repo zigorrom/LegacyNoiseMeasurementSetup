@@ -8,7 +8,7 @@ from arduino_controller import ArduinoController
 from fans_smu import HybridSMU_System
 from fans_controller import FANS_AO_channel, FANS_CONTROLLER
 from fans_constants import *
-from hp35670a_dsa import HP3567A
+from hp35670a_dsa import HP3567A, VoltageMeasurementSwitch
 
 
 from motorized_potentiometer import MotorizedPotentiometer
@@ -795,6 +795,8 @@ class PerformExperiment(Experiment):
         #self._fans_smu = ManualSMU(self._fans_controller, AO_BOX_CHANNELS.ao_ch_1, AO_BOX_CHANNELS.ao_ch_4,AO_BOX_CHANNELS.ao_ch_9, AO_BOX_CHANNELS.ao_ch_12, 5000)
         resource = self.hardware_settings.dsa_resource
         self.analyzer = HP3567A(resource)
+        self.voltage_measurement_switch = VoltageMeasurementSwitch(self.analyzer)
+
         self.init_analyzer()
 
     def init_analyzer(self):
@@ -828,10 +830,12 @@ class PerformExperiment(Experiment):
     
     def switch_voltage_measurement_relay_to(self, value):
         if value == "sample":
-            self.analyzer.output_state(True)
+            self.voltage_measurement_switch.switch_to_sample_gate()
+            #self.analyzer.output_state(True)
             self.wait_for_stabilization_after_switch()
         elif value == "main":
-            self.analyzer.output_state(False)
+            self.voltage_measurement_switch.switch_to_main()
+            #self.analyzer.output_state(False)
             self.wait_for_stabilization_after_switch()
         else:
             return
@@ -851,14 +855,28 @@ class PerformExperiment(Experiment):
         self.switch_voltage_measurement_relay_to("main")
 
     def perform_start_param_measurement(self):
-        
-        self._measurement_info.start_sample_voltage = np.random.random_sample()
-        self._measurement_info.start_main_voltage = np.random.random_sample()
+        self.switch_voltage_measurement_relay_to("sample")
+        sample_voltage = self._fans_smu.read_drain_source_voltage()
+        gate_voltage = self._fans_smu.read_gate_voltage()
+        self.switch_voltage_measurement_relay_to("main")
+        main_voltage = self._fans_smu.read_main_voltage()
+
+        self._measurement_info.start_sample_voltage = sample_voltage #np.random.random_sample()
+        self._measurement_info.start_main_voltage = main_voltage #np.random.random_sample()
+        self._measurement_info.start_gate_voltage = gate_voltage
         self.send_start_measurement_info()
 
     def perform_end_param_measurement(self):
-        self._measurement_info.end_sample_voltage = np.random.random_sample()
-        self._measurement_info.end_main_voltage = np.random.random_sample()
+        self.switch_voltage_measurement_relay_to("sample")
+        sample_voltage = self._fans_smu.read_drain_source_voltage()
+        gate_voltage = self._fans_smu.read_gate_voltage()
+        self.switch_voltage_measurement_relay_to("main")
+        main_voltage = self._fans_smu.read_main_voltage()
+
+
+        self._measurement_info.end_sample_voltage = sample_voltage #= np.random.random_sample()
+        self._measurement_info.end_main_voltage = main_voltage #= np.random.random_sample()
+        self._measurement_info.end_gate_voltage = gate_voltage
         self.send_end_measurement_info()
 
     def perform_single_value_measurement(self):

@@ -404,17 +404,7 @@ class FANS_SMU:
         
         return {"Vds":ds_voltage,"Vgs":gate_voltage,"Vmain":main_voltage, "Ids":current,"Rs":resistance}
 
-from hp35670a_dsa import HP3567A
-class VoltageMeasurementSwitch:
-    def __init__(self, analyzer):
-        assert isinstance(analyzer, HP3567A)
-        self.analyzer = analyzer
 
-    def switch_to_main(self):
-        self.analyzer.output_state(False)
-
-    def switch_to_sample_gate(self):
-        self.analyzer.output_state(True)
 
 
 class HybridSMU_System(FANS_SMU):

@@ -3,7 +3,7 @@ def generate_measurement_info_filename(measurement_name, measurement_count, file
     return "{0}_{1}.{2}".format(measurement_name,measurement_count, file_extension)
 
 class MeasurementInfo:
-    def __init__(self, measurement_filename = "", measurement_count = 0,file_extension = "dat"):
+    def __init__(self, measurement_filename = "", measurement_count = 0,file_extension = "dat", load_resistance = 5000):
         self._measurement_filename = measurement_filename
         self._measurement_count = measurement_count
         self._measurement_file_extension = file_extension
@@ -28,6 +28,15 @@ class MeasurementInfo:
 
         self._equivalent_resistance_start = 0
         self._equivalent_resistance_end = 0
+
+        self._load_resistance = load_resistance
+
+
+    def _calculate_current_resistance(self, main_voltage, sample_voltage, load_resistance):
+        current = (main_voltage-sample_voltage)/load_resistance
+        sample_resistance = sample_voltage/current
+        equivalent_resistance = sample_resistance*load_resistance/(sample_resistance+load_resistance)
+        return current, sample_resistance, equivalent_resistance
 
     @property
     def measurement_count(self):
@@ -108,6 +117,22 @@ class MeasurementInfo:
     @end_gate_voltage.setter
     def end_gate_voltage(self,value):
         self._measured_gate_voltage_end = value
+
+        #    ["U\_sample","V"],
+        #    ["Current", "A"],
+        #    ["R\_equivalent", "Ohm"],
+        #    ["Filename","str"],
+        #    ["R\_load","Ohm"],
+        #    ["U\_whole","V"],
+        #    ["U\_0sample", "V"],
+        #    ["U\_0whole","V"],
+        #    ["R\-(0sample)","Ohm"],
+        #    ["R\-(Esample)","Ohm"],
+        #    ["Temperature\-(0)","K"],
+        #    ["Temperature\-(E)","K"],
+        #    ["k\-(ampl)","int"],
+        #    ["N\-(aver)","int"],
+        #    ["V\-(Gate)","V"]
 
     def __str__(self):
         list = [self.start_sample_voltage, 

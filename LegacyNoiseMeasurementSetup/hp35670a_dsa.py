@@ -8,6 +8,7 @@ HP35670A_INPUTS = enum("INP1","INP2")
 HP35670A_CALC = enum("CALC1","CALC2","CALC3","CALC4")
 HP35670A_TRACES = enum("A","B","C","D")
 
+
 class HP3567A(VisaInstrument):
     def __init__(self, resource):
         super().__init__(resource)
@@ -124,6 +125,28 @@ class HP3567A(VisaInstrument):
 
     def operation_completed_query(self):
         self.query("*OPC?")
+
+        class VoltageMeasurementSwitch:
+    def __init__(self, analyzer):
+        assert isinstance(analyzer, HP3567A)
+        self.analyzer = analyzer
+
+    def switch_to_main(self):
+        self.analyzer.output_state(False)
+
+    def switch_to_sample_gate(self):
+        self.analyzer.output_state(True)
+
+class VoltageMeasurementSwitch:
+    def __init__(self, analyzer):
+        assert isinstance(analyzer, HP3567A)
+        self.analyzer = analyzer
+
+    def switch_to_main(self):
+        self.analyzer.output_state(False)
+
+    def switch_to_sample_gate(self):
+        self.analyzer.output_state(True)
 
 
 if __name__=="__main__":
