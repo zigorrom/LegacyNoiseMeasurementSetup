@@ -1,0 +1,253 @@
+reading file
+name: name, val: Settings, type: <class 'str'>
+converted value: Settings, type:<class 'str'>
+
+name: use_transistor_selector, val: bool:False, type: <class 'str'>
+False
+5
+False
+converted value: False, type:<class 'bool'>
+
+name: name, val: ExperimentSettings, type: <class 'str'>
+converted value: ExperimentSettings, type:<class 'str'>
+
+name: homemade_amp_coeff, val: i:178, type: <class 'str'>
+converted value: 178, type:<class 'int'>
+
+name: meas_gated_structure, val: bool:True, type: <class 'str'>
+True
+4
+True
+converted value: True, type:<class 'bool'>
+
+name: meas_characteristic_type, val: i:0, type: <class 'str'>
+converted value: 0, type:<class 'int'>
+
+name: need_measure_temperature, val: bool:False, type: <class 'str'>
+False
+5
+False
+converted value: False, type:<class 'bool'>
+
+name: working_directory, val: D:\I.Zadorozhnyi\temp\20170912, type: <class 'str'>
+converted value: D:\I.Zadorozhnyi\temp\20170912, type:<class 'str'>
+
+name: use_set_vds_range, val: bool:False, type: <class 'str'>
+False
+5
+False
+converted value: False, type:<class 'bool'>
+
+name: calibrate_before_measurement, val: bool:False, type: <class 'str'>
+False
+5
+False
+converted value: False, type:<class 'bool'>
+
+name: display_refresh, val: i:10, type: <class 'str'>
+converted value: 10, type:<class 'int'>
+
+name: simulate_experiment, val: bool:False, type: <class 'str'>
+False
+5
+False
+converted value: False, type:<class 'bool'>
+
+name: averages, val: i:100, type: <class 'str'>
+converted value: 100, type:<class 'int'>
+
+name: measurement_name, val: meas_, type: <class 'str'>
+converted value: meas_, type:<class 'str'>
+
+name: experiment_name, val: new_exp, type: <class 'str'>
+converted value: new_exp, type:<class 'str'>
+
+name: use_set_vfg_range, val: bool:True, type: <class 'str'>
+True
+4
+True
+converted value: True, type:<class 'bool'>
+
+name: use_second_amplifier, val: bool:True, type: <class 'str'>
+True
+4
+True
+converted value: True, type:<class 'bool'>
+
+name: load_resistance, val: i:5000, type: <class 'str'>
+converted value: 5000, type:<class 'int'>
+
+name: overload_rejecion, val: bool:False, type: <class 'str'>
+False
+5
+False
+converted value: False, type:<class 'bool'>
+
+name: transistor_list, val: , type: <class 'str'>
+converted value: , type:<class 'str'>
+
+name: front_gate_voltage, val: f:1.0, type: <class 'str'>
+converted value: 1.0, type:<class 'float'>
+
+name: use_automated_voltage_control, val: bool:True, type: <class 'str'>
+True
+4
+True
+converted value: True, type:<class 'bool'>
+
+name: measurement_count, val: i:1, type: <class 'str'>
+converted value: 1, type:<class 'int'>
+
+name: drain_source_voltage, val: f:0.1, type: <class 'str'>
+converted value: 0.1, type:<class 'float'>
+
+name: second_amp_coeff, val: i:100, type: <class 'str'>
+converted value: 100, type:<class 'int'>
+
+name: use_homemade_amplifier, val: bool:True, type: <class 'str'>
+True
+4
+True
+converted value: True, type:<class 'bool'>
+
+name: start_units, val: i:0, type: <class 'str'>
+converted value: 0, type:<class 'int'>
+
+name: name, val: drain_source_range, type: <class 'str'>
+converted value: drain_source_range, type:<class 'str'>
+
+name: start_value, val: i:0, type: <class 'str'>
+converted value: 0, type:<class 'int'>
+
+name: range_mode, val: i:0, type: <class 'str'>
+converted value: 0, type:<class 'int'>
+
+name: end_value, val: i:1, type: <class 'str'>
+converted value: 1, type:<class 'int'>
+
+name: points, val: i:10, type: <class 'str'>
+converted value: 10, type:<class 'int'>
+
+name: end_units, val: i:0, type: <class 'str'>
+converted value: 0, type:<class 'int'>
+
+name: start_units, val: i:0, type: <class 'str'>
+converted value: 0, type:<class 'int'>
+
+name: name, val: front_gate_range, type: <class 'str'>
+converted value: front_gate_range, type:<class 'str'>
+
+name: start_value, val: i:0, type: <class 'str'>
+converted value: 0, type:<class 'int'>
+
+name: range_mode, val: i:0, type: <class 'str'>
+converted value: 0, type:<class 'int'>
+
+name: end_value, val: i:1, type: <class 'str'>
+converted value: 1, type:<class 'int'>
+
+name: points, val: i:10, type: <class 'str'>
+converted value: 10, type:<class 'int'>
+
+name: end_units, val: i:0, type: <class 'str'>
+converted value: 0, type:<class 'int'>
+
+name: sample_relay_channel, val: i:4, type: <class 'str'>
+converted value: 4, type:<class 'int'>
+
+name: fans_controller_resource, val: USB0::0x0957::0x1718::TW52524501::INSTR, type: <class 'str'>
+converted value: USB0::0x0957::0x1718::TW52524501::INSTR, type:<class 'str'>
+
+name: name, val: HardwareSettings, type: <class 'str'>
+converted value: HardwareSettings, type:<class 'str'>
+
+name: dsa_resource, val: GPIB0::6::INSTR, type: <class 'str'>
+converted value: GPIB0::6::INSTR, type:<class 'str'>
+
+name: main_sample_multimeter_resource, val: GPIB0::23::INSTR, type: <class 'str'>
+converted value: GPIB0::23::INSTR, type:<class 'str'>
+
+name: gate_relay_channel, val: i:12, type: <class 'str'>
+converted value: 12, type:<class 'int'>
+
+name: gate_motor_channel, val: i:9, type: <class 'str'>
+converted value: 9, type:<class 'int'>
+
+name: sample_motor_channel, val: i:1, type: <class 'str'>
+converted value: 1, type:<class 'int'>
+
+name: gate_multimeter_resource, val: GPIB0::22::INSTR, type: <class 'str'>
+converted value: GPIB0::22::INSTR, type:<class 'str'>
+
+['Settings', 'ExperimentSettings']
+['Settings', 'ExperimentSettings']
+['Settings', 'HardwareSettings']
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+writing to device: ABORT
+querying from device: *CAL?
+writing to device: SOUR:VOLTAGE:OFFS 6.6
+writing to device: INST:SEL FFT
+writing to device: :INP2 OFF
+writing to device: :CALC1:ACTIVE A
+writing to device: FORM:DATA ASC, 12
+writing to device: CALC1:FEED 'XFR:POW 1'
+writing to device: CALC1:UNIT:VOLT 'V2/Hz'
+writing to device: CAL:AUTO OFF
+True
+0
+False
+True
+['front_gate_range']
+['drain_source_range']
+writing to device: OUTPUT:STAT ON
+performing setting ds voltage: 0.1
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+filter value 00001111
+pga value 00000000
+value to write 10001000
+writing to device: TRIG:COUN 1
+writing to device: TRIG:COUN 1
+writing to device: TRIG:COUN 1
+querying from device: MEAS:VOLTAGE:DC?
+querying from device: MEAS:VOLTAGE:DC?
+current: 0.099259853; goal: 0.1;to set: -0.3;
+querying from device: MEAS:VOLTAGE:DC?
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 4.669999999998287e-06, trust_error: 0.001, count: 0, value: 0.10000467
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0003646699999999975, trust_error: 0.001, count: 1, value: 0.10036467
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0004521499999999984, trust_error: 0.001, count: 2, value: 0.10045215
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.00047501999999999267, trust_error: 0.001, count: 3, value: 0.10047502
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0004819199999999968, trust_error: 0.001, count: 4, value: 0.10048192
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0004843799999999926, trust_error: 0.001, count: 5, value: 0.10048438
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.00048542999999999503, trust_error: 0.001, count: 6, value: 0.10048543
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0004857399999999984, trust_error: 0.001, count: 7, value: 0.10048574
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.00048647999999999747, trust_error: 0.001, count: 8, value: 0.10048648
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0004864200000000013, trust_error: 0.001, count: 9, value: 0.10048642
+querying from device: MEAS:VOLTAGE:DC?
+current distanse: 0.0004868099999999903, trust_error: 0.001, count: 10, value: 0.10048681
+querying from device: MEAS:VOLTAGE:DC?
