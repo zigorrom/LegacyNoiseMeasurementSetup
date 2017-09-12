@@ -404,6 +404,19 @@ class FANS_SMU:
         
         return {"Vds":ds_voltage,"Vgs":gate_voltage,"Vmain":main_voltage, "Ids":current,"Rs":resistance}
 
+from hp35670a_dsa import HP3567A
+class VoltageMeasurementSwitch:
+    def __init__(self, analyzer):
+        assert isinstance(analyzer, HP3567A)
+        self.analyzer = analyzer
+
+    def switch_to_main(self):
+        self.analyzer.output_state(False)
+
+    def switch_to_sample_gate(self):
+        self.analyzer.output_state(True)
+
+
 class HybridSMU_System(FANS_SMU):
     def __init__(self, fans_controller, drain_source_motor, drain_source_relay, drain_source_feedback_multimeter, gate_motor, gate_relay, gate_feedback_multimeter, main_feedback_multimeter, load_resistance):
         drain_source_feedback, gate_feedback, main_feedback = (0,1,2)
@@ -414,6 +427,8 @@ class HybridSMU_System(FANS_SMU):
             gate_feedback:gate_feedback_multimeter,
             main_feedback:main_feedback_multimeter
             }
+        
+        #self._voltage_measurement_switch = 
 
     def analog_read_channel(self, channel):
         return self._multimeters[channel].read_voltage()
@@ -430,6 +445,15 @@ class HybridSMU_System(FANS_SMU):
         for k,v in self._multimeters.items():
             assert isinstance(v, HP34401A)
             v.set_averaging(averaging)
+
+    def read_drain_source_voltage(self):
+        return self.analog_read_channel(0)
+
+    def read_gate_voltage(self):
+        return self.analog_read_channel(1)
+
+    def read_main_voltage(self):
+        return self.analog_read_channel(2)
 
 
 class ManualSMU(FANS_SMU):
