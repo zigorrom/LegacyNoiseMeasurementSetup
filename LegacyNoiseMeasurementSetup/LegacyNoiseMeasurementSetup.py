@@ -26,7 +26,8 @@ class StatusObject(QtCore.QObject):
         super().__init__()
 
     def send_message(self, message):
-        self.message_arrived.emit(message)
+        if message:
+            self.message_arrived.emit(message)
 
     def send_value_changed(self, parameter, value):
         self.value_changed.emit(parameter,value)
