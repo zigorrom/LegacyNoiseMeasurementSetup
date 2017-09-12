@@ -126,16 +126,6 @@ class HP3567A(VisaInstrument):
     def operation_completed_query(self):
         self.query("*OPC?")
 
-        class VoltageMeasurementSwitch:
-    def __init__(self, analyzer):
-        assert isinstance(analyzer, HP3567A)
-        self.analyzer = analyzer
-
-    def switch_to_main(self):
-        self.analyzer.output_state(False)
-
-    def switch_to_sample_gate(self):
-        self.analyzer.output_state(True)
 
 class VoltageMeasurementSwitch:
     def __init__(self, analyzer):
