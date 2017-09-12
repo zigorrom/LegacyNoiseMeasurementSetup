@@ -178,7 +178,8 @@ class MainView(mainViewBase,mainViewForm):
     def _on_message_arrived(self,message, timeout = 0):
         #assert isinstance(self.statusbar, QtGui.QStatusBar)
         #print("in message handler\n ******************************************")
-        self.statusbar.showMessage(message, timeout)
+        if message:
+            self.statusbar.showMessage(message, timeout)
 
         #print("message_arrived")
 
