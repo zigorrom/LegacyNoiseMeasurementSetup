@@ -934,87 +934,12 @@ class PerformExperiment(Experiment):
         self._fans_smu.smu_set_drain_source_voltage(voltage)
         print("done setting gs value")
 
-    #def single_value_measurement(self, drain_source_voltage, gate_voltage):
-    #    self.open_measurement()
-    #    print("performing single measurement")
-
-    #    self.set_drain_source_voltage(drain_source_voltage)
-    #    self.set_front_gate_voltage(gate_voltage)
-    #    self.set_drain_source_voltage(drain_source_voltage)
-
-
-    #    self._measurement_info.start_sample_voltage = np.random.random_sample()
-    #    self._measurement_info.start_main_voltage = np.random.random_sample()
-        
-    #    self.send_start_measurement_info()
-
-    #    assert isinstance(self.experiment_settings, ExperimentSettings)
-
-    #    #counter = 0
-    #    screen_update = self.experiment_settings.display_refresh  #10;
-    #    total_averaging = self.experiment_settings.averages;
-    #    dev = self.analyzer
-        
-    #    #self._spectrum_ranges = {0: (1,1600,1),1:(64,102400,64)}
-    #    for rng, (start,stop,step) in self._spectrum_ranges.items():
-    #        #dev.set_average_count(screen_update)
-    #        dev.set_average_count(total_averaging)
-    #        dev.set_display_update_rate(screen_update)
-    #        resolution = int(stop/step)
-    #        dev.set_frequency_resolution(resolution)
-    #        dev.set_frequency_start(start)
-    #        dev.set_frequency_stop(stop)
-                
-    #        print(dev.get_points_number(HP35670A_CALC.CALC1))
-
-    #        dev.init_instrument()
-    #        dev.wait_operation_complete()
-    #        data = dev.get_data(HP35670A_CALC.CALC1)
-    #        self.update_spectrum(data, rng, screen_update)
-
-    #        #while counter < total_averaging:
-    #        #    dev.init_instrument()
-    #        #    dev.wait_operation_complete()
-    #        #    data = dev.get_data(HP35670A_CALC.CALC1)
-    #        #    self.update_spectrum(data, rng, screen_update)
-    #        #    counter += screen_update
-
-    #        #counter = 0
-                
-        
-        
-    #    data = self.update_resulting_spectrum()
-        
-    #    data = data.transpose()
-    #    self._experiment_writer.write_measurement(data)   ##.write_measurement()
-    #    self._experiment_writer.write_measurement_info(self._measurement_info)
-    #    #self.get_resulting_spectrum()
-    #    #self.send_measurement_info()
-    #    self._measurement_info.end_sample_voltage = np.random.random_sample()
-    #    self._measurement_info.end_main_voltage = np.random.random_sample()
-        
-    #    self.send_end_measurement_info()
-        
-
-
-    #    self.close_measurement()
-
-
-    #   
+   
 
 
 
 
 
-
-
-
-
-
-    #def non_gated_single_value_measurement(self, drain_source_voltage):
-    #    self.open_measurement()
-    #    print("performing non gated single measurement")
-    #    self.close_measurement()
 
 
 
