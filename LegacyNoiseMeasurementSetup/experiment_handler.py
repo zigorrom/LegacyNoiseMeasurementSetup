@@ -490,7 +490,7 @@ class Experiment:
     def switch_transistor(self,transistor):
         raise NotImplementedError()
 
-    def wait_for_stabilization_after_switch():
+    def wait_for_stabilization_after_switch(self):
         time.sleep(15)
     #value: sample or main
     def switch_voltage_measurement_relay_to(self, value):
