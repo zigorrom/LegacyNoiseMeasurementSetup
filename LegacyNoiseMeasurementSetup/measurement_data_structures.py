@@ -1,4 +1,4 @@
-
+﻿
 def generate_measurement_info_filename(measurement_name, measurement_count, file_extension = "dat"):
     return "{0}_{1}.{2}".format(measurement_name,measurement_count, file_extension)
 
@@ -53,9 +53,14 @@ class MeasurementInfo:
 
 
     def _calculate_current_resistance(self, main_voltage, sample_voltage, load_resistance):
-        current = (main_voltage-sample_voltage)/load_resistance
-        sample_resistance = sample_voltage/current
-        equivalent_resistance = sample_resistance*load_resistance/(sample_resistance+load_resistance)
+        current, sample_resistance, equivalent_resistance = (0, float("inf"), load_resistance)
+        try:
+            current = (main_voltage-sample_voltage)/load_resistance
+            sample_resistance = sample_voltage/current
+            equivalent_resistance = sample_resistance*load_resistance/(sample_resistance+load_resistance)
+        except ZeroDivisionError:
+            print("zero division error while calculating resistance...")
+            
         return current, sample_resistance, equivalent_resistance
 
 
