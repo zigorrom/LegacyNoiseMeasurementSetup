@@ -135,7 +135,7 @@ class ExperimentWriter():
                          info.sample_resistance_end,
                          info.start_temperature,
                          info.end_temperature,
-                         None,
+                         info.second_amplifier_gain,
                          None,
                          info.start_gate_voltage,
                          info.end_gate_voltage,

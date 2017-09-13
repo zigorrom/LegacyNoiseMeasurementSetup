@@ -38,7 +38,7 @@ def generate_measurement_info_filename(measurement_name, measurement_count, file
     return "{0}_{1}.{2}".format(measurement_name,measurement_count, file_extension)
 
 class MeasurementInfo:
-    def __init__(self, measurement_filename = "", measurement_count = 0,file_extension = "dat", load_resistance = 5000):
+    def __init__(self, measurement_filename = "", measurement_count = 0,file_extension = "dat", load_resistance = 5000, second_amplifier_gain=100):
         self._measurement_filename = measurement_filename
         self._measurement_count = measurement_count
         self._measurement_file_extension = file_extension
@@ -65,6 +65,10 @@ class MeasurementInfo:
         self._equivalent_resistance_end = 0
 
         self._load_resistance = load_resistance
+
+        self._second_amplifier_gain = second_amplifier_gain
+
+
 
     def update_start_values(self, main_voltage, sample_voltage, gate_voltage, temperature):
         self.start_main_voltage = main_voltage
@@ -98,6 +102,14 @@ class MeasurementInfo:
             
         return current, sample_resistance, equivalent_resistance
 
+
+    @property
+    def second_amplifier_gain(self):
+        return self._second_amplifier_gain
+
+    @second_amplifier_gain.setter
+    def second_amplifier_gain(self,value):
+        self._second_amplifier_gain = value
 
     @property
     def sample_current_start(self):
