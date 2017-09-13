@@ -148,7 +148,8 @@ class ExperimentController(QtCore.QObject):
                 #self._spectrum_plot
             
         except Exception as e:
-            print(str(e))
+            pass
+            #print(str(e))
 
     def start(self):
         if self._running:
