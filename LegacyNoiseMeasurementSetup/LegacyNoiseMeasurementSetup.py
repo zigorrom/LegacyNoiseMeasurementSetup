@@ -98,8 +98,6 @@ class MainView(mainViewBase,mainViewForm):
     def on_folder_browse_button_context_menu(self,point):
         self.popMenu.exec_(self.folderBrowseButton.mapToGlobal(point))
     
-
-   
     def __update_view(self):
         self._viewModel.layoutChanged.emit()
 
@@ -126,12 +124,17 @@ class MainView(mainViewBase,mainViewForm):
         if isinstance(measurement_info, MeasurementInfo):
             self.sample_voltage_start.setText(str(measurement_info.start_sample_voltage))
             self.front_gate_voltage_start.setText(str(measurement_info.start_gate_voltage))
+            self.sample_current_start.setText(str(measurement_info.sample_current_start))
+            self.sample_resistance_start.setText(str(measurement_info.sample_resistance_start))
+            self.ui_current_temp.setText(str(measurement_info.start_temperature))
       
     def  _on_refresh_measurement_end_data(self, measurement_info):
         if isinstance(measurement_info, MeasurementInfo):
             self.sample_voltage_end.setText(str(measurement_info.end_sample_voltage))
             self.front_gate_voltage_end.setText(str(measurement_info.end_gate_voltage))
-
+            self.sample_current_end.setText(str(measurement_info.sample_current_end))
+            self.sample_resistance_end.setText(str(measurement_info.sample_resistance_end))
+            self.ui_current_temp.setText(str(measurement_info.end_temperature))
 
     #def __ui_set_measurement_info(self, measurement_info):
     #    print("updating ui")

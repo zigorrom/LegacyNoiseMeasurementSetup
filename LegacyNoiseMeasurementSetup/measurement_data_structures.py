@@ -1,4 +1,39 @@
 ﻿
+
+class measurement_parameter_property(property):
+    def __init__(self,name,units,description, **kwargs):
+        super().__init__(**kwargs)
+        self._name = name
+        self._units = units
+        self._description = description
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def units(self):
+        return self._units
+
+    @property
+    def description(self):
+        return self._description
+
+def create_measurement_parameter_property(name, units, description):
+    def real_decorator(func):
+        return measurement_parameter_property(name,units, description, fget = func)
+    return real_decorator
+
+
+class test_class:
+    def __init__(self, value):
+        self._value = value
+
+    @create_measurement_parameter_property("blah", "V",":asdfbashfg")
+    def value(self):
+        return self._value
+    
+
 def generate_measurement_info_filename(measurement_name, measurement_count, file_extension = "dat"):
     return "{0}_{1}.{2}".format(measurement_name,measurement_count, file_extension)
 
@@ -31,7 +66,7 @@ class MeasurementInfo:
 
         self._load_resistance = load_resistance
 
-    def update_start_values(self, main_voltage, sample_voltage, gate_voltage):
+    def update_start_values(self, main_voltage, sample_voltage, gate_voltage, temperature):
         self.start_main_voltage = main_voltage
         self.start_gate_voltage = gate_voltage
         self.start_sample_voltage = sample_voltage
@@ -39,10 +74,10 @@ class MeasurementInfo:
         self.sample_current_start = current
         self.sample_resistance_start = sample_resistance
         self.equivalent_resistance_start = equivalent_resistance
+        self.start_temperature = temperature
 
 
-
-    def update_end_values(self, main_voltage, sample_voltage, gate_voltage):
+    def update_end_values(self, main_voltage, sample_voltage, gate_voltage, temperature):
         self.end_main_voltage = main_voltage
         self.end_gate_voltage = gate_voltage
         self.end_sample_voltage = sample_voltage
@@ -50,7 +85,7 @@ class MeasurementInfo:
         self.sample_current_end = current
         self.sample_resistance_end = sample_resistance
         self.equivalent_resistance_end = equivalent_resistance
-
+        self.end_temperature = temperature
 
     def _calculate_current_resistance(self, main_voltage, sample_voltage, load_resistance):
         current, sample_resistance, equivalent_resistance = (0, float("inf"), load_resistance)
@@ -237,5 +272,8 @@ class MeasurementInfo:
         return representation
         
 
-
+if __name__=="__main__":
+    tc = test_class("asfgasgag")
+    print(tc.value)
+    print(tc.value.name)
 

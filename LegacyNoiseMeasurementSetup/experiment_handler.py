@@ -9,7 +9,7 @@ from fans_smu import HybridSMU_System
 from fans_controller import FANS_AO_channel, FANS_CONTROLLER
 from fans_constants import *
 from hp35670a_dsa import HP3567A, VoltageMeasurementSwitch
-
+from temperature_controller import LakeShore211TemperatureSensor
 
 from motorized_potentiometer import MotorizedPotentiometer
 import numpy as np
@@ -690,7 +690,9 @@ class Experiment:
         print(self.__exp_settings.use_transistor_selector)
         print(self.__exp_settings.use_automated_voltage_control)
 
-        if not self.__exp_settings.meas_gated_structure:# non gated structure measurement
+        if not self.__exp_settings.use_automated_voltage_control:
+            func = lambda: self.single_value_measurement(None,None)
+        elif not self.__exp_settings.meas_gated_structure:# non gated structure measurement
             func = self.non_gated_structure_meaurement_function
         elif self.__exp_settings.meas_characteristic_type == 0: #output curve
             func = self.output_curve_measurement_function
@@ -798,6 +800,8 @@ class PerformExperiment(Experiment):
         self.analyzer = HP3567A(resource)
         self.voltage_measurement_switch = VoltageMeasurementSwitch(self.analyzer)
 
+        self.temperature_controller = LakeShore211TemperatureSensor("COM9")
+
         self.init_analyzer()
 
     def init_analyzer(self):
@@ -863,8 +867,8 @@ class PerformExperiment(Experiment):
         gate_voltage = self._fans_smu.read_gate_voltage()
         self.switch_voltage_measurement_relay_to("main")
         main_voltage = self._fans_smu.read_main_voltage()
-
-        self._measurement_info.update_start_values(main_voltage, sample_voltage, gate_voltage)
+        temperature = self.temperature_controller.temperature
+        self._measurement_info.update_start_values(main_voltage, sample_voltage, gate_voltage,temperature)
         #self._measurement_info.start_sample_voltage = sample_voltage #np.random.random_sample()
         #self._measurement_info.start_main_voltage = main_voltage #np.random.random_sample()
         #self._measurement_info.start_gate_voltage = gate_voltage
@@ -876,8 +880,8 @@ class PerformExperiment(Experiment):
         gate_voltage = self._fans_smu.read_gate_voltage()
         self.switch_voltage_measurement_relay_to("main")
         main_voltage = self._fans_smu.read_main_voltage()
-
-        self._measurement_info.update_end_values(main_voltage, sample_voltage, gate_voltage)
+        temperature = self.temperature_controller.temperature
+        self._measurement_info.update_end_values(main_voltage, sample_voltage, gate_voltage,temperature)
         #self._measurement_info.end_sample_voltage = sample_voltage #= np.random.random_sample()
         #self._measurement_info.end_main_voltage = main_voltage #= np.random.random_sample()
         #self._measurement_info.end_gate_voltage = gate_voltage
