@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>9efc1e3d-be9f-46ea-b936-985386cf6bf7</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>LegacyNoiseMeasurementSetup.py</StartupFile>
+    <StartupFile>temperature_controller.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -81,6 +81,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="StandAloneVoltageControl.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="temperature_controller.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="xml_serializer.py">
