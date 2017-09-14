@@ -422,78 +422,87 @@ class Experiment:
         return ds_range, fg_range
 
     def output_curve_measurement_function(self):
-        ds_range, fg_range = self.get_meas_ranges()
+        try:
+            ds_range, fg_range = self.get_meas_ranges()
         
-        if (not self.__exp_settings.use_set_vfg_range) and (not self.__exp_settings.use_set_vds_range) and not self.need_exit:
-            self.single_value_measurement(self.__exp_settings.drain_source_voltage,self.__exp_settings.front_gate_voltage)
+            if (not self.__exp_settings.use_set_vfg_range) and (not self.__exp_settings.use_set_vds_range) and not self.need_exit:
+                self.single_value_measurement(self.__exp_settings.drain_source_voltage,self.__exp_settings.front_gate_voltage)
 
-        elif self.__exp_settings.use_set_vds_range and self.__exp_settings.use_set_vfg_range and not self.need_exit:
-            for vfg in fg_range.get_range_handler():
-                if self.need_exit:
-                    return
-                for vds in ds_range.get_range_handler():
-                    if self.need_exit:
-                        return
-                    self.single_value_measurement(vds, vfg)
-           
-        elif not self.__exp_settings.use_set_vfg_range:
-            for vds in ds_range.get_range_handler():
-                if self.need_exit:
-                    return
-                self.single_value_measurement(vds, self.__exp_settings.front_gate_voltage)
-                    
-        elif not self.__exp_settings.use_set_vds_range:
-            for vfg in fg_range.get_range_handler():
-                if self.need_exit:
-                    return
-                self.single_value_measurement(self.__exp_settings.drain_source_voltage, vfg)
-        else:
-            raise ValueError("range handlers are not properly defined")
-
-        self.set_voltages_to_zero()
-
-
-    def transfer_curve_measurement_function(self):
-        ds_range, fg_range = self.get_meas_ranges()
-        if (not self.__exp_settings.use_set_vds_range) and (not self.__exp_settings.use_set_vfg_range) and not self.need_exit:
-             self.single_value_measurement(self.__exp_settings.drain_source_voltage,self.__exp_settings.front_gate_voltage)
-
-        elif self.__exp_settings.use_set_vds_range and self.__exp_settings.use_set_vfg_range:
-            for vds in ds_range.get_range_handler():
-                if self.need_exit:
-                    return
+            elif self.__exp_settings.use_set_vds_range and self.__exp_settings.use_set_vfg_range and not self.need_exit:
                 for vfg in fg_range.get_range_handler():
                     if self.need_exit:
                         return
-                    self.single_value_measurement(vds, vfg)
+                    for vds in ds_range.get_range_handler():
+                        if self.need_exit:
+                            return
+                        self.single_value_measurement(vds, vfg)
            
-        elif not self.__exp_settings.use_set_vfg_range:
-            for vds in ds_range.get_range_handler():
-                if self.need_exit:
-                    return
-                self.single_value_measurement(vds, self.__exp_settings.front_gate_voltage)
+            elif not self.__exp_settings.use_set_vfg_range:
+                for vds in ds_range.get_range_handler():
+                    if self.need_exit:
+                        return
+                    self.single_value_measurement(vds, self.__exp_settings.front_gate_voltage)
                     
-        elif not self.__exp_settings.use_set_vds_range:
-             for vfg in fg_range.get_range_handler():
-                 if self.need_exit:
-                    return
-                 self.single_value_measurement(self.__exp_settings.drain_source_voltage, vfg)
-        else:
-            raise ValueError("range handlers are not properly defined")
+            elif not self.__exp_settings.use_set_vds_range:
+                for vfg in fg_range.get_range_handler():
+                    if self.need_exit:
+                        return
+                    self.single_value_measurement(self.__exp_settings.drain_source_voltage, vfg)
+            else:
+                raise ValueError("range handlers are not properly defined")
+        except:
+            pass
+        finally:
+            self.set_voltages_to_zero()
 
-        self.set_voltages_to_zero()
+
+    def transfer_curve_measurement_function(self):
+        try:
+            ds_range, fg_range = self.get_meas_ranges()
+            if (not self.__exp_settings.use_set_vds_range) and (not self.__exp_settings.use_set_vfg_range) and not self.need_exit:
+                 self.single_value_measurement(self.__exp_settings.drain_source_voltage,self.__exp_settings.front_gate_voltage)
+
+            elif self.__exp_settings.use_set_vds_range and self.__exp_settings.use_set_vfg_range:
+                for vds in ds_range.get_range_handler():
+                    if self.need_exit:
+                        return
+                    for vfg in fg_range.get_range_handler():
+                        if self.need_exit:
+                            return
+                        self.single_value_measurement(vds, vfg)
+           
+            elif not self.__exp_settings.use_set_vfg_range:
+                for vds in ds_range.get_range_handler():
+                    if self.need_exit:
+                        return
+                    self.single_value_measurement(vds, self.__exp_settings.front_gate_voltage)
+                    
+            elif not self.__exp_settings.use_set_vds_range:
+                 for vfg in fg_range.get_range_handler():
+                     if self.need_exit:
+                        return
+                     self.single_value_measurement(self.__exp_settings.drain_source_voltage, vfg)
+            else:
+                raise ValueError("range handlers are not properly defined")
+        except:
+            pass
+        finally:
+            self.set_voltages_to_zero()
 
 
     def non_gated_structure_meaurement_function(self):
-        if self.__exp_settings.use_set_vds_range:
-             for vds in self.__exp_settings.vds_range:
-                 if self.need_exit:
-                    return
-                 self.non_gated_single_value_measurement(vds)
-        else:
-            self.non_gated_single_value_measurement(self.__exp_settings.drain_source_voltage)
-
-        self.set_drain_source_voltage(0)
+        try:
+            if self.__exp_settings.use_set_vds_range:
+                 for vds in self.__exp_settings.vds_range:
+                     if self.need_exit:
+                        return
+                     self.non_gated_single_value_measurement(vds)
+            else:
+                self.non_gated_single_value_measurement(self.__exp_settings.drain_source_voltage)
+        except:
+            pass
+        finally:
+            self.set_drain_source_voltage(0)
 
         
     def set_voltages_to_zero(self):
