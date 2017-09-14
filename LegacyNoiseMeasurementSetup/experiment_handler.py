@@ -450,6 +450,8 @@ class Experiment:
         else:
             raise ValueError("range handlers are not properly defined")
 
+        self.set_voltages_to_zero()
+
 
     def transfer_curve_measurement_function(self):
         ds_range, fg_range = self.get_meas_ranges()
@@ -479,6 +481,8 @@ class Experiment:
         else:
             raise ValueError("range handlers are not properly defined")
 
+        self.set_voltages_to_zero()
+
 
     def non_gated_structure_meaurement_function(self):
         if self.__exp_settings.use_set_vds_range:
@@ -489,6 +493,12 @@ class Experiment:
         else:
             self.non_gated_single_value_measurement(self.__exp_settings.drain_source_voltage)
 
+        self.set_drain_source_voltage(0)
+
+        
+    def set_voltages_to_zero(self):
+        self.set_drain_source_voltage(0)
+        self.set_front_gate_voltage(0)
 
     def handle_measurement_abort(self):
         raise NotImplementedError()
