@@ -104,8 +104,8 @@ class Calibration:
         second_amp_gain = self.get_amplifier_gain("second_amp")**2
         second_amp_freq_response_sqr = self.calibration_data["second_amp"]["freq_response_interp"](frequencies)*second_amp_gain
         
-        real_spectrum = (data/second_amp_freq_response_sqr - second_amp_calibration_curve)/ preamp_freq_response_sqr - preamp_calibration_curve
-
+        #real_spectrum = (data/second_amp_freq_response_sqr - second_amp_calibration_curve)/ preamp_freq_response_sqr - preamp_calibration_curve
+        real_spectrum = np.asarray([((sv_meas/k_ampl - sv_ampl)/k_preamp - sv_preamp) for (sv_meas, k_ampl, sv_ampl, sv_preamp, k_preamp) in zip(data, second_amp_freq_response_sqr,second_amp_calibration_curve, preamp_calibration_curve, preamp_freq_response_sqr)])
          
         return np.vstack((frequencies,real_spectrum))
 
@@ -142,13 +142,22 @@ def test_calibration():
     dir = os.path.dirname(__file__)
     c = Calibration(os.path.join(dir,"calibration_data"))
 
-    n = 10000
-    frequency = np.linspace(1,102400, n)
-    data = np.random.rand(n)
-    print(data)
-    res = c.apply_calibration((frequency,data))
-    print(res)
+    #n = 10000
+    #frequency = np.linspace(1,102400, n)
+    #data = np.random.rand(n)
+    #print(data)
+    #res = c.apply_calibration((frequency,data))
+    #print(res)
 
+    filename = "meas__1.dat"
+    loaded = np.loadtxt(filename,skiprows=2)
+    data = np.transpose(loaded)
+
+    print(data)
+    result = c.apply_calibration(data)
+    print(result)
+    
+    
 
 
 if __name__ == "__main__":
