@@ -626,7 +626,8 @@ class Experiment:
         measurement_name = self.__exp_settings.measurement_name
         measurement_counter = self._measurement_counter
         assert isinstance(self.__exp_settings, ExperimentSettings)
-        self._measurement_info = MeasurementInfo(measurement_name, measurement_counter)#, second_amplifier_gain = self.__exp_settings.second_amplifier_gain)
+        self._measurement_info = MeasurementInfo(measurement_name, measurement_counter, second_amplifier_gain = self.__exp_settings.second_amp_coeff)
+        #self._measurement_info.second_amplifier_gain = self.__exp_settings.second_amp_coeff
         self._send_command_with_params(ExperimentCommands.MEASUREMENT_STARTED, measurement_name = measurement_name, measurement_count = measurement_counter) 
 
         self._experiment_writer.open_measurement(measurement_name,measurement_counter)
@@ -934,9 +935,9 @@ class PerformExperiment(Experiment):
             self.update_spectrum(data, rng, screen_update)
 
         data = self.update_resulting_spectrum()
-        #if self.calibration:
-        #    self.calibration.set_amplifier_gain("second_amp",self._measurement_info.second_amplifier_gain)
-        #    data = self.calibration.apply_calibration(data) 
+        if self.calibration:
+            self.calibration.set_amplifier_gain("second_amp",self._measurement_info.second_amplifier_gain)
+            data = self.calibration.apply_calibration(data) 
             
         data = data.transpose()
         self._experiment_writer.write_measurement(data)   ##.write_measurement()
