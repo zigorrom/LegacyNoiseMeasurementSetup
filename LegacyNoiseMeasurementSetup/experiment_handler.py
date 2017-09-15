@@ -567,7 +567,7 @@ class Experiment:
             #specific of measurement setup!!!
             self.set_drain_source_voltage(drain_source_voltage)
         
-
+        self.prepare_to_measure_voltages()
         self.perform_start_param_measurement()
         self.prepare_to_measure_spectrum()
         self.perform_single_value_measurement()
@@ -592,6 +592,7 @@ class Experiment:
             self.prepare_to_set_voltages()
             self.set_drain_source_voltage(drain_source_voltage)
         
+        self.prepare_to_measure_voltages()
         self.perform_start_param_measurement()
         self.prepare_to_measure_spectrum()
         self.perform_non_gated_single_value_measurement()
@@ -883,9 +884,38 @@ class PerformExperiment(Experiment):
 
     def prepare_to_set_voltages(self):
         self.switch_voltage_measurement_relay_to("sample")
+        #### set averaging to low values
+        self.ds_mult.set_nplc(0.02)
+        self.ds_mult.set_trigger_count(5)
+        self.ds_mult.switch_high_ohmic_mode(True)
+        self.ds_mult.set_function(HP34401A_FUNCTIONS.AVER)
+        self.ds_mult.switch_stat(False)
+        self.ds_mult.switch_autorange(True)
+
+        self.gs_mult.set_nplc(0.02)
+        self.gs_mult.set_trigger_count(5)
+        self.gs_mult.switch_high_ohmic_mode(True)
+        self.gs_mult.set_function(HP34401A_FUNCTIONS.AVER)
+        self.gs_mult.switch_stat(False)
+        self.gs_mult.switch_autorange(True)
+
 
     def prepare_to_measure_voltages(self):
-        pass
+        ### set averaging to high values
+        self.ds_mult.set_nplc(10)
+        self.ds_mult.set_trigger_count(10)
+        self.ds_mult.switch_high_ohmic_mode(True)
+        self.ds_mult.set_function(HP34401A_FUNCTIONS.AVER)
+        self.ds_mult.switch_stat(False)
+        self.ds_mult.switch_autorange(True)
+
+        self.gs_mult.set_nplc(10)
+        self.gs_mult.set_trigger_count(10)
+        self.gs_mult.switch_high_ohmic_mode(True)
+        self.gs_mult.set_function(HP34401A_FUNCTIONS.AVER)
+        self.gs_mult.switch_stat(False)
+        self.gs_mult.switch_autorange(True)
+
 
     def prepare_to_measure_spectrum(self):
         self.switch_voltage_measurement_relay_to("main")
