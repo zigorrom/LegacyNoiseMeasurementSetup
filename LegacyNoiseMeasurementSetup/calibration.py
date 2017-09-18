@@ -2,7 +2,6 @@ import os
 import numpy as np
 import json
 from scipy.interpolate import interp1d
-import pyqtgraph as pg
 
 class CalibrationInfo:
     def __init__(self):
@@ -95,18 +94,20 @@ class Calibration:
         self.calibration_data_info[amplifier]["gain"] = gain
 
     def apply_calibration(self, noise_spectrum):
+        #import pyqtgraph as pg
+
         frequencies, data = noise_spectrum
         preamp_calibration_curve =  self.calibration_data["preamp"]["calib_interp"](frequencies)
         preamp_gain = self.get_amplifier_gain("preamp")**2
         preamp_freq_response_sqr = self.calibration_data["preamp"]["freq_response_interp"](frequencies)*preamp_gain
-        pg.plot(frequencies, preamp_calibration_curve)
-        pg.plot(frequencies, preamp_freq_response_sqr)
+        #pg.plot(frequencies, preamp_calibration_curve)
+        #pg.plot(frequencies, preamp_freq_response_sqr)
         
         second_amp_calibration_curve = self.calibration_data["second_amp"]["calib_interp"](frequencies)
         second_amp_gain = self.get_amplifier_gain("second_amp")**2
         second_amp_freq_response_sqr = self.calibration_data["second_amp"]["freq_response_interp"](frequencies)*second_amp_gain
-        pg.plot(frequencies, second_amp_calibration_curve)
-        pg.plot(frequencies, second_amp_freq_response_sqr)
+        #pg.plot(frequencies, second_amp_calibration_curve)
+        #pg.plot(frequencies, second_amp_freq_response_sqr)
 
         #real_spectrum = (data/second_amp_freq_response_sqr - second_amp_calibration_curve)/ preamp_freq_response_sqr - preamp_calibration_curve
         real_spectrum = np.asarray([((sv_meas/k_ampl - sv_ampl)/k_preamp - sv_preamp) for (sv_meas, k_ampl, sv_ampl, sv_preamp, k_preamp) in zip(data, second_amp_freq_response_sqr,second_amp_calibration_curve, preamp_calibration_curve, preamp_freq_response_sqr)])
