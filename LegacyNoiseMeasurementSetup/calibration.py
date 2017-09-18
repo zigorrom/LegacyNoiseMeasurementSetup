@@ -2,6 +2,7 @@ import os
 import numpy as np
 import json
 from scipy.interpolate import interp1d
+import pyqtgraph as pg
 
 class CalibrationInfo:
     def __init__(self):
@@ -98,12 +99,15 @@ class Calibration:
         preamp_calibration_curve =  self.calibration_data["preamp"]["calib_interp"](frequencies)
         preamp_gain = self.get_amplifier_gain("preamp")**2
         preamp_freq_response_sqr = self.calibration_data["preamp"]["freq_response_interp"](frequencies)*preamp_gain
+        pg.plot(frequencies, preamp_calibration_curve)
+        pg.plot(frequencies, preamp_freq_response_sqr)
         
-
         second_amp_calibration_curve = self.calibration_data["second_amp"]["calib_interp"](frequencies)
         second_amp_gain = self.get_amplifier_gain("second_amp")**2
         second_amp_freq_response_sqr = self.calibration_data["second_amp"]["freq_response_interp"](frequencies)*second_amp_gain
-        
+        pg.plot(frequencies, second_amp_calibration_curve)
+        pg.plot(frequencies, second_amp_freq_response_sqr)
+
         #real_spectrum = (data/second_amp_freq_response_sqr - second_amp_calibration_curve)/ preamp_freq_response_sqr - preamp_calibration_curve
         real_spectrum = np.asarray([((sv_meas/k_ampl - sv_ampl)/k_preamp - sv_preamp) for (sv_meas, k_ampl, sv_ampl, sv_preamp, k_preamp) in zip(data, second_amp_freq_response_sqr,second_amp_calibration_curve, preamp_calibration_curve, preamp_freq_response_sqr)])
          
@@ -157,14 +161,31 @@ def test_calibration():
     result = c.apply_calibration(data)
     print(result)
     
-    
+def test_calibration_on_real_file():
+    dir = os.path.dirname(__file__)
+    c = Calibration(os.path.join(dir,"calibration_data"))
+    folder_name  = "C:\\Users\\i.zadorozhnyi\\Desktop\\test_data"
+    filename = "t04_func.dat"
+    loaded = np.loadtxt(os.path.join(folder_name,filename))
+    data = np.transpose(loaded)
+    print(data)
+
+    result = c.apply_calibration(data)
+    np.savetxt(os.path.join(folder_name, "exported_{0}".format(filename)), result.T)
+
+
 
 
 if __name__ == "__main__":
+    import sys
+    test_calibration_on_real_file()
+    if sys.flags.interactive != 1 or not hasattr(QtCore, 'PYQT_VERSION'):
+        pg.QtGui.QApplication.exec_()
     #add_amplifiers()
 
     #load_amplifiers()
 
-    test_calibration()
+    #test_calibration()
 
+    
     
