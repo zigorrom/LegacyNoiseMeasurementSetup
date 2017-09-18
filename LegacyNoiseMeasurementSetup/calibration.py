@@ -1,4 +1,4 @@
-import os
+﻿import os
 import numpy as np
 import json
 from scipy.interpolate import interp1d
@@ -112,6 +112,7 @@ class Calibration:
 
         #real_spectrum = (data/second_amp_freq_response_sqr - second_amp_calibration_curve)/ preamp_freq_response_sqr - preamp_calibration_curve
         real_spectrum = np.asarray([((sv_meas/k_ampl - sv_ampl)/k_preamp - sv_preamp) for (sv_meas, k_ampl, sv_ampl, sv_preamp, k_preamp) in zip(data, second_amp_freq_response_sqr,second_amp_calibration_curve, preamp_calibration_curve, preamp_freq_response_sqr)])
+        #real_spectrum = np.asarray([((sv_meas/k_preamp - sv_preamp)/k_ampl - sv_ampl) for (sv_meas, k_ampl, sv_ampl, sv_preamp, k_preamp) in zip(data, second_amp_freq_response_sqr,second_amp_calibration_curve, preamp_calibration_curve, preamp_freq_response_sqr)])
          
         return np.vstack((frequencies,real_spectrum))
 
