@@ -2,6 +2,7 @@ import os
 import numpy as np
 import json
 from scipy.interpolate import interp1d
+#import pyqtgraph as pg
 
 class CalibrationInfo:
     def __init__(self):
@@ -94,7 +95,7 @@ class Calibration:
         self.calibration_data_info[amplifier]["gain"] = gain
 
     def apply_calibration(self, noise_spectrum):
-        #import pyqtgraph as pg
+       
 
         frequencies, data = noise_spectrum
         preamp_calibration_curve =  self.calibration_data["preamp"]["calib_interp"](frequencies)
@@ -178,15 +179,15 @@ def test_calibration_on_real_file():
 
 
 if __name__ == "__main__":
-    import sys
-    test_calibration_on_real_file()
-    if sys.flags.interactive != 1 or not hasattr(QtCore, 'PYQT_VERSION'):
-        pg.QtGui.QApplication.exec_()
+    #import sys
+    #test_calibration_on_real_file()
+    #if sys.flags.interactive != 1 or not hasattr(QtCore, 'PYQT_VERSION'):
+    #    pg.QtGui.QApplication.exec_()
     #add_amplifiers()
 
     #load_amplifiers()
 
     #test_calibration()
-
+    pass
     
     
