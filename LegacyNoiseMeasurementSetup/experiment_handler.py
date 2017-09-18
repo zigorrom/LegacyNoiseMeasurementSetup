@@ -866,6 +866,42 @@ class PerformExperiment(Experiment):
         #dev.wait_operation_complete()
         #print(dev.get_data(HP35670A_CALC.CALC1))
         
+    def init_timetrace_measurement(self):
+#OUTPUT @Analyzer;"FREQ:STAR 0"
+#OUTPUT @Analyzer;"FREQ:STOP "&VAL$(Freqstopvalue)&" HZ"
+#OUTPUT @Analyzer;"CALC1:UNIT:VOLT 'V'"
+
+#Timestep=400/(Freqstopvalue-0)/1024
+
+#OUTPUT @Analyzer;"MEM:DEL:ALL"
+#OUTPUT @Analyzer;"TCAP:LENG "&VAL$(Blocks)&" BLK"
+#CONTROL @Sys;SET ("*NAME":"Noisepanel/Status")
+#CONTROL @Sys;SET ("PEN":24)
+#CONTROL @Sys;SET ("VALUE":"Getting data...")
+#OUTPUT @Analyzer;"TCAP:MALL"
+#OUTPUT @Analyzer;"TCAP;*WAI"
+#OUTPUT @Analyzer;"FORM REAL,64"
+#OUTPUT @Analyzer;"SENSE:DATA? TCAP1;*WAI"
+#ENTER @Analyzer USING "%,A,D";Term$,Ii
+#ENTER @Analyzer USING "%,"&VAL$(Ii)&"D";Bytes
+#P=Bytes/8
+#Records=P/1024
+#!PRINT Records
+#REDIM Y(1:Blocks,1:1024)
+#Step=INT(P/30000)+1
+#!REDIM Ydata(1:30000)
+#!REDIM Xdata(1:30000)
+#CONTROL @Sys;SET ("*NAME":"Noisepanel/Noisespectrum","POINT CAPACITY":30000)
+#IF Step=1 THEN
+#REDIM Ydata(1:INT(P))
+#REDIM Xdata(1:INT(P))
+#END IF
+#ENTER @Analyzer_bin;Y(*)
+#ENTER @Analyzer;Term$
+#CREATE Directory$&F$&Part$,20
+#ASSIGN @File TO Directory$&F$&Part$;FORMAT ON
+
+        pass
 
     
     def switch_voltage_measurement_relay_to(self, value):
@@ -920,6 +956,8 @@ class PerformExperiment(Experiment):
     def prepare_to_measure_spectrum(self):
         self.switch_voltage_measurement_relay_to("main")
         self.wait_for_stabilization_after_switch()
+        
+
 
     def prepare_to_measure_timetrace(self):
         self.switch_voltage_measurement_relay_to("main")
