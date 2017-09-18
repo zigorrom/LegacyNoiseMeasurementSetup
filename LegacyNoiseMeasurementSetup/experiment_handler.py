@@ -636,7 +636,7 @@ class Experiment:
         measurement_name = self.__exp_settings.measurement_name
         measurement_counter = self._measurement_counter
         assert isinstance(self.__exp_settings, ExperimentSettings)
-        self._measurement_info = MeasurementInfo(measurement_name, measurement_counter, second_amplifier_gain = self.__exp_settings.second_amp_coeff)
+        self._measurement_info = MeasurementInfo(measurement_name, measurement_counter, load_resistance = self.__exp_settings.load_resistance, second_amplifier_gain = self.__exp_settings.second_amp_coeff)
         #self._measurement_info.second_amplifier_gain = self.__exp_settings.second_amp_coeff
         self._send_command_with_params(ExperimentCommands.MEASUREMENT_STARTED, measurement_name = measurement_name, measurement_count = measurement_counter) 
 
