@@ -963,7 +963,7 @@ class PerformExperiment(Experiment):
         self.switch_voltage_measurement_relay_to("main")
         self.wait_for_stabilization_after_switch()
 
-    def perform_start_param_measurement(self):
+    def perform_param_measurement(self):
         self.switch_voltage_measurement_relay_to("sample")
         self.wait_for_stabilization_after_switch()
         sample_voltage = self._fans_smu.read_drain_source_voltage()
@@ -972,6 +972,18 @@ class PerformExperiment(Experiment):
         self.wait_for_stabilization_after_switch()
         main_voltage = self._fans_smu.read_main_voltage()
         temperature = self.temperature_controller.temperature
+        return (sample_voltage,main_voltage, gate_voltage, temperature)
+
+    def perform_start_param_measurement(self):
+        #self.switch_voltage_measurement_relay_to("sample")
+        #self.wait_for_stabilization_after_switch()
+        #sample_voltage = self._fans_smu.read_drain_source_voltage()
+        #gate_voltage = self._fans_smu.read_gate_voltage()
+        #self.switch_voltage_measurement_relay_to("main")
+        #self.wait_for_stabilization_after_switch()
+        #main_voltage = self._fans_smu.read_main_voltage()
+        #temperature = self.temperature_controller.temperature
+        sample_voltage,main_voltage, gate_voltage, temperature = self.perform_param_measurement()
         self._measurement_info.update_start_values(main_voltage, sample_voltage, gate_voltage,temperature)
         #self._measurement_info.start_sample_voltage = sample_voltage #np.random.random_sample()
         #self._measurement_info.start_main_voltage = main_voltage #np.random.random_sample()
@@ -979,12 +991,13 @@ class PerformExperiment(Experiment):
         self.send_start_measurement_info()
 
     def perform_end_param_measurement(self):
-        self.switch_voltage_measurement_relay_to("sample")
-        sample_voltage = self._fans_smu.read_drain_source_voltage()
-        gate_voltage = self._fans_smu.read_gate_voltage()
-        self.switch_voltage_measurement_relay_to("main")
-        main_voltage = self._fans_smu.read_main_voltage()
-        temperature = self.temperature_controller.temperature
+        #self.switch_voltage_measurement_relay_to("sample")
+        #sample_voltage = self._fans_smu.read_drain_source_voltage()
+        #gate_voltage = self._fans_smu.read_gate_voltage()
+        #self.switch_voltage_measurement_relay_to("main")
+        #main_voltage = self._fans_smu.read_main_voltage()
+        #temperature = self.temperature_controller.temperature
+        sample_voltage,main_voltage, gate_voltage, temperature = self.perform_param_measurement()
         self._measurement_info.update_end_values(main_voltage, sample_voltage, gate_voltage,temperature)
         #self._measurement_info.end_sample_voltage = sample_voltage #= np.random.random_sample()
         #self._measurement_info.end_main_voltage = main_voltage #= np.random.random_sample()
