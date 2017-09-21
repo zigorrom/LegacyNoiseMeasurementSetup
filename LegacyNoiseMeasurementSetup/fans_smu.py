@@ -424,6 +424,7 @@ class HybridSMU_System(FANS_SMU):
         return self._multimeters[channel].read_voltage()
 
     def analog_read_average_channel(self,channel):
+        self._multimeters[channel].init_instrument()
         return self._multimeters[channel].read_average()
 
     def analog_read(self, channels):
