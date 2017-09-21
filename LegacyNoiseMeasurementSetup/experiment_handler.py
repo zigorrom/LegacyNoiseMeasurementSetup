@@ -925,6 +925,7 @@ class PerformExperiment(Experiment):
         self.ds_mult.set_trigger_count(5)
         self.ds_mult.switch_high_ohmic_mode(True)
         self.ds_mult.set_function(HP34401A_FUNCTIONS.AVER)
+        # switching averafing off
         self.ds_mult.switch_stat(False)
         self.ds_mult.switch_autorange(True)
 
@@ -932,6 +933,7 @@ class PerformExperiment(Experiment):
         self.gs_mult.set_trigger_count(5)
         self.gs_mult.switch_high_ohmic_mode(True)
         self.gs_mult.set_function(HP34401A_FUNCTIONS.AVER)
+        # switching averafing off
         self.gs_mult.switch_stat(False)
         self.gs_mult.switch_autorange(True)
 
@@ -942,14 +944,16 @@ class PerformExperiment(Experiment):
         self.ds_mult.set_trigger_count(10)
         self.ds_mult.switch_high_ohmic_mode(True)
         self.ds_mult.set_function(HP34401A_FUNCTIONS.AVER)
-        self.ds_mult.switch_stat(False)
+        # switching averafing on
+        self.ds_mult.switch_stat(True)
         self.ds_mult.switch_autorange(True)
 
         self.gs_mult.set_nplc(10)
         self.gs_mult.set_trigger_count(10)
         self.gs_mult.switch_high_ohmic_mode(True)
         self.gs_mult.set_function(HP34401A_FUNCTIONS.AVER)
-        self.gs_mult.switch_stat(False)
+        # switching averafing on
+        self.gs_mult.switch_stat(True)
         self.gs_mult.switch_autorange(True)
 
 
@@ -963,14 +967,14 @@ class PerformExperiment(Experiment):
         self.switch_voltage_measurement_relay_to("main")
         self.wait_for_stabilization_after_switch()
 
-    def perform_param_measurement(self):
+    def perform_param_measurement(self, measure_average = True):
         self.switch_voltage_measurement_relay_to("sample")
         self.wait_for_stabilization_after_switch()
-        sample_voltage = self._fans_smu.read_drain_source_voltage()
-        gate_voltage = self._fans_smu.read_gate_voltage()
+        sample_voltage = self._fans_smu.read_drain_source_voltage(measure_average)
+        gate_voltage = self._fans_smu.read_gate_voltage(measure_average)
         self.switch_voltage_measurement_relay_to("main")
         self.wait_for_stabilization_after_switch()
-        main_voltage = self._fans_smu.read_main_voltage()
+        main_voltage = self._fans_smu.read_main_voltage(measure_average)
         temperature = self.temperature_controller.temperature
         return (sample_voltage,main_voltage, gate_voltage, temperature)
 
@@ -983,7 +987,7 @@ class PerformExperiment(Experiment):
         #self.wait_for_stabilization_after_switch()
         #main_voltage = self._fans_smu.read_main_voltage()
         #temperature = self.temperature_controller.temperature
-        sample_voltage,main_voltage, gate_voltage, temperature = self.perform_param_measurement()
+        sample_voltage,main_voltage, gate_voltage, temperature = self.perform_param_measurement(True)
         self._measurement_info.update_start_values(main_voltage, sample_voltage, gate_voltage,temperature)
         #self._measurement_info.start_sample_voltage = sample_voltage #np.random.random_sample()
         #self._measurement_info.start_main_voltage = main_voltage #np.random.random_sample()
@@ -997,7 +1001,7 @@ class PerformExperiment(Experiment):
         #self.switch_voltage_measurement_relay_to("main")
         #main_voltage = self._fans_smu.read_main_voltage()
         #temperature = self.temperature_controller.temperature
-        sample_voltage,main_voltage, gate_voltage, temperature = self.perform_param_measurement()
+        sample_voltage,main_voltage, gate_voltage, temperature = self.perform_param_measurement(True)
         self._measurement_info.update_end_values(main_voltage, sample_voltage, gate_voltage,temperature)
         #self._measurement_info.end_sample_voltage = sample_voltage #= np.random.random_sample()
         #self._measurement_info.end_main_voltage = main_voltage #= np.random.random_sample()

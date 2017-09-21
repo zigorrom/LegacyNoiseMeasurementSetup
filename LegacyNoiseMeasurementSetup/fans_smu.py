@@ -423,6 +423,9 @@ class HybridSMU_System(FANS_SMU):
     def analog_read_channel(self, channel):
         return self._multimeters[channel].read_voltage()
 
+    def analog_read_average_channel(self,channel):
+        return self._multimeters[channel].read_average()
+
     def analog_read(self, channels):
         if isinstance(channels,int):
             return self.analog_read_channel(channels)
@@ -436,14 +439,23 @@ class HybridSMU_System(FANS_SMU):
             assert isinstance(v, HP34401A)
             v.set_averaging(averaging)
 
-    def read_drain_source_voltage(self):
-        return self.analog_read_channel(0)
+    def read_drain_source_voltage(self, read_average = False):
+        if read_average:
+            return self.analog_read_average_channel(0)
+        else:
+            return self.analog_read_channel(0)
 
-    def read_gate_voltage(self):
-        return self.analog_read_channel(1)
+    def read_gate_voltage(self, read_average = False):
+        if read_average:
+            return self.analog_read_average_channel(1)
+        else:
+            return self.analog_read_channel(1)
 
-    def read_main_voltage(self):
-        return self.analog_read_channel(2)
+    def read_main_voltage(self, read_average = False):
+        if read_average:
+            return self.analog_read_average_channel(1)
+        else:
+            return self.analog_read_channel(2)
 
 
 class ManualSMU(FANS_SMU):
