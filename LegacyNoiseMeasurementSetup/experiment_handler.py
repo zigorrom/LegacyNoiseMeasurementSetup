@@ -270,9 +270,10 @@ class LoggingQueuedStream:
     def __init__(self, data_queue = None):
         self._log_queue = data_queue
 
-    def write(self, txt):
-        if self._log_queue:
-            self._log_queue.put_nowait({COMMAND:ExperimentCommands.LOG_MESSAGE, PARAMETER:txt})
+    def write(self, txt, skip_new_line = True):
+        if (txt != '\n') and skip_new_line:
+            if self._log_queue:
+                self._log_queue.put_nowait({COMMAND:ExperimentCommands.LOG_MESSAGE, PARAMETER:txt})
         
     def flush(self):
         pass
@@ -289,10 +290,10 @@ class ExperimentHandler(Process):
         self._exit.set()
 
     def run(self):
-        if self._input_data_queue:
-            sys.stdout = LoggingQueuedStream(self._input_data_queue) #open("log.txt", "w")
-        else:
-            sys.stdout = open("log.txt", "w")
+        #if self._input_data_queue:
+        sys.stdout = LoggingQueuedStream(self._input_data_queue) #open("log.txt", "w")
+        #else:
+        #    sys.stdout = open("log.txt", "w")
 
         cfg = Configuration()
         exp_settings = cfg.get_node_from_path("Settings.ExperimentSettings")
