@@ -454,7 +454,7 @@ class HybridSMU_System(FANS_SMU):
 
     def read_main_voltage(self, read_average = False):
         if read_average:
-            return self.analog_read_average_channel(1)
+            return self.analog_read_average_channel(2)
         else:
             return self.analog_read_channel(2)
 
