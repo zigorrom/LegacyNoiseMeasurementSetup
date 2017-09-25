@@ -9,6 +9,47 @@ class CalibrationInfo:
         super().__init__()
 
 
+class CalibrationSimple:
+    def __init__(self, calibration_directory = ""):
+        super().__init__()
+
+        self.calibration_directory = calibration_directory
+
+        self.frequencies = None
+        self.h0 = None
+        self.h0n = None
+        self.k2 = None
+        self.k2n = None
+
+    def generate_filepath(self,fname):
+        return os.path.join(self.calibration_directory, fname)
+    
+    def init_values(self):
+        self.frequencies = np.loadtxt(self.generate_filepath("frequencies.dat"))
+        self.h0 = np.loadtxt(self.generate_filepath("h0.dat"))
+        self.h0n = np.loadtxt(self.generate_filepath("h0n.dat"))
+        self.k2 = np.loadtxt(self.generate_filepath("k2.dat"))
+        self.k2n = np.loadtxt(self.generate_filepath("k2n.dat"))
+
+    def apply_calibration(self,noise_spectrum, preamp_amplification, second_amplification):
+        freq, data = noise_spectrum
+        freq_default = self.frequencies
+        h0 = self.h0
+        h0n = self.h0n
+        k2 = self.k2
+        k2n = self.k2n
+
+        hm_ampl = preamp_amplification * preamp_amplification
+        second_ampl = second_amplification * second_amplification
+
+        real_spectrum = np.asarray([(((sv_meas/second_ampl - h0_)/k2_ - h0n_)/k2n_/hm_ampl)   for (sv_meas, h0_, k2_, h0n_, k2n_) in zip(data, h0, k2, h0n, k2n)])
+
+
+
+        #real_spectrum = np.asarray([((sv_meas/k_ampl - sv_ampl)/k_preamp - sv_preamp) for (sv_meas, k_ampl, sv_ampl, sv_preamp, k_preamp) in zip(data, second_amp_freq_response_sqr,second_amp_calibration_curve, preamp_calibration_curve, preamp_freq_response_sqr)])
+
+
+
 
 class Calibration:
     def __init__(self, calibration_directory = "", use_preamplifier = True, use_second_amplifier = True):

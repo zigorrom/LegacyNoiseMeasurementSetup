@@ -30,7 +30,7 @@ import math
 from measurement_data_structures import MeasurementInfo
 from experiment_writer import ExperimentWriter
 from process_communication_protocol import *
-from calibration import Calibration
+from calibration import Calibration, CalibrationSimple
 
 
 class ExperimentController(QtCore.QObject):
