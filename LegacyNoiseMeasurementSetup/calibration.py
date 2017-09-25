@@ -43,7 +43,7 @@ class CalibrationSimple:
         second_ampl = second_amplification * second_amplification
 
         real_spectrum = np.asarray([(((sv_meas/second_ampl - h0_)/k2_ - h0n_)/k2n_/hm_ampl)   for (sv_meas, h0_, k2_, h0n_, k2n_) in zip(data, h0, k2, h0n, k2n)])
-
+        return np.vstack((freq,real_spectrum))
 
 
         #real_spectrum = np.asarray([((sv_meas/k_ampl - sv_ampl)/k_preamp - sv_preamp) for (sv_meas, k_ampl, sv_ampl, sv_preamp, k_preamp) in zip(data, second_amp_freq_response_sqr,second_amp_calibration_curve, preamp_calibration_curve, preamp_freq_response_sqr)])
