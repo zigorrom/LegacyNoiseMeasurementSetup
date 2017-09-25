@@ -412,6 +412,7 @@ class Experiment:
         dir = os.path.dirname(__file__)
         #self._calibration = Calibration(os.path.join(dir,"calibration_data"))
         self._calibration = CalibrationSimple(os.path.join(dir,"calibration_data"))
+        self._calibration.init_values()
    
 
     def get_meas_ranges(self):
