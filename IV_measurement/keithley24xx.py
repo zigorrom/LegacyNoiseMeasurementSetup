@@ -456,9 +456,12 @@ class Keithley24XX:
     def OperationCompletedQuery(self):
         return bool(self.instrument.ask("*OPC?"))
 
+    
+
 
 def perform_sweep(resource):
-    k = Keithley24XX('GPIB0::16::INSTR')
+    #k = Keithley24XX('GPIB0::16::INSTR')
+    k = Keithley24XX('GPIB0::5::INSTR')
     k.Reset()
     time.sleep(1)
     print(k.IDN())
@@ -471,10 +474,10 @@ def perform_sweep(resource):
     k.SetVoltageSourceFunction()
     k.SetCurrentSenseFunction()
 
-    k.SetVoltageNPLC(1)
+    k.SetVoltageNPLC(0.01)
 
-    k.SetSweepStartVoltage(-0.5)
-    k.SetSweepStopVoltage(0.5)
+    k.SetSweepStartVoltage(-5)
+    k.SetSweepStopVoltage(5)
     k.SetSweepStepVoltage(0.01)
 
     npoints = k.GetSweepPoints()
@@ -483,7 +486,7 @@ def perform_sweep(resource):
     k.SetSweepRanging(k.RANGING_AUTO)
     k.SetSweepSpacing(k.SPACING_LIN)
     k.SetTriggerCount(npoints)
-    k.SetDelay(0.01)
+    k.SetDelay(0.001)
     k.OutputOn()
     
     k.StartOutput()
@@ -494,14 +497,16 @@ def perform_sweep(resource):
     k.OutputOff()
 
     data = np.fromstring(strData, sep=',')
-
+    
     data = data.reshape((npoints,5)).T
+    print(data)
+    voltages, currents, resistances, times, status  = data
+    
 
-    voltages = data[0]
-    current = data[1]
 
+    pg.plot(voltages, currents)
 
-    pg.plot(voltages, current)
+    pg.plot(times, currents)
 
 if __name__ == "__main__":
     
