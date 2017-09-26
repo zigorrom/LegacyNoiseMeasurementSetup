@@ -5,6 +5,8 @@ VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "LegacyNoiseMeasurementSetup", "LegacyNoiseMeasurementSetup\LegacyNoiseMeasurementSetup.pyproj", "{9EFC1E3D-BE9F-46EA-B936-985386CF6BF7}"
 EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "IV_measurement", "IV_measurement\IV_measurement.pyproj", "{B28A6E00-39C6-474C-82A0-25B55DD6FDDF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +15,8 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{9EFC1E3D-BE9F-46EA-B936-985386CF6BF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9EFC1E3D-BE9F-46EA-B936-985386CF6BF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B28A6E00-39C6-474C-82A0-25B55DD6FDDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B28A6E00-39C6-474C-82A0-25B55DD6FDDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
