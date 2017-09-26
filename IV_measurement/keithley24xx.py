@@ -1,4 +1,4 @@
-import visa
+﻿import visa
 import time
 
 class Keithley24XX:
@@ -56,27 +56,27 @@ class Keithley24XX:
     SOURSING_MODES = ['FIX','LIST','SWE']
     FIXED_SOURCING_MODE, lIST_SOURCING_MODE,SWEEP_SOURCING_MODE = SOURSING_MODES
 
-    def SetSourceMode(self,func, mode):
+    def SetSourcingMode(self,func, mode):
         if (mode in self.SOURSING_MODES) and (func in self.SOURCE_FUNCTIONS):
             self.instrument.write("SOUR:{f}:MODE {m}".format(f=func,m=mode))
 
     def SetFixedVoltageSourceMode(self):
-        self.SetSourcingMode(VOLT_SOURCE_FUNCTION,FIXED_SOURCING_MODE)
+        self.SetSourcingMode(self.VOLT_SOURCE_FUNCTION,self.FIXED_SOURCING_MODE)
 
     def SetFixedCurrentSourceMode(self):
-        self.SetSourcingMode(CURR_SOURCE_FUNCTION,FIXED_SOURCING_MODE)
+        self.SetSourcingMode(self.CURR_SOURCE_FUNCTION,self.FIXED_SOURCING_MODE)
 
     def SetListVoltageSourceMode(self):
-        self.SetSourcingMode(VOLT_SOURCE_FUNCTION,lIST_SOURCING_MODE)
+        self.SetSourcingMode(self.VOLT_SOURCE_FUNCTION,self.lIST_SOURCING_MODE)
 
     def SetLisrCurrentSourceMode(self):
-        self.SetSourcingMode(CURR_SOURCE_FUNCTION,lIST_SOURCING_MODE)
+        self.SetSourcingMode(self.CURR_SOURCE_FUNCTION,self.lIST_SOURCING_MODE)
         
     def SetSweepVoltageSourceMode(self):
-        self.SetSourcingMode(VOLT_SOURCE_FUNCTION,SWEEP_SOURCING_MODE)
+        self.SetSourcingMode(self.VOLT_SOURCE_FUNCTION,self.SWEEP_SOURCING_MODE)
         
     def SetSweepCurrentSourceMode(self):
-        self.SetSourcingMode(CURR_SOURCE_FUNCTION,SWEEP_SOURCING_MODE)
+        self.SetSourcingMode(self.CURR_SOURCE_FUNCTION,self.SWEEP_SOURCING_MODE)
 
         
 ##
@@ -295,6 +295,35 @@ class Keithley24XX:
 
 ##################################################################################
 ##
+##  SWEEP FUNCTIONS
+##
+    
+    RANGING_LIST = ["BEST","AUTO","FIX"]
+    RANGING_BEST,RANGING_AUTO, RANGING_FIX = RANGING_LIST
+    def SetSweepRanging(self,mode):
+        if mode in self.RANGING_LIST:
+            self.instrument.write(":SOUR:SWE:RANG {0}".format(mode))
+
+    SPACING_MODES = ["LIN","LOG"]
+    SPACING_LIN, SPACING_LOG = SPACING_MODES
+    def SetSweepSpacing(self,spacing):
+        if spacing in self.SPACING_MODES:
+            self.instrument.write(":SOUR:SWE:SPAC {0}".format(spacing))
+
+    def SetSweepStartVoltage(self, voltage):
+        self.instrument.write(":SOUR:VOLT:STAR {0}".format(voltage))
+
+    def SetSweepStopVoltage(self,voltage):
+        self.instrument.write(":SOUR:VOLT:STOP {0}".format(voltage))
+
+##
+##  END SWEEP FUNCTIONS
+##        
+
+
+
+##################################################################################
+##
 ##  ON/OFF FUNCTIONS
 ##
 
@@ -318,7 +347,9 @@ class Keithley24XX:
 ##    def SetCurrentAmplitude(self,current):
 ##        self.instrument.write("SOUR:CURR:LEV {0}".format(current))
 
-    
+        
+
+
         
     def OutputOff(self):
         self.instrument.write("OUTP:STAT OFF")
@@ -370,38 +401,58 @@ class Keithley24XX:
 
 
 
-    
-
-if __name__ == "__main__":
+def perform_sweep(resource):
     k = Keithley24XX('GPIB0::5::INSTR')
     k.Reset()
     time.sleep(1)
     print(k.IDN())
+
+    k.SetConcurrentMeasurement(k.STATE_OFF)
+    k.SetSourceFunction(k.VOLT_SOURCE_FUNCTION)
+    k.SetSweepStartVoltage(-0.5)
+    k.SetSweepStopVoltage(0.5)
+    k.SetSweepVoltageSourceMode()
+    k.SetSweepRanging(k.RANGING_AUTO)
+    k.SetSweepSpacing(k.SPACING_LIN)
+    k.SetTriggerCount(10)
+    k.SetDelay(0.1)
+    k.OutputOn()
+    print(k.StartOutputAndRead())
+
+
+
+if __name__ == "__main__":
+    perform_sweep('GPIB0::5::INSTR')
+
+#    k = Keithley24XX('GPIB0::5::INSTR')
+#    k.Reset()
+#    time.sleep(1)
+#    print(k.IDN())
     
-    k.SetCurrentSourceFunction()
-    time.sleep(1)
-    k.SetVoltageSourceFunction()
-##    k.SwitchAllFunctions(k.STATE_ON)
-##    time.sleep(1)
-    k.SetPulse()
-    k.DisablePulseMeasurements()
-    print("pw")
-    k.SetPulseWidth(0.005)
-    print("pd")
-    k.SetPulseDelay(1)
-    print("pc")
-    k.SetTriggerCount(3)
-    print("a")
-    time.sleep(1)
-    k.SetVoltageSourceRange(k.MAX_RANGE)#VOLT_RANGE_100V)
-    time.sleep(1)
+#    k.SetCurrentSourceFunction()
+#    time.sleep(1)
+#    k.SetVoltageSourceFunction()
+###    k.SwitchAllFunctions(k.STATE_ON)
+###    time.sleep(1)
+#    k.SetPulse()
+#    k.DisablePulseMeasurements()
+#    print("pw")
+#    k.SetPulseWidth(0.005)
+#    print("pd")
+#    k.SetPulseDelay(1)
+#    print("pc")
+#    k.SetTriggerCount(3)
+#    print("a")
+#    time.sleep(1)
+#    k.SetVoltageSourceRange(k.MAX_RANGE)#VOLT_RANGE_100V)
+#    time.sleep(1)
     
-    k.SetVoltageAmplitude(100)
-    time.sleep(1)
-    k.StartOutput()
-##    k.OutputOn()
-##    print(k.StartOutputAndRead())
-    time.sleep(2)
-    k.OutputOff()
-    k.SetDC()
-    time.sleep(1)
+#    k.SetVoltageAmplitude(100)
+#    time.sleep(1)
+#    k.StartOutput()
+###    k.OutputOn()
+###    print(k.StartOutputAndRead())
+#    time.sleep(2)
+#    k.OutputOff()
+#    k.SetDC()
+#    time.sleep(1)
