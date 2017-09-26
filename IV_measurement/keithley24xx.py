@@ -1,5 +1,22 @@
-﻿import visa
+﻿import sys
+import visa
 import time
+import pyqtgraph as pg
+import numpy as np
+from PyQt4 import QtGui
+
+def instrument_await_function(func):
+        def wrapper(self,*args,**kwargs):
+            #print (isinstance(self,VisaInstrument))
+            prev_timeout = self.instrument.timeout
+            self.instrument.timeout = None
+            #self.timeout = None
+            #self.__instrument.timeout = None
+            result = func(self,*args,**kwargs)
+            self.instrument.timeout = prev_timeout
+            #self.__instrument.timeout = prev_timeout 
+            return result
+        return wrapper
 
 class Keithley24XX:
     def __init__(self,resource):
@@ -32,11 +49,11 @@ class Keithley24XX:
 ##  SET SOURCE FUNCTION
 ##
 
-    SOURCE_FUNCTIONS = ['VOLT','CURR']
-    VOLT_SOURCE_FUNCTION, CURR_SOURCE_FUNCTION = SOURCE_FUNCTIONS
+    SOURCE_SENSE_FUNCTIONS = ['VOLT','CURR']
+    VOLT_SOURCE_FUNCTION, CURR_SOURCE_FUNCTION = SOURCE_SENSE_FUNCTIONS 
 
     def SetSourceFunction(self,func):
-        if func in self.SOURCE_FUNCTIONS:
+        if func in self.SOURCE_SENSE_FUNCTIONS :
             self.instrument.write("SOUR:FUNC {0}".format(func))
     
     def SetVoltageSourceFunction(self):
@@ -45,6 +62,17 @@ class Keithley24XX:
 
     def SetCurrentSourceFunction(self):
         self.SetSourceFunction(self.CURR_SOURCE_FUNCTION)
+
+    def SetSenseFunction(self,func):
+        if func in self.SOURCE_SENSE_FUNCTIONS :
+            self.instrument.write("SENS:FUNC '{0}'".format(func)) 
+
+    def SetVoltageSenseFunction(self):
+        self.SetSenseFunction(self.VOLT_SOURCE_FUNCTION)
+    
+
+    def SetCurrentSenseFunction(self):
+        self.SetSenseFunction(self.CURR_SOURCE_FUNCTION)
 
 ##
 ##  END SET SOURCE FUNCTION
@@ -57,7 +85,7 @@ class Keithley24XX:
     FIXED_SOURCING_MODE, lIST_SOURCING_MODE,SWEEP_SOURCING_MODE = SOURSING_MODES
 
     def SetSourcingMode(self,func, mode):
-        if (mode in self.SOURSING_MODES) and (func in self.SOURCE_FUNCTIONS):
+        if (mode in self.SOURSING_MODES) and (func in self.SOURCE_SENSE_FUNCTIONS):
             self.instrument.write("SOUR:{f}:MODE {m}".format(f=func,m=mode))
 
     def SetFixedVoltageSourceMode(self):
@@ -98,7 +126,7 @@ class Keithley24XX:
     CURR_RANGE_10uA,CURR_RANGE_100uA,CURR_RANGE_1mA,CURR_RANGE_10mA,CURR_RANGE_100mA,CURR_RANGE_1A = ALL_CURRENT_RANGES
 
     def SetSourceRange(self,func,rang):
-        if func in self.SOURCE_FUNCTIONS:
+        if func in self.SOURCE_SENSE_FUNCTIONS:
             if(rang in self.DEFAULT_RANGES) or (rang in self.ALL_VOLTAGE_RANGES) or (rang in self.ALL_CURRENT_RANGES):
                 self.instrument.write("SOUR:{f}:RANG {r}".format(f=func,r=rang))
 
@@ -109,7 +137,7 @@ class Keithley24XX:
         self.SetSourceRange(self.CURR_SOURCE_FUNCTION,rang)
 
     def SetAutoRange(self,func, state):
-        if func in self.SOURCE_FUNCTIONS:
+        if func in self.SOURCE_SENSE_FUNCTIONS:
             if state in self.SWITCH_STATES:
                 self.instrument.write("SOUR:{f}:RANG:AUTO {s}".format(f = func,s = state))
 
@@ -126,7 +154,7 @@ class Keithley24XX:
     MAX_VOLT_AMPL_VALUE, MIN_VOLT_AMPL_VALUE = [105,-105]
     MAX_CURR_AMPL_VALUE, MIN_CURR_AMPL_VALUE = [10.5,-10.5]
     def SetFixedModeAmplitude(self,func,ampl):
-        if func in self.SOURCE_FUNCTIONS:
+        if func in self.SOURCE_SENSE_FUNCTIONS:
             strFmt = "SOUR:{f} {a}"
             if ampl in self.DEFAULT_AMPLITUDES:
                 self.instrument.write(strFmt.format(f=func,a=ampl))
@@ -153,7 +181,7 @@ class Keithley24XX:
 ##
 
     def SetFixedModeAmplitudeWhenTriggered(self,func, ampl):
-        if func in self.SOURCE_FUNCTIONS:
+        if func in self.SOURCE_SENSE_FUNCTIONS:
             strFmt = "SOUR:{f}:TRIG {a}"
             if ampl in self.DEFAULT_AMPLITUDES:
                 self.instrument.write(strFmt.format(f=func,a=ampl))
@@ -288,7 +316,20 @@ class Keithley24XX:
     def SwitchAllFunctions(self,state):
         if state in self.SWITCH_STATES:
             self.instrument.write("FUNC:{0}:ALL".format(state))
+
+    def SetNPLC(self, func, nplc):
+        if func in self.SENSE_FUNCTIONS:
+            self.instrument.write(":SENS:{0}:NPLC {1}".format(func, nplc))
     
+    def SetVoltageNPLC(self, nplc):
+        self.SetNPLC(self.VOLT_SENSE_FUNCTION, nplc)
+
+    def SetCurrentNPLC(self, nplc):
+        self.SetNPLC(self.CURR_SENSE_FUNCTION, nplc)
+
+    def SetResistanceNPLC(self, nplc):
+        self.SetNPLC(self.RES_SENSE_FUNCTION, nplc)
+
 ##
 ##  END ON/OFF FUNCTIONS
 ##   
@@ -315,6 +356,15 @@ class Keithley24XX:
 
     def SetSweepStopVoltage(self,voltage):
         self.instrument.write(":SOUR:VOLT:STOP {0}".format(voltage))
+
+    def SetSweepStepVoltage(self, step):
+        self.instrument.write(":SOUR:VOLT:STEP {0}".format(step))
+
+    def SetSweepPoints(self,points):
+        self.instrument.write(":SOUR:VOLT:POIN {0}".format(points))
+
+    def GetSweepPoints(self):
+        return int(self.instrument.ask(":SOUR:SWE:POIN?"))
 
 ##
 ##  END SWEEP FUNCTIONS
@@ -369,10 +419,14 @@ class Keithley24XX:
         else:
             return False
 
+    
+    @instrument_await_function
     def StartOutputAndRead(self):
         return self.instrument.ask(":READ?")
 
-    
+    @instrument_await_function
+    def FetchData(self):
+        return self.instrument.ask(":FETC?")
 
     
 
@@ -399,30 +453,65 @@ class Keithley24XX:
     def Reset(self):
         self.instrument.write("*RST")
 
+    def OperationCompletedQuery(self):
+        return bool(self.instrument.ask("*OPC?"))
 
 
 def perform_sweep(resource):
-    k = Keithley24XX('GPIB0::5::INSTR')
+    k = Keithley24XX('GPIB0::16::INSTR')
     k.Reset()
     time.sleep(1)
     print(k.IDN())
 
+
+   
+
     k.SetConcurrentMeasurement(k.STATE_OFF)
-    k.SetSourceFunction(k.VOLT_SOURCE_FUNCTION)
+    
+    k.SetVoltageSourceFunction()
+    k.SetCurrentSenseFunction()
+
+    k.SetVoltageNPLC(1)
+
     k.SetSweepStartVoltage(-0.5)
     k.SetSweepStopVoltage(0.5)
+    k.SetSweepStepVoltage(0.01)
+
+    npoints = k.GetSweepPoints()
+
     k.SetSweepVoltageSourceMode()
     k.SetSweepRanging(k.RANGING_AUTO)
     k.SetSweepSpacing(k.SPACING_LIN)
-    k.SetTriggerCount(10)
-    k.SetDelay(0.1)
+    k.SetTriggerCount(npoints)
+    k.SetDelay(0.01)
     k.OutputOn()
-    print(k.StartOutputAndRead())
+    
+    k.StartOutput()
+    #while not k.OperationCompletedQuery():
+    strData = k.FetchData()
+    print(strData)
+    #print(k.StartOutputAndRead())
+    k.OutputOff()
+
+    data = np.fromstring(strData, sep=',')
+
+    data = data.reshape((npoints,5)).T
+
+    voltages = data[0]
+    current = data[1]
 
 
+    pg.plot(voltages, current)
 
 if __name__ == "__main__":
+    
+    app = QtGui.QApplication(sys.argv)
+    app.setApplicationName("IV measurement")
+    
     perform_sweep('GPIB0::5::INSTR')
+    
+    sys.exit(app.exec_())
+
 
 #    k = Keithley24XX('GPIB0::5::INSTR')
 #    k.Reset()
