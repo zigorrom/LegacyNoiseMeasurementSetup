@@ -4,24 +4,29 @@ import time
 import pyqtgraph as pg
 import numpy as np
 from PyQt4 import QtGui
+from communication_layer import VisaInstrument, instrument_await_function
 
-def instrument_await_function(func):
-        def wrapper(self,*args,**kwargs):
-            #print (isinstance(self,VisaInstrument))
-            prev_timeout = self.instrument.timeout
-            self.instrument.timeout = None
-            #self.timeout = None
-            #self.__instrument.timeout = None
-            result = func(self,*args,**kwargs)
-            self.instrument.timeout = prev_timeout
-            #self.__instrument.timeout = prev_timeout 
-            return result
-        return wrapper
+#def instrument_await_function(func):
+#        def wrapper(self,*args,**kwargs):
+#            #print (isinstance(self,VisaInstrument))
+#            prev_timeout = self.instrument.timeout
+#            self.instrument.timeout = None
+#            #self.timeout = None
+#            #self.__instrument.timeout = None
+#            result = func(self,*args,**kwargs)
+#            self.instrument.timeout = prev_timeout
+#            #self.__instrument.timeout = prev_timeout 
+#            return result
+#        return wrapper
 
-class Keithley24XX:
-    def __init__(self,resource):
-        rm = visa.ResourceManager()
-        self.instrument = rm.open_resource(resource)
+class Keithley24XX(VisaInstrument):
+    def __init__(self, resource):
+        super().__init__(resource)
+
+    #def __init__(self,resource):
+        
+        #rm = visa.ResourceManager()
+        #self.instrument = rm.open_resource(resource)
 
 ##################################################################################
 ##
@@ -33,7 +38,7 @@ class Keithley24XX:
 
     def SetFunctionShape(self,shape):
         if shape in self.FUNCTION_SHAPES:
-            self.instrument.write("SOUR:FUNC:SHAP {0}".format(shape))
+            self.write("SOUR:FUNC:SHAP {0}".format(shape))
     
     def SetDC(self):
         self.SetFunctionShape(self.DC_SHAPE)
@@ -54,7 +59,7 @@ class Keithley24XX:
 
     def SetSourceFunction(self,func):
         if func in self.SOURCE_SENSE_FUNCTIONS :
-            self.instrument.write("SOUR:FUNC {0}".format(func))
+            self.write("SOUR:FUNC {0}".format(func))
     
     def SetVoltageSourceFunction(self):
         self.SetSourceFunction(self.VOLT_SOURCE_FUNCTION)
@@ -65,7 +70,7 @@ class Keithley24XX:
 
     def SetSenseFunction(self,func):
         if func in self.SOURCE_SENSE_FUNCTIONS :
-            self.instrument.write("SENS:FUNC '{0}'".format(func)) 
+            self.write("SENS:FUNC '{0}'".format(func)) 
 
     def SetVoltageSenseFunction(self):
         self.SetSenseFunction(self.VOLT_SOURCE_FUNCTION)
@@ -86,7 +91,7 @@ class Keithley24XX:
 
     def SetSourcingMode(self,func, mode):
         if (mode in self.SOURSING_MODES) and (func in self.SOURCE_SENSE_FUNCTIONS):
-            self.instrument.write("SOUR:{f}:MODE {m}".format(f=func,m=mode))
+            self.write("SOUR:{f}:MODE {m}".format(f=func,m=mode))
 
     def SetFixedVoltageSourceMode(self):
         self.SetSourcingMode(self.VOLT_SOURCE_FUNCTION,self.FIXED_SOURCING_MODE)
@@ -128,7 +133,7 @@ class Keithley24XX:
     def SetSourceRange(self,func,rang):
         if func in self.SOURCE_SENSE_FUNCTIONS:
             if(rang in self.DEFAULT_RANGES) or (rang in self.ALL_VOLTAGE_RANGES) or (rang in self.ALL_CURRENT_RANGES):
-                self.instrument.write("SOUR:{f}:RANG {r}".format(f=func,r=rang))
+                self.write("SOUR:{f}:RANG {r}".format(f=func,r=rang))
 
     def SetVoltageSourceRange(self,rang):
         self.SetSourceRange(self.VOLT_SOURCE_FUNCTION,rang)
@@ -139,7 +144,7 @@ class Keithley24XX:
     def SetAutoRange(self,func, state):
         if func in self.SOURCE_SENSE_FUNCTIONS:
             if state in self.SWITCH_STATES:
-                self.instrument.write("SOUR:{f}:RANG:AUTO {s}".format(f = func,s = state))
+                self.write("SOUR:{f}:RANG:AUTO {s}".format(f = func,s = state))
 
 ##
 ##  END SET SOURCING RANGE
@@ -157,13 +162,13 @@ class Keithley24XX:
         if func in self.SOURCE_SENSE_FUNCTIONS:
             strFmt = "SOUR:{f} {a}"
             if ampl in self.DEFAULT_AMPLITUDES:
-                self.instrument.write(strFmt.format(f=func,a=ampl))
+                self.write(strFmt.format(f=func,a=ampl))
             elif func == self.VOLT_SOURCE_FUNCTION:
                 if (ampl >= self.MIN_VOLT_AMPL_VALUE) and (ampl<=self.MAX_VOLT_AMPL_VALUE):
-                    self.instrument.write(strFmt.format(f=func,a=ampl))
+                    self.write(strFmt.format(f=func,a=ampl))
             elif func == self.CURR_SOURCE_FUNCTION:
                 if(ampl >= self.MIN_CURR_AMPL_VALUE) and (ampl<=self.MAX_CURR_AMPL_VALUE):
-                    self.instrument.write(strFmt.format(f=func,a=ampl))
+                    self.write(strFmt.format(f=func,a=ampl))
 
     def SetVoltageAmplitude(self,volt):
         self.SetFixedModeAmplitude(self.VOLT_SOURCE_FUNCTION,volt)
@@ -184,13 +189,13 @@ class Keithley24XX:
         if func in self.SOURCE_SENSE_FUNCTIONS:
             strFmt = "SOUR:{f}:TRIG {a}"
             if ampl in self.DEFAULT_AMPLITUDES:
-                self.instrument.write(strFmt.format(f=func,a=ampl))
+                self.write(strFmt.format(f=func,a=ampl))
             elif func == self.VOLT_SOURCE_FUNCTION:
                 if (ampl >= self.MIN_VOLT_AMPL_VALUE) and (ampl<=self.MAX_VOLT_AMPL_VALUE):
-                    self.instrument.write(strFmt.format(f=func,a=ampl))
+                    self.write(strFmt.format(f=func,a=ampl))
             elif func == self.CURR_SOURCE_FUNCTION:
                 if(ampl >= self.MIN_CURR_AMPL_VALUE) and (ampl<=self.MAX_CURR_AMPL_VALUE):
-                    self.instrument.write(strFmt.format(f=func,a=ampl))
+                    self.write(strFmt.format(f=func,a=ampl))
 
     def SetVoltageAmplitudeWhenTriggered(self,volt):
         self.SetFixedModeAmplitudeWhenTriggered(self.VOLT_SOURCE_FUNCTION,volt)
@@ -211,9 +216,9 @@ class Keithley24XX:
     def SetVoltageSourceLimit(self,level):
         strFmt = "SOUR:VOLT:PROT {l}"
         if level in self.DEFAULT_AMPLITUDES:
-              self.instrument.write(strFmt.format(l=level))
+              self.write(strFmt.format(l=level))
         elif (level <= MAX_VOLT_AMPL_VALUE)and (level>=MIN_VOLT_AMPL_VALUE):
-            self.instrument.write(strFmt.format(l=level))
+            self.write(strFmt.format(l=level))
 
 ##
 ##  END SET FIXED AMPLITUDE WHEN TRIGGERED
@@ -229,9 +234,9 @@ class Keithley24XX:
     def SetDelay(self,delay):
         strFmt = "SOUR:DEL {d}"
         if delay in self.DEFAULT_AMPLITUDES:
-            self.instrument.write(strFmt.format(d=delay))
+            self.write(strFmt.format(d=delay))
         elif (delay>=self.MIN_DELAY) and (delay<=self.MAX_DELAY):
-            self.instrument.write(strFmt.format(d=delay))
+            self.write(strFmt.format(d=delay))
         
     
 ##
@@ -249,7 +254,7 @@ class Keithley24XX:
             seconds = self.MIN_PULSE_WIDTH
         elif seconds >self.MAX_PULSE_WIDTH :
             seconds = self.MAX_PULSE_WIDTH
-        self.instrument.write("SOUR:PULS:WIDT {0}".format(seconds))
+        self.write("SOUR:PULS:WIDT {0}".format(seconds))
 
 ##
 ##   END SET PULSE WIDTH (USED FOR PULSE MODE)
@@ -267,7 +272,7 @@ class Keithley24XX:
             delay = self.MIN_DELAY
         elif delay > self.MAX_DELAY:
             delay = self.MAX_DELAY
-        self.instrument.write("SOUR:PULS:DEL {0}".format(delay))
+        self.write("SOUR:PULS:DEL {0}".format(delay))
 
 ##
 ##  END SET PULSE WIDTH (USED FOR PULSE MODE)
@@ -285,7 +290,7 @@ class Keithley24XX:
         
     def SetConcurrentMeasurement(self,state):
         if state in self.SWITCH_STATES:
-            self.instrument.write("SENS:FUNC:CONC {0}".format(state))
+            self.write("SENS:FUNC:CONC {0}".format(state))
 
 
 ##
@@ -302,7 +307,7 @@ class Keithley24XX:
     def SwitchFunction(self, state, func_List):
         if (func_list is list) and (state in self.SWITCH_STATES):
             if all(item in self.SENSE_FUNCTIONS for item in func_list):
-                self.instrument.write("FUNC:{0} \"{1}\"".format(state,"\",\"".join(func_List)))
+                self.write("FUNC:{0} \"{1}\"".format(state,"\",\"".join(func_List)))
             
 
     
@@ -315,11 +320,11 @@ class Keithley24XX:
 
     def SwitchAllFunctions(self,state):
         if state in self.SWITCH_STATES:
-            self.instrument.write("FUNC:{0}:ALL".format(state))
+            self.write("FUNC:{0}:ALL".format(state))
 
     def SetNPLC(self, func, nplc):
         if func in self.SENSE_FUNCTIONS:
-            self.instrument.write(":SENS:{0}:NPLC {1}".format(func, nplc))
+            self.write(":SENS:{0}:NPLC {1}".format(func, nplc))
     
     def SetVoltageNPLC(self, nplc):
         self.SetNPLC(self.VOLT_SENSE_FUNCTION, nplc)
@@ -343,28 +348,28 @@ class Keithley24XX:
     RANGING_BEST,RANGING_AUTO, RANGING_FIX = RANGING_LIST
     def SetSweepRanging(self,mode):
         if mode in self.RANGING_LIST:
-            self.instrument.write(":SOUR:SWE:RANG {0}".format(mode))
+            self.write(":SOUR:SWE:RANG {0}".format(mode))
 
     SPACING_MODES = ["LIN","LOG"]
     SPACING_LIN, SPACING_LOG = SPACING_MODES
     def SetSweepSpacing(self,spacing):
         if spacing in self.SPACING_MODES:
-            self.instrument.write(":SOUR:SWE:SPAC {0}".format(spacing))
+            self.write(":SOUR:SWE:SPAC {0}".format(spacing))
 
     def SetSweepStartVoltage(self, voltage):
-        self.instrument.write(":SOUR:VOLT:STAR {0}".format(voltage))
+        self.write(":SOUR:VOLT:STAR {0}".format(voltage))
 
     def SetSweepStopVoltage(self,voltage):
-        self.instrument.write(":SOUR:VOLT:STOP {0}".format(voltage))
+        self.write(":SOUR:VOLT:STOP {0}".format(voltage))
 
     def SetSweepStepVoltage(self, step):
-        self.instrument.write(":SOUR:VOLT:STEP {0}".format(step))
+        self.write(":SOUR:VOLT:STEP {0}".format(step))
 
     def SetSweepPoints(self,points):
-        self.instrument.write(":SOUR:VOLT:POIN {0}".format(points))
+        self.write(":SOUR:SWE:POIN {0}".format(points))
 
     def GetSweepPoints(self):
-        return int(self.instrument.ask(":SOUR:SWE:POIN?"))
+        return int(self.query(":SOUR:SWE:POIN?"))
 
 ##
 ##  END SWEEP FUNCTIONS
@@ -374,13 +379,89 @@ class Keithley24XX:
 
 ##################################################################################
 ##
-##  ON/OFF FUNCTIONS
+##  Triggering FUNCTIONS
 ##
-
+    MIN_TRIG_COUNT = 1
+    MAX_TRIG_COUNT = 2500
+    def SetTriggerCount(self, count):
+        if count<self.MIN_TRIG_COUNT:
+            count = self.MIN_TRIG_COUNT
+        elif count> self.MAX_TRIG_COUNT:
+            count = self.MAX_TRIG_COUNT
+        self.write(":TRIG:COUN {0}".format(count))
     
+    def SetArmCount(self,count):
+        if count<self.MIN_TRIG_COUNT:
+            count = self.MIN_TRIG_COUNT
+        elif count> self.MAX_TRIG_COUNT:
+            count = self.MAX_TRIG_COUNT
+        self.write(":ARM:COUN {0}".format(count))
+
+    def ClearInputTriggers(self):
+        self.write(":TRIG:CLE")
+
+    def Initiate(self):
+        self.write(":INIT")
+    
+    def Abort(self):
+        self.write("ABOR")
+
+    MIN_TRIG_DELAY, MAX_TRIG_DELAY = (0, 999.999)
+    def SetTriggerDelay(self,delay):
+        if delay < self.MIN_TRIG_DELAY:
+            delay = self.MIN_TRIG_DELAY
+        if delay > self.MAX_TRIG_DELAY:
+            delay = self.MAX_TRIG_DELAY
+        self.write(":TRIG:DEL {0}".format(delay))
+
+    TRIG_SOURCE_LIST = ["IMM","TLIN","TIM", "MAN", "BUS", "NST", "PST","BST"]
+    TRIG_IMM, TRIG_TLIN,TRIG_TIM,TRIG_MAN,TRIG_BUS,TRIG_NST,TRIG_PST,TRIG_BST = TRIG_SOURCE_LIST
+    def SetTriggerSource(self,source):
+        if source in self.TRIG_SOURCE_LIST:
+            self.write(":TRIG:SOUR {0}".format(source))
+
+    def SetArmSource(self,source):
+        if source in self.TRIG_SOURCE_LIST:
+            self.write(":ARM:SOUR {0}".format(source))
+
+    TRIG_EVENTS = ["SOUR","SENS","DEL","NONE"]
+    TRIG_SOUR_EVENT,TRIG_SENS_EVENT,TRIG_DEL_EVENT,TRIG_NONE_EVENT = TRIG_EVENTS
+    def SetTriggerInputEventDetection(self, *event):
+        events = filter(lambda x: x in self.TRIG_EVENTS, event)
+        if events:
+            res = ", ".join(events)
+            self.write(":TRIG:INP {0}".format(res))
+
+    def SetTriggerOutputEvent(self, *event):
+        events = filter(lambda x: x in self.TRIG_EVENTS, event)
+        if events:
+            res = ", ".join(events)
+            self.write(":TRIG:OUTP {0}".format(res))
+
+    ARM_EVENTS = ["TENT", "TEX", "NONE"]
+    ARM_TENT_EVENT, ARM_TEX_EVENT, ARM_NONE_EVENT = ARM_EVENTS
+
+    def SetArmOutputEvent(self, *event):
+        events = filter(lambda x: x in self.ARM_EVENTS, event)
+        if events:
+            res = ", ".join(events)
+            self.write(":ARM:OUTP {0}".format(res))
+
+
+
+    TRIG_INPUT_LINES = [1,2,3,4]
+    def SetTriggerInputLine(self, line):
+        if line in self.TRIG_INPUT_LINES:
+            self.write(":TRIG:ILIN {0}".format(line))
+            
+    TRIG_OUTPUT_LINES = [1,2,3,4]
+    def SetTriggerOutputLine(self, line):
+        if line in self.TRIG_OUTPUT_LINES:
+            self.write(":TRIG:OLIN {0}".format(line))
+
 
 ##
-##  END ON/OFF FUNCTIONS
+##  END Triggering FUNCTIONS
 ##        
 
 
@@ -391,42 +472,40 @@ class Keithley24XX:
 
         
 ##    def SetVoltageAmplitude(self,voltage):
-##        self.instrument.write("SOUR:VOLT:LEV {0}".format(voltage))
+##        self.write("SOUR:VOLT:LEV {0}".format(voltage))
 ##
 ##
 ##    def SetCurrentAmplitude(self,current):
-##        self.instrument.write("SOUR:CURR:LEV {0}".format(current))
+##        self.write("SOUR:CURR:LEV {0}".format(current))
 
         
-
+    def OutputOn(self):
+        self.write("OUTP:STAT ON")
+        #if self.query("OUTP:STAT?") == 'ON':
+        #    return True
+        #else:
+        #    return False
 
         
     def OutputOff(self):
-        self.instrument.write("OUTP:STAT OFF")
-        if self.instrument.ask("OUTP:STAT?") == 'OFF':
-            return True
-        else:
-            return False
+        self.write("OUTP:STAT OFF")
+        #if self.query("OUTP:STAT?") == 'OFF':
+        #    return True
+        #else:
+        #    return False
         
         
-    def StartOutput(self):
-        self.instrument.write(":INIT")
     
-    def OutputOn(self):
-        self.instrument.write("OUTP:STAT ON")
-        if self.instrument.ask("OUTP:STAT?") == 'ON':
-            return True
-        else:
-            return False
+
 
     
     @instrument_await_function
     def StartOutputAndRead(self):
-        return self.instrument.ask(":READ?")
+        return self.query(":READ?")
 
     @instrument_await_function
     def FetchData(self):
-        return self.instrument.ask(":FETC?")
+        return self.query(":FETC?")
 
     
 
@@ -435,85 +514,136 @@ class Keithley24XX:
     
     
     def DisablePulseMeasurements(self):
-        self.instrument.write(":SENSe:FUNCtion:OFF:ALL")
+        self.write(":SENSe:FUNCtion:OFF:ALL")
 
-    MIN_TRIG_COUNT = 1
-    MAX_TRIG_COUNT = 2500
-    def SetTriggerCount(self, count):
-        if count<self.MIN_TRIG_COUNT:
-            count = self.MIN_TRIG_COUNT
-        elif count> self.MAX_TRIG_COUNT:
-            count = self.MAX_TRIG_COUNT
-        self.instrument.write(":TRIG:COUN {0}".format(count))
+    
     
     def IDN(self):
-        if self.instrument:
-            return self.instrument.ask("*IDN?")
+        if self.is_initialized():
+            return self.query("*IDN?")
 
     def Reset(self):
-        self.instrument.write("*RST")
+        self.write("*RST")
 
     def OperationCompletedQuery(self):
-        return bool(self.instrument.ask("*OPC?"))
+        return bool(self.query("*OPC?"))
+
+    def WaitOperationCompleted(self):
+        self.write("*WAI")
 
     
 
 
-def perform_sweep(resource):
-    #k = Keithley24XX('GPIB0::16::INSTR')
+def perform_sweep():
     k = Keithley24XX('GPIB0::5::INSTR')
-    k.Reset()
-    time.sleep(1)
-    print(k.IDN())
+    k2 = Keithley24XX('GPIB0::16::INSTR')
+    k.Abort()
+    k2.Abort()
 
+    k.Reset()
+    k2.Reset()
+    
+    
+
+    print(k.IDN())
+    print(k2.IDN())
 
    
 
     k.SetConcurrentMeasurement(k.STATE_OFF)
-    
+    k2.SetConcurrentMeasurement(k.STATE_OFF)
+
+
+
     k.SetVoltageSourceFunction()
+    k2.SetVoltageSourceFunction()
+
     k.SetCurrentSenseFunction()
+    k2.SetCurrentSenseFunction()
 
     k.SetVoltageNPLC(0.01)
+    k2.SetVoltageNPLC(0.01)
 
-    k.SetSweepStartVoltage(-5)
-    k.SetSweepStopVoltage(5)
-    k.SetSweepStepVoltage(0.01)
 
+
+    k.SetSweepStartVoltage(-1)
+    k.SetSweepStopVoltage(1)
+    k.SetSweepPoints(2001)
+    #k.SetSweepStepVoltage(0.001)
     npoints = k.GetSweepPoints()
 
     k.SetSweepVoltageSourceMode()
+    k2.SetVoltageAmplitude(0.5)
+
+    
+
     k.SetSweepRanging(k.RANGING_AUTO)
     k.SetSweepSpacing(k.SPACING_LIN)
     k.SetTriggerCount(npoints)
-    k.SetDelay(0.001)
-    k.OutputOn()
+    k2.SetTriggerCount(npoints)
     
-    k.StartOutput()
+    k2.SetTriggerSource(k2.TRIG_TLIN)
+    k2.SetTriggerInputEventDetection(k2.TRIG_SOUR_EVENT)
+    k2.SetTriggerInputLine(1)
+    k2.SetTriggerOutputLine(2)
+    k2.SetTriggerOutputEvent(k2.TRIG_SENS_EVENT)
+
+
+    k.SetTriggerSource(k.TRIG_TLIN)
+    k.SetTriggerInputEventDetection(k.TRIG_SENS_EVENT)
+    k.SetTriggerOutputEvent(k.TRIG_SOUR_EVENT)
+    k.SetTriggerOutputLine(1)
+    k.SetTriggerInputLine(2)
+
+    
+
+
+
+    k.SetDelay(0.001)
+    k2.SetDelay(0.001)
+
+    k.OutputOn()
+    k2.OutputOn()
+    
+    k.Initiate()
+    k2.Initiate()
+
+   
     #while not k.OperationCompletedQuery():
-    strData = k.FetchData()
-    print(strData)
-    #print(k.StartOutputAndRead())
+    k.WaitOperationCompleted()
+    k2.WaitOperationCompleted()
+    #k.OperationCompletedQuery()
     k.OutputOff()
+    k2.OutputOff()
+
+    strData = k.FetchData()
+    strData2 = k2.FetchData()
+
+    
+    #print(strData)
+    #print(k.StartOutputAndRead())
+    
 
     data = np.fromstring(strData, sep=',')
-    
+    data2 = np.fromstring(strData2, sep=',')
     data = data.reshape((npoints,5)).T
-    print(data)
-    voltages, currents, resistances, times, status  = data
+    data2 = data2.reshape((npoints,5)).T
     
+    voltages, currents, resistances, times, status  = data
+    voltages2, currents2, resistances2, times2, status2  = data2
 
-
-    pg.plot(voltages, currents)
 
     pg.plot(times, currents)
+    pg.plot(times2, currents2)
+
+    #pg.plot(times, currents)
 
 if __name__ == "__main__":
     
     app = QtGui.QApplication(sys.argv)
     app.setApplicationName("IV measurement")
     
-    perform_sweep('GPIB0::5::INSTR')
+    perform_sweep()
     
     sys.exit(app.exec_())
 

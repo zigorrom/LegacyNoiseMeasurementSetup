@@ -22,6 +22,9 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="communication_layer.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="IV_measurement.py" />
     <Compile Include="keithley24xx.py" />
     <Compile Include="py_pulse.py" />
