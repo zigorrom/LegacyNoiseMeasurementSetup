@@ -614,7 +614,7 @@ def perform_sweep():
 
     k.SetSweepStartVoltage(-1)
     k.SetSweepStopVoltage(1)
-    k.SetSweepPoints(1101)
+    k.SetSweepPoints(101)
     #k.SetSweepStepVoltage(0.001)
     npoints = k.GetSweepPoints()
 
