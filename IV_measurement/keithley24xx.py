@@ -212,6 +212,29 @@ class Keithley24XX(VisaInstrument):
 ##
 ##  SET FIXED AMPLITUDE WHEN TRIGGERED
 ##
+    #DEFAULT_AMPLITUDES = ['DEF','MIN','MAX']
+    #DEFAULT_AMPLITUDE,MIN_AMPLITUDE,MAX_AMPLITUDE = DEFAULT_AMPLITUDES
+    MAX_VOLT_COMPLIANCE, MIN_VOLT_COMPLIANCE = [105,-105]
+    MAX_CURR_COMPLIANCE, MIN_CURR_COMPLIANCE = [1.05,-1.05]
+    def SetSenseCompliance(self,func,compliance):
+        if func in self.SENSE_FUNCTIONS:
+            strFmt = ":SENS:{f}:PROT {c}"
+            if compliance in self.DEFAULT_AMPLITUDES:
+                self.write(strFmt.format(f=func, c=compliance))
+            elif func == self.VOLT_SENSE_FUNCTION:
+                if (compliance >= self.MIN_VOLT_COMPLIANCE) and (compliance <= self.MAX_VOLT_COMPLIANCE):
+                    self.write(strFmt.format(f=func, c=compliance))
+            elif func == self.CURR_SENSE_FUNCTION:
+                if (compliance >= self.MIN_CURR_COMPLIANCE) and (compliance <= self.MAX_CURR_COMPLIANCE):
+                    self.write(strFmt.format(f=func, c=compliance))
+
+    def SetVoltageSenseCompliance(self, compliance):
+        self.SetSenseCompliance(self.VOLT_SENSE_FUNCTION, compliance)
+
+    def SetCurrentSenseCompliance(self, compliance):
+        self.SetSenseCompliance(self.CURR_SENSE_FUNCTION, compliance)
+
+
 
     def SetVoltageSourceLimit(self,level):
         strFmt = "SOUR:VOLT:PROT {l}"
@@ -497,8 +520,28 @@ class Keithley24XX(VisaInstrument):
         
     
 
-
+    def ClearBuffer(self):
+        self.write(":TRAC:CLE")
     
+
+    MAX_TRACE_POINTS_COUNT, MIN_TRACE_POINTS_COUNT = (2500,1)
+    def SetTraceBufferSize(self, count):
+        if count>= self.MIN_TRACE_POINTS_COUNT and count <= self.MAX_TRACE_POINTS_COUNT:
+            self.write(":TRAC:POIN {0}".format(count))
+
+    TRACE_CONTROLS = ["NEXT", "NEV"]
+    NEXT_TRACE_CONTROL, NEVER_TRACE_CONTROL = TRACE_CONTROLS
+    def SelectTraceBufferControl(self, ctrl):
+        if ctrl in self.TRACE_CONTROLS:
+            self.write(":TRAC:FEED:CONT {0}".format(ctrl))
+
+
+    @instrument_await_function
+    def ReadTraceData(self):
+        return self.query(":TRAC:DATA?")
+
+
+
     @instrument_await_function
     def StartOutputAndRead(self):
         return self.query(":READ?")
@@ -543,6 +586,8 @@ def perform_sweep():
     k.Reset()
     k2.Reset()
     
+    k.ClearBuffer()
+    k2.ClearBuffer()
     
 
     print(k.IDN())
@@ -564,11 +609,12 @@ def perform_sweep():
     k.SetVoltageNPLC(0.01)
     k2.SetVoltageNPLC(0.01)
 
-
+    k.SetCurrentSenseCompliance(k.MAX_CURR_COMPLIANCE)
+    k2.SetCurrentSenseCompliance(k2.MAX_CURR_COMPLIANCE)
 
     k.SetSweepStartVoltage(-1)
     k.SetSweepStopVoltage(1)
-    k.SetSweepPoints(2001)
+    k.SetSweepPoints(1101)
     #k.SetSweepStepVoltage(0.001)
     npoints = k.GetSweepPoints()
 
@@ -579,9 +625,16 @@ def perform_sweep():
 
     k.SetSweepRanging(k.RANGING_AUTO)
     k.SetSweepSpacing(k.SPACING_LIN)
+    
     k.SetTriggerCount(npoints)
     k2.SetTriggerCount(npoints)
-    
+    k.SetTraceBufferSize(npoints)
+    k2.SetTraceBufferSize(npoints)
+
+    k.SelectTraceBufferControl(k.NEXT_TRACE_CONTROL)
+    k2.SelectTraceBufferControl(k.NEXT_TRACE_CONTROL)
+
+
     k2.SetTriggerSource(k2.TRIG_TLIN)
     k2.SetTriggerInputEventDetection(k2.TRIG_SOUR_EVENT)
     k2.SetTriggerInputLine(1)
@@ -595,10 +648,6 @@ def perform_sweep():
     k.SetTriggerOutputLine(1)
     k.SetTriggerInputLine(2)
 
-    
-
-
-
     k.SetDelay(0.001)
     k2.SetDelay(0.001)
 
@@ -608,7 +657,6 @@ def perform_sweep():
     k.Initiate()
     k2.Initiate()
 
-   
     #while not k.OperationCompletedQuery():
     k.WaitOperationCompleted()
     k2.WaitOperationCompleted()
@@ -616,8 +664,8 @@ def perform_sweep():
     k.OutputOff()
     k2.OutputOff()
 
-    strData = k.FetchData()
-    strData2 = k2.FetchData()
+    strData = k.ReadTraceData() #k.FetchData()
+    strData2 = k2.ReadTraceData() #k2.FetchData()
 
     
     #print(strData)
