@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>b28a6e00-39c6-474c-82a0-25b55dd6fddf</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>keithley24xx.py</StartupFile>
+    <StartupFile>IV_measurement.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -27,7 +27,6 @@
     </Compile>
     <Compile Include="IV_measurement.py" />
     <Compile Include="keithley24xx.py" />
-    <Compile Include="py_pulse.py" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
