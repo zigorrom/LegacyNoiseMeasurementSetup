@@ -2,25 +2,19 @@
 import os
 import time
 import datetime
+import configparser
 import numpy as np
-import pyqtgraph as pg
 import pandas as pd
 
 from PyQt4 import uic, QtGui, QtCore
 from PyQt4.QtCore import QThread
 
-import configparser
-
-
 from communication_layer import get_available_gpib_resources, get_available_com_resources
 from keithley24xx import Keithley24XX
 from range_handlers import float_range
+from iv_plot import IV_PlotWidget
 
 
-
-pg.setConfigOptions(antialias=True)
-pg.setConfigOption('background', None) #'w')
-pg.setConfigOption('foreground','k')
 
 INTEGRATION_SPEEDS = ["Slow", "Middle", "Fast"]
 INTEGRATION_SLOW,INTEGRATION_MIDDLE, INTEGRATION_FAST = INTEGRATION_SPEEDS
@@ -28,31 +22,15 @@ INTEGRATION_SLOW,INTEGRATION_MIDDLE, INTEGRATION_FAST = INTEGRATION_SPEEDS
 MEASUREMENT_TYPES = ["Output", "Transfer"]
 OUTPUT_MEASUREMENT, TRANSFER_MEASUREMENT = MEASUREMENT_TYPES
 
-class MeasurementThread(QThread):
-    measurementStarted = QtCore.pyqtSignal()
-    measurementStopped = QtCore.pyqtSignal()
-    measurementProgressChanged =QtCore.pyqtSignal(int)
 
-    def __init__(self, experiment):
-        QThread.__init__(self)
-        self.alive = True
-        assert isinstance(experiment, IV_Experiment), "Not expectable experiment type"
-        self.experiment = experiment
-
-    def __del__(self):
-        self.wait()
-
-    def stop(self):
-        self.alive = False
-
-    def run(self):
-        self.experiment.perform_measurement()
         
 
 class IV_Experiment(QThread):
     measurementStarted = QtCore.pyqtSignal()
     measurementStopped = QtCore.pyqtSignal()
     measurementProgressChanged =QtCore.pyqtSignal(int)
+    measurementDataArrived = QtCore.pyqtSignal(tuple) 
+    measurementNextFile = QtCore.pyqtSignal()
 
     def __init__(self):
         QThread.__init__(self)
@@ -209,7 +187,7 @@ class IV_Experiment(QThread):
             raise Exception("Measurement type error")
 
     
-    def __perform_hardware_sweep(self, independent_device, independent_range, dependent_device, dependent_range, independent_variable_name, dependent_variable_name):
+    def __perform_hardware_sweep(self, independent_device, independent_range, dependent_device, dependent_range, independent_variable_name, dependent_variable_name, visualize_independent_values):
         assert isinstance(independent_device, Keithley24XX), "Wrong type for independent device"
         assert isinstance(dependent_device, Keithley24XX), "Wrong type for dependent device"
         NUMBER_OF_ELEMENTS_READ_FROM_DEVICE = 5
@@ -252,22 +230,33 @@ class IV_Experiment(QThread):
             dep_voltages, dep_currents, dep_resistances, dep_times, dep_status  = dep_data
 
             res_array = np.vstack((indep_voltages, indep_currents, indep_times, dep_voltages, dep_currents, dep_times)).T
+            
+            visual_currents = indep_currents if visualize_independent_values else dep_currents
+            self.measurementDataArrived.emit(("V{0} = {1:.5} V".format(dependent_variable_name[0], dependent_voltage), indep_voltages, visual_currents))
+            #else:
+            #    self.measurementDataArrived.emit(("V{0} = {1:.5} V".format(dependent_variable_name[0], dependent_voltage), indep_voltages, dep_currents))
+
             df = pd.DataFrame(res_array,index = np.arange(independent_range.length), columns = cols)
             filename = os.path.join(self.working_folder,filename_format.format(self.measurement_name,self.measurement_count, datetime.datetime.now().strftime("%Y-%m-%dH%HM%MS%S") )) 
             df.to_csv(filename, index = False)
+
+            self.__increment_file_count()
             #indep_voltages, indep_currents, indep_resistances, indep_times, indep_status  = data
             #dep_voltages, dep_currents, dep_resistances, dep_times, dep_status  = data2
             #print("VG={0}".format(dependent_voltage))
             #print(dep_voltages)
             #print(indep_currents)
 
+    def __increment_file_count(self):
+        self.measurement_count +=1
+        self.measurementNextFile.emit()
 
     def _perform_hardware_sweep_for_measurement_type(self):
         drain_var, gate_var = ("drain","gate")
         if self.measurement_type == OUTPUT_MEASUREMENT:
-            self.__perform_hardware_sweep(self.drain_keithley, self.drain_range,self.gate_keithley,self.gate_range, drain_var, gate_var)
+            self.__perform_hardware_sweep(self.drain_keithley, self.drain_range,self.gate_keithley,self.gate_range, drain_var, gate_var, True)
         elif self.measurement_type == TRANSFER_MEASUREMENT:
-            self.__perform_hardware_sweep(self.gate_keithley,self.gate_range, self.drain_keithley, self.drain_range, gate_var, drain_var)
+            self.__perform_hardware_sweep(self.gate_keithley,self.gate_range, self.drain_keithley, self.drain_range, gate_var, drain_var, False)
 
 
 
@@ -354,6 +343,8 @@ class MainView(mainViewBase, mainViewForm):
     def setupUi(self):
         super(MainView, self).setupUi(self)
         
+        self.ivPlotWidget = IV_PlotWidget(self.ui_plot)
+
         self.ui_measurement_type.addItems(MEASUREMENT_TYPES)
         gpib_resources = get_available_gpib_resources()
         self.ui_ds_resource.addItems(gpib_resources)
@@ -397,9 +388,21 @@ class MainView(mainViewBase, mainViewForm):
                 measurement_name,
                 measurement_count)
 
+    def data_arrived(self, data):
+        name, x,y = data
+        self.ivPlotWidget.add_curve(x,y,name)
+
+    def on_next_file(self):
+        meas_count = self.ui_measurementCount.value()
+        self.ui_measurementCount.setValue(meas_count+1)
 
     def initialize_experiment(self):
         self.experiment = IV_Experiment()
+
+        self.experiment.measurementDataArrived.connect(self.data_arrived)
+        self.experiment.measurementNextFile.connect(self.on_next_file)
+
+
         (measurement_type,
          drain_keithley_resource, 
          gate_keithley_resource, 
@@ -423,6 +426,7 @@ class MainView(mainViewBase, mainViewForm):
                                            current_compliance,
                                            set_measure_delay)
         self.experiment.prepare_hardware()
+        self.experiment.open_experiment(self.working_directory, measurement_name, measurement_count)
         #exp.prepare_experiment(TRANSFER_MEASUREMENT,float_range(0,1.5,len=101),float_range(-1,1,len=5), True, INTEGRATION_MIDDLE, 0.001, 0.001)
         #exp.prepare_hardware()
 
@@ -430,14 +434,22 @@ class MainView(mainViewBase, mainViewForm):
     @QtCore.pyqtSlot()
     def on_startButton_clicked(self):
         print("start")
+        #x = np.linspace(-1,1,101)
+        #y = np.linspace(-10,10,101)
+        #self.ivPlotWidget.add_curve(x,y,"test")
+        self.ivPlotWidget.clear_curves()
         self.initialize_experiment()
         self.experiment.start()
+
+        #self.initialize_experiment()
+        #self.experiment.start()
         
 
     @QtCore.pyqtSlot()
     def on_stopButton_clicked(self):
         print("stop")
-        self.experiment.stop()
+        #self.ivPlotWidget.clear_curves()
+        #self.experiment.stop()
         
     def closeEvent(self,event):
 
@@ -483,30 +495,30 @@ class MainView(mainViewBase, mainViewForm):
 
 
 if __name__== "__main__":
-    #app = QtGui.QApplication(sys.argv)
-    #app.setApplicationName("LegacyNoiseMeasurementSetup")
-    ##app.setStyle("cleanlooks")
+    app = QtGui.QApplication(sys.argv)
+    app.setApplicationName("LegacyNoiseMeasurementSetup")
+    app.setStyle("cleanlooks")
 
     ##css = "QLineEdit#sample_voltage_start {background-color: yellow}"
     ##app.setStyleSheet(css)
     ##sample_voltage_start
 
-    #wnd = MainView()
-    #wnd.show()
-    exp = IV_Experiment()
-    exp.init_hardware('GPIB0::5::INSTR', 'GPIB0::16::INSTR')
-    exp.prepare_experiment(TRANSFER_MEASUREMENT,float_range(0,1.5,len=101),float_range(-1,1,len=5), True, INTEGRATION_MIDDLE, 0.001, 0.001)
-    exp.prepare_hardware()
-    exp.open_experiment("", "test_meas",1)
-    exp.perform_measurement()
+    wnd = MainView()
+    wnd.show()
+    #exp = IV_Experiment()
+    #exp.init_hardware('GPIB0::5::INSTR', 'GPIB0::16::INSTR')
+    #exp.prepare_experiment(TRANSFER_MEASUREMENT,float_range(0,1.5,len=101),float_range(-1,1,len=5), True, INTEGRATION_MIDDLE, 0.001, 0.001)
+    #exp.prepare_hardware()
+    #exp.open_experiment("", "test_meas",1)
+    #exp.perform_measurement()
     #exp.start()
     
     #exp.stop()
 
     #exp.wait()
     #exp.perform_measurement()
-    sys.exit(0)
-    #sys.exit(app.exec_())
+    #sys.exit(0)
+    sys.exit(app.exec_())
 
     
     

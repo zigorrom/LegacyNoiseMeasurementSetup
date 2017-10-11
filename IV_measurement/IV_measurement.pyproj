@@ -26,6 +26,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="IV_measurement.py" />
+    <Compile Include="iv_plot.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="keithley24xx.py" />
     <Compile Include="n_enum.py" />
     <Compile Include="range_handlers.py" />
