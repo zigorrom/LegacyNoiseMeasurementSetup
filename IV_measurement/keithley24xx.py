@@ -595,8 +595,10 @@ def perform_sweep():
 
    
 
-    k.SetConcurrentMeasurement(k.STATE_OFF)
-    k2.SetConcurrentMeasurement(k.STATE_OFF)
+    k.SetConcurrentMeasurement(Keithley24XX.STATE_ON)
+    k2.SetConcurrentMeasurement(Keithley24XX.STATE_ON)
+    #k.SetConcurrentMeasurement(Keithley24XX.STATE_OFF)
+    #k2.SetConcurrentMeasurement(Keithley24XX.STATE_OFF)
 
 
 
@@ -606,11 +608,11 @@ def perform_sweep():
     k.SetCurrentSenseFunction()
     k2.SetCurrentSenseFunction()
 
-    k.SetVoltageNPLC(0.01)
-    k2.SetVoltageNPLC(0.01)
+    k.SetVoltageNPLC(0.1)
+    k2.SetVoltageNPLC(0.1)
 
-    k.SetCurrentSenseCompliance(k.MAX_CURR_COMPLIANCE)
-    k2.SetCurrentSenseCompliance(k2.MAX_CURR_COMPLIANCE)
+    k.SetCurrentSenseCompliance(Keithley24XX.MAX_CURR_COMPLIANCE)
+    k2.SetCurrentSenseCompliance(Keithley24XX.MAX_CURR_COMPLIANCE)
 
     k.SetSweepStartVoltage(-1)
     k.SetSweepStopVoltage(1)
@@ -623,28 +625,28 @@ def perform_sweep():
 
     
 
-    k.SetSweepRanging(k.RANGING_AUTO)
-    k.SetSweepSpacing(k.SPACING_LIN)
+    k.SetSweepRanging(Keithley24XX.RANGING_AUTO)
+    k.SetSweepSpacing(Keithley24XX.SPACING_LIN)
     
     k.SetTriggerCount(npoints)
     k2.SetTriggerCount(npoints)
     k.SetTraceBufferSize(npoints)
     k2.SetTraceBufferSize(npoints)
 
-    k.SelectTraceBufferControl(k.NEXT_TRACE_CONTROL)
-    k2.SelectTraceBufferControl(k.NEXT_TRACE_CONTROL)
+    k.SelectTraceBufferControl(Keithley24XX.NEXT_TRACE_CONTROL)
+    k2.SelectTraceBufferControl(Keithley24XX.NEXT_TRACE_CONTROL)
 
 
-    k2.SetTriggerSource(k2.TRIG_TLIN)
-    k2.SetTriggerInputEventDetection(k2.TRIG_SOUR_EVENT)
+    k2.SetTriggerSource(Keithley24XX.TRIG_TLIN)
+    k2.SetTriggerInputEventDetection(Keithley24XX.TRIG_SOUR_EVENT)
     k2.SetTriggerInputLine(1)
     k2.SetTriggerOutputLine(2)
-    k2.SetTriggerOutputEvent(k2.TRIG_SENS_EVENT)
+    k2.SetTriggerOutputEvent(Keithley24XX.TRIG_SENS_EVENT)
 
 
-    k.SetTriggerSource(k.TRIG_TLIN)
-    k.SetTriggerInputEventDetection(k.TRIG_SENS_EVENT)
-    k.SetTriggerOutputEvent(k.TRIG_SOUR_EVENT)
+    k.SetTriggerSource(Keithley24XX.TRIG_TLIN)
+    k.SetTriggerInputEventDetection(Keithley24XX.TRIG_SENS_EVENT)
+    k.SetTriggerOutputEvent(Keithley24XX.TRIG_SOUR_EVENT)
     k.SetTriggerOutputLine(1)
     k.SetTriggerInputLine(2)
 
@@ -681,8 +683,8 @@ def perform_sweep():
     voltages2, currents2, resistances2, times2, status2  = data2
 
 
-    pg.plot(times, currents)
-    pg.plot(times2, currents2)
+    pg.plot(voltages, currents)
+    pg.plot(voltages2, currents2)
 
     #pg.plot(times, currents)
 
