@@ -370,6 +370,10 @@ class MainView(mainViewBase, mainViewForm):
 
     def __ui_measurement_type_changed(self):
         self.__setup_ui_range_from_config()
+        meas_type = self.__get_ui_measurement_type()
+        indep_var = "Drain" if meas_type == OUTPUT_MEASUREMENT else "Gate"
+
+        self.ivPlotWidget.set_independent_variable_name(indep_var, "V")
 
     def __set_combobox_index_corresponding_to_text(self,combobox, text):
         index = combobox.findText(text, QtCore.Qt.MatchFixedString)
@@ -379,7 +383,7 @@ class MainView(mainViewBase, mainViewForm):
     def __setup_ui_range_from_config(self):
         config = self.configuration
         main_section = MainView.config_file_section_name
-        measurement_type = config[main_section][self.measurement_type_option]
+        measurement_type = self.__get_ui_measurement_type() #config[main_section][self.measurement_type_option]
         if config.has_section(measurement_type):
             ds_start = float(config[measurement_type][self.drain_start_option])
             self.ui_ds_start.setValue(ds_start)

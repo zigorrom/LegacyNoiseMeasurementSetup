@@ -1,4 +1,4 @@
-import pyqtgraph as pg
+﻿import pyqtgraph as pg
 
 pg.setConfigOptions(antialias=True)
 pg.setConfigOption('background', None) #'w')
@@ -13,7 +13,11 @@ class IV_PlotWidget:
         self.layout = layout
         self.curve_count = 0
         self.create_plot()
+        
 
+
+    def set_independent_variable_name(self, name, units = "V"):
+        self.plot.setLabel("bottom", "{0} Voltage".format(name.title()), units = units)
 
     def create_plot(self):
         """Create main spectrum plot"""
@@ -56,7 +60,7 @@ class IV_PlotWidget:
         if self.plot.sceneBoundingRect().contains(pos):
             mousePoint = self.plot.vb.mapSceneToView(pos)
             self.posLabel.setText(
-                "<span style='font-size: 12pt'>Voltage={:.5} V, P={:.5E} A</span>".format( #:0.3f
+                "<span style='font-size: 12pt'>V={:.5} V, Id={:.5E} A</span>".format( #:0.3f
                     mousePoint.x() ,
                     mousePoint.y()
                 )
