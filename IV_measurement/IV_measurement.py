@@ -188,13 +188,20 @@ class IV_Experiment(QThread):
         else:
             raise Exception("Measurement type error")
 
-    
+    def __make_beep(self,device):
+        device.SwitchBeeperOn()
+        device.PerformBeep()
+        device.SwitchBeeperOff()
+
     def __perform_hardware_sweep(self, independent_device, independent_range, dependent_device, dependent_range, independent_variable_name, dependent_variable_name, visualize_independent_values):
         assert isinstance(independent_device, Keithley24XX), "Wrong type for independent device"
         assert isinstance(dependent_device, Keithley24XX), "Wrong type for dependent device"
         NUMBER_OF_ELEMENTS_READ_FROM_DEVICE = 5
         cols = "{0} voltage; {0} current; {0} timestamp; {1} voltage; {1} current; {1} timestamp".format(independent_variable_name.title(), dependent_variable_name.title()).split(';')
         filename_format = "{0}_{1}_{2}.dat"
+
+        self.__make_beep(dependent_device)
+        
         for dependent_voltage in np.linspace(dependent_range.start, dependent_range.stop, dependent_range.length, True):
             if not self.alive:
                 print("Measurement abort")
@@ -246,9 +253,7 @@ class IV_Experiment(QThread):
 
             self.__increment_file_count()
 
-        dependent_device.SwitchBeeperOn()
-        dependent_device.PerformBeep()
-        dependent_device.SwitchBeeperOff()
+        self.__make_beep(dependent_device)
         self.measurementStopped.emit()
             #indep_voltages, indep_currents, indep_resistances, indep_times, indep_status  = data
             #dep_voltages, dep_currents, dep_resistances, dep_times, dep_status  = data2
