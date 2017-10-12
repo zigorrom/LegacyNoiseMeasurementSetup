@@ -49,8 +49,8 @@ class IV_PlotWidget:
         self.plot.legend.items = []
 
     def add_curve(self, x_data, y_data, name, **kwargs):
-        p = pg.intColor(self.curve_count)
-        self.plot.plot(x_data, y_data, name = name, pen = p,width = 5, **kwargs)
+        p = pg.intColor(self.curve_count,width = 5)
+        self.plot.plot(x_data, y_data, name = name, pen = p, **kwargs)
         self.curve_count += 1
 
 
