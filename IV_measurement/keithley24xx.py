@@ -122,7 +122,7 @@ class Keithley24XX(VisaInstrument):
     DEFAULT_RANGES = ['DEF','MIN','MAX','UP','DOWN']
     DEFAULT_RANGE,MIN_RANGE,MAX_RANGE,UP_RANGE,DOWN_RANGE = DEFAULT_RANGES
 
-    SWITCH_STATES = STATE_ON, STATE_OFF = ['ON','OFF']
+    STATE_ON, STATE_OFF = SWITCH_STATES = ['ON','OFF']
     
     ALL_VOLTAGE_RANGES = ['200E-3','2','20','100']
     VOLT_RANGE_200mV,VOLT_RANGE_2V,VOLT_RANGE_20V,VOLT_RANGE_100V = ALL_VOLTAGE_RANGES
@@ -574,8 +574,23 @@ class Keithley24XX(VisaInstrument):
     def WaitOperationCompleted(self):
         self.write("*WAI")
 
-    
+    def SwitchBeeper(self, state):
+        if state in Keithley24XX.SWITCH_STATES:
+            self.write(":SYST:BEEP:STAT {0}".format(state))
 
+    def SwitchBeeperOn(self):
+        self.SwitchBeeper(Keithley24XX.STATE_ON)
+
+    def SwitchBeeperOff(self):
+        self.SwitchBeeper(Keithley24XX.STATE_OFF)
+
+    def QueryBeeperState(self):
+        val = self.query(":SYST:BEEP:STAT?")
+        return val
+    
+    def PerformBeep(self):
+        self.write(":SYST:BEEP:IMM 2560, 0.2")
+            
 
 def perform_sweep():
     k = Keithley24XX('GPIB0::5::INSTR')
@@ -688,14 +703,22 @@ def perform_sweep():
 
     #pg.plot(times, currents)
 
+def perform_beep():
+    k = Keithley24XX('GPIB0::5::INSTR')
+    k.SwitchBeeper(Keithley24XX.STATE_ON)
+    k.write(":SYST:BEEP:IMM 2560, 0.2")
+
+
 if __name__ == "__main__":
     
-    app = QtGui.QApplication(sys.argv)
-    app.setApplicationName("IV measurement")
+    perform_beep()
+
+    #app = QtGui.QApplication(sys.argv)
+    #app.setApplicationName("IV measurement")
     
-    perform_sweep()
+    #perform_sweep()
     
-    sys.exit(app.exec_())
+    #sys.exit(app.exec_())
 
 
 #    k = Keithley24XX('GPIB0::5::INSTR')

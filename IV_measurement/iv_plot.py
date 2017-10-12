@@ -14,7 +14,7 @@ class IV_PlotWidget:
         self.curve_count = 0
         self.create_plot()
         
-
+    
 
     def set_independent_variable_name(self, name, units = "V"):
         self.plot.setLabel("bottom", "{0} Voltage".format(name.title()), units = units)

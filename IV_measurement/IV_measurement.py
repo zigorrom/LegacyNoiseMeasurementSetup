@@ -86,6 +86,8 @@ class IV_Experiment(QThread):
         device.Abort()
         #reset devices
         device.Reset()
+        #switch beeper off
+        device.SwitchBeeper(Keithley24XX.STATE_OFF)
         #switch off buffer control
         device.SelectTraceBufferControl(Keithley24XX.NEVER_TRACE_CONTROL)
         #clear buffer
@@ -198,6 +200,8 @@ class IV_Experiment(QThread):
                 print("Measurement abort")
                 return
 
+            self.measurementStarted.emit()
+            
             independent_device.OutputOn()
             dependent_device.OutputOn() 
             dependent_device.SetVoltageAmplitude(dependent_voltage)
@@ -237,10 +241,15 @@ class IV_Experiment(QThread):
             #    self.measurementDataArrived.emit(("V{0} = {1:.5} V".format(dependent_variable_name[0], dependent_voltage), indep_voltages, dep_currents))
 
             df = pd.DataFrame(res_array,index = np.arange(independent_range.length), columns = cols)
-            filename = os.path.join(self.working_folder,filename_format.format(self.measurement_name,self.measurement_count, datetime.datetime.now().strftime("%Y-%m-%dH%HM%MS%S") )) 
+            filename = os.path.join(self.working_folder,filename_format.format(self.measurement_name,self.measurement_count, datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S") )) 
             df.to_csv(filename, index = False)
 
             self.__increment_file_count()
+
+        dependent_device.SwitchBeeperOn()
+        dependent_device.PerformBeep()
+        dependent_device.SwitchBeeperOff()
+        self.measurementStopped.emit()
             #indep_voltages, indep_currents, indep_resistances, indep_times, indep_status  = data
             #dep_voltages, dep_currents, dep_resistances, dep_times, dep_status  = data2
             #print("VG={0}".format(dependent_voltage))
@@ -320,9 +329,14 @@ class MainView(mainViewBase, mainViewForm):
         super(mainViewBase, self).__init__(parent)
         self.configuration = configparser.RawConfigParser()
         self.configuration.read(self.config_filename)
+        self.working_directory = ""
         self.setupUi()
         self.experiment = None
-        self.working_directory = ""
+        
+
+    def show_message(self,message, timeout = 0):
+        if message:
+            self.statusbar.showMessage(message, timeout)
 
     @QtCore.pyqtSlot()
     def on_folderBrowseButton_clicked(self):
@@ -341,11 +355,42 @@ class MainView(mainViewBase, mainViewForm):
         retval = msg.exec_()
         if retval:
             self.working_directory = folder_name
+            self.configuration[MainView.config_file_section_name][self.working_directory_option] = self.working_directory
+            self.set_selected_folder_context_menu_item_text(self.working_directory)
         return retval
+
+    def setupFolderBrowseButton(self):
+        self.popMenu = QtGui.QMenu(self)
+        self.selected_folder_context_menu_item = QtGui.QAction(self)
+        self.selected_folder_context_menu_item.triggered.connect(self.on_open_folder_in_explorer)
+        self.popMenu.addAction(self.selected_folder_context_menu_item)
+        self.popMenu.addSeparator()
+
+        #open_folder_action = QtGui.QAction("Open in explorer...",self)
+        #open_folder_action.triggered.connect(self.on_open_folder_in_explorer)
+        #self.popMenu.addAction(open_folder_action)
+        
+        self.folderBrowseButton.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.folderBrowseButton.customContextMenuRequested.connect(self.on_folder_browse_button_context_menu)
+        
+    def set_selected_folder_context_menu_item_text(self,text):
+        self.selected_folder_context_menu_item.setText(text)
+
+    def on_open_folder_in_explorer(self):
+        print("opening folder")
+        print(self.working_directory)
+        request = 'explorer "{0}"'.format(self.working_directory)
+        print(request)
+        os.system(request)
+
+    def on_folder_browse_button_context_menu(self,point):
+        self.popMenu.exec_(self.folderBrowseButton.mapToGlobal(point))
 
     def setupUi(self):
         super(MainView, self).setupUi(self)
-        
+        self.setupFolderBrowseButton()
+
+
         self.ivPlotWidget = IV_PlotWidget(self.ui_plot)
 
         self.ui_measurement_type.addItems(MEASUREMENT_TYPES)
@@ -354,25 +399,35 @@ class MainView(mainViewBase, mainViewForm):
         self.ui_gs_resource.addItems(gpib_resources)
         self.ui_integration_time.addItems(INTEGRATION_SPEEDS)
 
-        self.ui_ds_start.valueChanged.connect(self.__ui_range_changed)
-        self.ui_ds_stop.valueChanged.connect(self.__ui_range_changed)
-        self.ui_ds_points.valueChanged.connect(self.__ui_range_changed)
-        self.ui_gs_start.valueChanged.connect(self.__ui_range_changed)
-        self.ui_gs_stop.valueChanged.connect(self.__ui_range_changed)
-        self.ui_gs_points.valueChanged.connect(self.__ui_range_changed)
+        self.__setup_ui_from_config()
 
+        #self.ui_ds_start.valueChanged.connect(self.__ui_range_changed)
+        #self.ui_ds_stop.valueChanged.connect(self.__ui_range_changed)
+        #self.ui_ds_points.valueChanged.connect(self.__ui_range_changed)
+        #self.ui_gs_start.valueChanged.connect(self.__ui_range_changed)
+        #self.ui_gs_stop.valueChanged.connect(self.__ui_range_changed)
+        #self.ui_gs_points.valueChanged.connect(self.__ui_range_changed)
         self.ui_measurement_type.currentIndexChanged.connect(self.__ui_measurement_type_changed)
 
 
-        self.__setup_ui_from_config()
+        
         #config = configparser.ConfigParser()
         #config.read(self.config_filename)
 
     def __ui_measurement_type_changed(self):
-        self.__setup_ui_range_from_config()
         meas_type = self.__get_ui_measurement_type()
-        indep_var = "Drain" if meas_type == OUTPUT_MEASUREMENT else "Gate"
-
+        indep_var = "Drain"
+        if meas_type == OUTPUT_MEASUREMENT:
+            self.__ui_range_changed(TRANSFER_MEASUREMENT)
+        elif meas_type == TRANSFER_MEASUREMENT:
+            indep_var = "Gate"
+            self.__ui_range_changed(OUTPUT_MEASUREMENT)
+        else:
+            raise ValueError("wrong measurement type")
+        
+        self.__setup_ui_range_from_config()
+        
+        #indep_var = "Drain" if meas_type == OUTPUT_MEASUREMENT else "Gate"
         self.ivPlotWidget.set_independent_variable_name(indep_var, "V")
 
     def __set_combobox_index_corresponding_to_text(self,combobox, text):
@@ -444,6 +499,7 @@ class MainView(mainViewBase, mainViewForm):
 
         working_directory = config[main_section][self.working_directory_option]
         self.working_directory = working_directory
+        self.set_selected_folder_context_menu_item_text(self.working_directory)
 
         self.__setup_ui_range_from_config()
         
@@ -487,9 +543,9 @@ class MainView(mainViewBase, mainViewForm):
                 measurement_name,
                 measurement_count)
 
-    def __ui_range_changed(self):
+    def __ui_range_changed(self, measurement_type):
         drain_range, gate_range = self.__get_range_values_from_ui()
-        measurement_type = self.__get_ui_measurement_type()
+        #measurement_type = self.__get_ui_measurement_type()
         if not self.configuration.has_section(measurement_type):
             self.configuration.add_section(measurement_type)
 
@@ -512,9 +568,26 @@ class MainView(mainViewBase, mainViewForm):
         meas_count = self.ui_measurementCount.value()
         self.ui_measurementCount.setValue(meas_count+1)
 
+    def _on_measurement_started(self):
+        self.show_message("new measurement started", 1)
+
+    def _on_measurement_finished(self):
+        self.show_message("measurement finished", 5)
+        msg = QtGui.QMessageBox()
+        msg.setIcon(QtGui.QMessageBox.Information)
+        msg.setText("Measurement completed!!!")
+        msg.setInformativeText("Additional info about measurement")
+        msg.setWindowTitle("Measurement completed")
+        msg.setDetailedText("Data saved in folder: {0}".format(self.working_directory))
+        msg.setStandardButtons(QtGui.QMessageBox.Ok | QtGui.QMessageBox.Cancel)
+        retval = msg.exec_()
+
     def initialize_experiment(self):
         self.experiment = IV_Experiment()
 
+
+        self.experiment.measurementStarted.connect(self._on_measurement_started)
+        self.experiment.measurementStopped.connect(self._on_measurement_finished)
         self.experiment.measurementDataArrived.connect(self.data_arrived)
         self.experiment.measurementNextFile.connect(self.on_next_file)
 
@@ -588,7 +661,7 @@ class MainView(mainViewBase, mainViewForm):
                 measurement_name,
                 measurement_count) = self.__get_values_from_ui()
 
-        #(drain_range, gate_range) = self.__get_range_values_from_ui()
+        (drain_range, gate_range) = self.__get_range_values_from_ui()
 
         config = self.configuration
         
@@ -609,21 +682,21 @@ class MainView(mainViewBase, mainViewForm):
                             self.measurement_count_option: str(measurement_count),
                             self.working_directory_option: str(self.working_directory )}
         
+        
+
+        has_section = config.has_section(measurement_type)
+        if not has_section:
+            config.add_section(measurement_type)
+
+        config[measurement_type] = {
+            self.drain_start_option: str(drain_range.start),
+            self.drain_stop_option: str(drain_range.stop),
+            self.drain_points_option : str(drain_range.length),
+            self.gate_start_option: str(gate_range.start),
+            self.gate_stop_option:str( gate_range.stop),
+            self.gate_points_option : str(gate_range.length),
+            }
         self.write_config_file()
-
-        #has_section = config.has_section(measurement_type)
-        #if not has_section:
-        #    config.add_section(measurement_type)
-
-        #config[measurement_type] = {
-        #    self.drain_start_option: str(drain_range.start),
-        #    self.drain_stop_option: str(drain_range.stop),
-        #    self.drain_points_option : str(drain_range.length),
-        #    self.gate_start_option: str(gate_range.start),
-        #    self.gate_stop_option:str( gate_range.stop),
-        #    self.gate_points_option : str(gate_range.length),
-        #    }
-
 
       
 
