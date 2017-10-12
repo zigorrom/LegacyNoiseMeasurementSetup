@@ -569,10 +569,10 @@ class MainView(mainViewBase, mainViewForm):
         self.ui_measurementCount.setValue(meas_count+1)
 
     def _on_measurement_started(self):
-        self.show_message("new measurement started", 1)
+        self.show_message("new measurement started", 1000)
 
     def _on_measurement_finished(self):
-        self.show_message("measurement finished", 5)
+        self.show_message("measurement finished", 5000)
         msg = QtGui.QMessageBox()
         msg.setIcon(QtGui.QMessageBox.Information)
         msg.setText("Measurement completed!!!")
