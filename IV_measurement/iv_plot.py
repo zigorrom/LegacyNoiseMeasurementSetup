@@ -50,7 +50,7 @@ class IV_PlotWidget:
 
     def add_curve(self, x_data, y_data, name, **kwargs):
         p = pg.intColor(self.curve_count)
-        self.plot.plot(x_data, y_data, name = name, pen = p,width = 3, **kwargs)
+        self.plot.plot(x_data, y_data, name = name, pen = p,width = 5, **kwargs)
         self.curve_count += 1
 
 
