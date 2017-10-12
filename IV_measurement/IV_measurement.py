@@ -318,6 +318,8 @@ class MainView(mainViewBase, mainViewForm):
 
     def __init__(self, parent = None):
         super(mainViewBase, self).__init__(parent)
+        self.configuration = configparser.RawConfigParser()
+        self.configuration.read(self.config_filename)
         self.setupUi()
         self.experiment = None
         self.working_directory = ""
@@ -326,7 +328,8 @@ class MainView(mainViewBase, mainViewForm):
     def on_folderBrowseButton_clicked(self):
         print("Select folder")
         
-        folder_name = os.path.abspath(QtGui.QFileDialog.getExistingDirectory(self,caption="Select Folder"))#, directory = self._settings.working_directory))
+
+        folder_name = os.path.abspath(QtGui.QFileDialog.getExistingDirectory(self,caption="Select Folder", directory = self.working_directory))
         
         msg = QtGui.QMessageBox()
         msg.setIcon(QtGui.QMessageBox.Information)
@@ -351,11 +354,103 @@ class MainView(mainViewBase, mainViewForm):
         self.ui_gs_resource.addItems(gpib_resources)
         self.ui_integration_time.addItems(INTEGRATION_SPEEDS)
 
-        config = configparser.ConfigParser()
-        config.read(self.config_filename)
+        self.ui_ds_start.valueChanged.connect(self.__ui_range_changed)
+        self.ui_ds_stop.valueChanged.connect(self.__ui_range_changed)
+        self.ui_ds_points.valueChanged.connect(self.__ui_range_changed)
+        self.ui_gs_start.valueChanged.connect(self.__ui_range_changed)
+        self.ui_gs_stop.valueChanged.connect(self.__ui_range_changed)
+        self.ui_gs_points.valueChanged.connect(self.__ui_range_changed)
+
+        self.ui_measurement_type.currentIndexChanged.connect(self.__ui_measurement_type_changed)
 
 
+        self.__setup_ui_from_config()
+        #config = configparser.ConfigParser()
+        #config.read(self.config_filename)
 
+    def __ui_measurement_type_changed(self):
+        self.__setup_ui_range_from_config()
+
+    def __set_combobox_index_corresponding_to_text(self,combobox, text):
+        index = combobox.findText(text, QtCore.Qt.MatchFixedString)
+        if index >= 0:
+           combobox.setCurrentIndex(index)
+
+    def __setup_ui_range_from_config(self):
+        config = self.configuration
+        main_section = MainView.config_file_section_name
+        measurement_type = config[main_section][self.measurement_type_option]
+        if config.has_section(measurement_type):
+            ds_start = float(config[measurement_type][self.drain_start_option])
+            self.ui_ds_start.setValue(ds_start)
+
+            ds_stop = float(config[measurement_type][self.drain_stop_option])
+            self.ui_ds_stop.setValue(ds_stop)
+
+            ds_points = int(config[measurement_type][self.drain_points_option])
+            self.ui_ds_points.setValue(ds_points)
+
+            gs_start = float(config[measurement_type][self.gate_start_option])
+            self.ui_gs_start.setValue(gs_start)
+
+            gs_stop = float(config[measurement_type][self.gate_stop_option])
+            self.ui_gs_stop.setValue(gs_stop)
+
+            gs_points = int(config[measurement_type][self.gate_points_option])
+            self.ui_gs_points.setValue(gs_points)
+
+    def __setup_ui_from_config(self):
+        config = self.configuration
+        #config = configparser.RawConfigParser()
+        #config.read(self.config_filename)
+
+        main_section = MainView.config_file_section_name
+        if not config.has_section(main_section):
+            return False
+        
+        measurement_type = config[main_section][self.measurement_type_option]
+        self.__set_combobox_index_corresponding_to_text(self.ui_measurement_type, measurement_type)
+        
+        drain_keithley_resource =  config[main_section][self.drain_keithley_resource_option]
+        self.__set_combobox_index_corresponding_to_text(self.ui_ds_resource, drain_keithley_resource)
+
+        gate_keithley_resource = config[main_section][self.gate_keithley_resource_option]
+        self.__set_combobox_index_corresponding_to_text(self.ui_gs_resource, gate_keithley_resource)
+
+        hardware_sweep = bool(config[main_section][self.hardware_sweep_option])
+
+
+        integration_time = config[main_section][self.integration_time_option]
+        self.__set_combobox_index_corresponding_to_text(self.ui_integration_time, integration_time)
+
+        current_compliance = float(config[main_section][self.current_compliance_option])
+        self.ui_current_compliance.setValue(current_compliance)
+
+        set_measure_delay= float(config[main_section][self.set_measure_delay_option])
+        self.ui_set_meas_delay.setValue(set_measure_delay)
+
+        experiment_name = config[main_section][self.experiment_name_option]
+        self.ui_experimentName.setText(experiment_name)
+
+        measurement_name = config[main_section][self.experiment_name_option]
+        self.ui_measurementName.setText(measurement_name)
+
+        measurement_count = int(config[main_section][self.measurement_count_option])
+        self.ui_measurementCount.setValue(measurement_count)
+
+        working_directory = config[main_section][self.working_directory_option]
+        self.working_directory = working_directory
+
+        self.__setup_ui_range_from_config()
+        
+    
+    def __get_ui_measurement_type(self):
+        return self.ui_measurement_type.currentText()
+
+    def __get_range_values_from_ui(self):
+        drain_range = float_range(self.ui_ds_start.value(), self.ui_ds_stop.value(), len = self.ui_ds_points.value())
+        gate_range =  float_range(self.ui_gs_start.value(), self.ui_gs_stop.value(), len = self.ui_gs_points.value())
+        return (drain_range, gate_range)
 
     def __get_values_from_ui(self):
         measurement_type = self.ui_measurement_type.currentText()
@@ -363,8 +458,8 @@ class MainView(mainViewBase, mainViewForm):
         drain_keithley_resource = self.ui_ds_resource.currentText()
         gate_keithley_resource = self.ui_gs_resource.currentText()
 
-        drain_range = float_range(self.ui_ds_start.value(), self.ui_ds_stop.value(), len = self.ui_ds_points.value())
-        gate_range =  float_range(self.ui_gs_start.value(), self.ui_gs_stop.value(), len = self.ui_gs_points.value())
+        #drain_range = float_range(self.ui_ds_start.value(), self.ui_ds_stop.value(), len = self.ui_ds_points.value())
+        #gate_range =  float_range(self.ui_gs_start.value(), self.ui_gs_stop.value(), len = self.ui_gs_points.value())
 
         hardware_sweep = self.ui_hardware_sweep.isChecked()
         integration_time = self.ui_integration_time.currentText()
@@ -378,8 +473,8 @@ class MainView(mainViewBase, mainViewForm):
         return (measurement_type,
                 drain_keithley_resource, 
                 gate_keithley_resource, 
-                drain_range, 
-                gate_range, 
+                #drain_range, 
+                #gate_range, 
                 hardware_sweep, 
                 integration_time, 
                 current_compliance,
@@ -387,6 +482,23 @@ class MainView(mainViewBase, mainViewForm):
                 experiment_name,
                 measurement_name,
                 measurement_count)
+
+    def __ui_range_changed(self):
+        drain_range, gate_range = self.__get_range_values_from_ui()
+        measurement_type = self.__get_ui_measurement_type()
+        if not self.configuration.has_section(measurement_type):
+            self.configuration.add_section(measurement_type)
+
+        self.configuration[measurement_type][self.drain_start_option] = str(drain_range.start)
+        self.configuration[measurement_type][self.drain_stop_option] = str(drain_range.stop)
+        self.configuration[measurement_type][self.drain_points_option] = str(drain_range.length)
+        self.configuration[measurement_type][self.gate_start_option] = str(gate_range.start)
+        self.configuration[measurement_type][self.gate_stop_option] = str(gate_range.stop)
+        self.configuration[measurement_type][self.gate_points_option] = str(gate_range.length)
+        self.write_config_file()
+        
+        
+
 
     def data_arrived(self, data):
         name, x,y = data
@@ -406,8 +518,8 @@ class MainView(mainViewBase, mainViewForm):
         (measurement_type,
          drain_keithley_resource, 
          gate_keithley_resource, 
-         drain_range, 
-         gate_range, 
+         #drain_range, 
+         #gate_range, 
          hardware_sweep, 
          integration_time, 
          current_compliance,
@@ -415,6 +527,7 @@ class MainView(mainViewBase, mainViewForm):
          experiment_name,
          measurement_name,
          measurement_count) = self.__get_values_from_ui()
+        (drain_range, gate_range) = self.__get_range_values_from_ui()
 
         
         self.experiment.init_hardware(drain_keithley_resource, gate_keithley_resource)
@@ -451,13 +564,18 @@ class MainView(mainViewBase, mainViewForm):
         #self.ivPlotWidget.clear_curves()
         #self.experiment.stop()
         
+    def write_config_file(self):
+        with open(self.config_filename,'w') as configfile:
+            self.configuration.write(configfile)
+
+
     def closeEvent(self,event):
 
         (measurement_type,
                 drain_keithley_resource, 
                 gate_keithley_resource, 
-                drain_range, 
-                gate_range, 
+                #drain_range, 
+                #gate_range, 
                 hardware_sweep, 
                 integration_time, 
                 current_compliance,
@@ -466,32 +584,44 @@ class MainView(mainViewBase, mainViewForm):
                 measurement_name,
                 measurement_count) = self.__get_values_from_ui()
 
-        config = configparser.RawConfigParser()
-        section = MainView.config_file_section_name
-        has_section = config.has_section(section)
-        if not has_section:
-            config.add_section(section)
+        #(drain_range, gate_range) = self.__get_range_values_from_ui()
 
-        config[section] = {self.measurement_type_option: str(measurement_type),
+        config = self.configuration
+        
+        main_section = MainView.config_file_section_name
+        has_section = config.has_section(main_section)
+        if not has_section:
+            config.add_section(main_section)
+
+        config[main_section] = {self.measurement_type_option: str(measurement_type),
                            self.drain_keithley_resource_option: str(drain_keithley_resource),
                             self.gate_keithley_resource_option: str(gate_keithley_resource),
-                            self.drain_start_option: str(drain_range.start),
-                            self.drain_stop_option: str(drain_range.stop),
-                            self.drain_points_option : str(drain_range.length),
-                            self.gate_start_option: str(gate_range.start),
-                            self.gate_stop_option:str( gate_range.stop),
-                            self.gate_points_option : str(gate_range.length),
                             self.hardware_sweep_option: str(hardware_sweep ),
+                            self.current_compliance_option: str(current_compliance),
                             self.integration_time_option: str(integration_time ),
                             self.set_measure_delay_option: str(set_measure_delay),
                             self.experiment_name_option: str(experiment_name),
                             self.measurement_name_option: str(measurement_name),
                             self.measurement_count_option: str(measurement_count),
                             self.working_directory_option: str(self.working_directory )}
+        
+        self.write_config_file()
 
-        with open(self.config_filename,'w') as configfile:
-            config.write(configfile)
+        #has_section = config.has_section(measurement_type)
+        #if not has_section:
+        #    config.add_section(measurement_type)
 
+        #config[measurement_type] = {
+        #    self.drain_start_option: str(drain_range.start),
+        #    self.drain_stop_option: str(drain_range.stop),
+        #    self.drain_points_option : str(drain_range.length),
+        #    self.gate_start_option: str(gate_range.start),
+        #    self.gate_stop_option:str( gate_range.stop),
+        #    self.gate_points_option : str(gate_range.length),
+        #    }
+
+
+      
 
 
 if __name__== "__main__":
