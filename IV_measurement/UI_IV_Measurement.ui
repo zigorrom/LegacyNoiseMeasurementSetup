@@ -78,6 +78,9 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="suffix">
+             <string> V</string>
+            </property>
             <property name="decimals">
              <number>5</number>
             </property>
@@ -97,6 +100,18 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="suffix">
+             <string> V</string>
+            </property>
+            <property name="decimals">
+             <number>5</number>
+            </property>
+            <property name="minimum">
+             <double>-50.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>50.000000000000000</double>
+            </property>
            </widget>
           </item>
           <item row="3" column="1">
@@ -106,6 +121,12 @@
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>501</number>
             </property>
            </widget>
           </item>
@@ -147,6 +168,18 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="suffix">
+             <string> V</string>
+            </property>
+            <property name="decimals">
+             <number>5</number>
+            </property>
+            <property name="minimum">
+             <double>-50.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>50.000000000000000</double>
+            </property>
            </widget>
           </item>
           <item row="1" column="1">
@@ -157,6 +190,18 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="suffix">
+             <string> V</string>
+            </property>
+            <property name="decimals">
+             <number>5</number>
+            </property>
+            <property name="minimum">
+             <double>-50.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>50.000000000000000</double>
+            </property>
            </widget>
           </item>
           <item row="2" column="1">
@@ -166,6 +211,12 @@
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>501</number>
             </property>
            </widget>
           </item>
@@ -267,10 +318,20 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="decimals">
+             <number>7</number>
+            </property>
            </widget>
           </item>
           <item row="5" column="1">
-           <widget class="QDoubleSpinBox" name="ui_set_meas_delay"/>
+           <widget class="QDoubleSpinBox" name="ui_set_meas_delay">
+            <property name="decimals">
+             <number>4</number>
+            </property>
+            <property name="maximum">
+             <double>9999.999900000000707</double>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -388,7 +449,7 @@
      <x>0</x>
      <y>0</y>
      <width>961</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>
