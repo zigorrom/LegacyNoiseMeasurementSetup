@@ -23,10 +23,10 @@ MEASUREMENT_TYPES = ["Output", "Transfer"]
 OUTPUT_MEASUREMENT, TRANSFER_MEASUREMENT = MEASUREMENT_TYPES
 
 
-        
+     
 
 class IV_Experiment(QThread):
-    measurementStarted = QtCore.pyqtSignal()
+    measurementStarted = QtCore.pyqtSignal(int) # int - max amount of points in the sweep
     measurementStopped = QtCore.pyqtSignal()
     measurementProgressChanged =QtCore.pyqtSignal(int)
     measurementDataArrived = QtCore.pyqtSignal(tuple) 
@@ -67,8 +67,9 @@ class IV_Experiment(QThread):
         self.drain_keithley = Keithley24XX(drain_keithley_resource)
         self.gate_keithley = Keithley24XX(gate_keithley_resource)
 
-    def open_experiment(self, working_folder, measurement_name, measurement_count):
+    def open_experiment(self, working_folder,experiment_name, measurement_name, measurement_count):
         self.working_folder = working_folder
+        self.experiment_name = experiment_name
         self.measurement_name = measurement_name
         self.measurement_count = measurement_count
 
@@ -211,23 +212,23 @@ class IV_Experiment(QThread):
         cols = "{0} voltage; {0} current; {0} timestamp; {1} voltage; {1} current; {1} timestamp".format(independent_variable_name.title(), dependent_variable_name.title()).split(';')
         filename_format = "{0}_{1}_{2}.dat"
         measurement_data_filename = os.path.join(self.working_folder,"MeasurmentData_{0}.dat".format(self.experiment_name))
-        need_to_write_header = not os.path.isfile(measurement_data_filename)
+        need_to_write_header = lambda: not os.path.isfile(measurement_data_filename)
         filename_option = "Filename"
         timestamp_option = "Timestamp"
         indep_var_option = "Independent Var"
         dep_var_option = "Dependent Var"
         dep_volt_option = "Dependent Voltage"
 
-        measurement_data_dataFrame = pd.DataFrame(columns = [filename_option, timestamp_option, indep_var_option, dep_var_option, dep_volt_option])
+        #measurement_data_dataFrame = pd.DataFrame(columns = [filename_option, timestamp_option, indep_var_option, dep_var_option, dep_volt_option])
 
         self.__make_beep(dependent_device)
         #try:
-        for dependent_voltage in np.linspace(dependent_range.start, dependent_range.stop, dependent_range.length, True):
+        for count, dependent_voltage in enumerate(np.linspace(dependent_range.start, dependent_range.stop, dependent_range.length, True)):
             if not self.alive:
                 print("Measurement abort")
                 return
 
-            self.measurementStarted.emit()
+            self.measurementStarted.emit(dependent_range.length)
             
             independent_device.OutputOn()
             dependent_device.OutputOn() 
@@ -269,26 +270,31 @@ class IV_Experiment(QThread):
 
             df = pd.DataFrame(res_array,index = np.arange(independent_range.length), columns = cols)
             timestamp =  datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-            filename = os.path.join(self.working_folder,filename_format.format(self.measurement_name,self.measurement_count, timestamp )) 
-            df.to_csv(filename, index = False)
+            filename = filename_format.format(self.measurement_name,self.measurement_count, timestamp )
+            filepath = os.path.join(self.working_folder,filename) 
+            df.to_csv(filepath, index = False)
 
-            meas_data = pd.DataFrame.from_dict({filename_option: filename, 
-                                                timestamp_option: timestamp,
-                                                indep_var_option: independent_variable_name,
-                                                dep_var_option: dependent_variable_name,
-                                                dep_volt_option: dependent_voltage})
+            measurement_data_dataFrame = pd.DataFrame([[filename, 
+                                                timestamp,
+                                                independent_variable_name,
+                                                dependent_variable_name,
+                                                dependent_voltage]], index = [0], columns = [filename_option, 
+                                                                                             timestamp_option, 
+                                                                                             indep_var_option, 
+                                                                                             dep_var_option, 
+                                                                                             dep_volt_option])
 
-            measurement_data_dataFrame.append(meas_data)
+            measurement_data_dataFrame.to_csv(measurement_data_filename, mode= 'a', header=need_to_write_header(), index = False)
             
-
-
             self.__increment_file_count()
+            self.measurementProgressChanged.emit(count+1)
+
         #except Exception as e:
         #    independent_device.OutputOff()
         #    dependent_device.OutputOff() 
         
 
-        measurement_data_dataFrame.to_csv(measurement_data_filename, mode= 'a', header=need_to_write_header)
+        
 
         self.__make_beep(dependent_device)
         self.measurementStopped.emit()
@@ -444,6 +450,9 @@ class MainView(mainViewBase, mainViewForm):
         self.ui_integration_time.addItems(INTEGRATION_SPEEDS)
         integration_count_list = list(map(str,[0,1,5,10,20,40,50,80,100]))
         self.ui_averaging_count.addItems(integration_count_list)
+
+        self.progressBar = QtGui.QProgressBar(self)
+        self.statusbar.addPermanentWidget(self.progressBar)
 
         self.__setup_ui_from_config()
 
@@ -623,8 +632,12 @@ class MainView(mainViewBase, mainViewForm):
         meas_count = self.ui_measurementCount.value()
         self.ui_measurementCount.setValue(meas_count+1)
 
-    def _on_measurement_started(self):
+    def _on_measurement_progress_changed(self,progress):
+        self.progressBar.setValue(progress)
+
+    def _on_measurement_started(self, max_experiment_count):
         self.show_message("new measurement started", 1000)
+        self.progressBar.setRange(0,max_experiment_count)
 
     def _on_measurement_finished(self):
         self.show_message("measurement finished", 5000)
@@ -673,7 +686,7 @@ class MainView(mainViewBase, mainViewForm):
                                            set_measure_delay,
                                            averaging_count)
         self.experiment.prepare_hardware()
-        self.experiment.open_experiment(self.working_directory, measurement_name, measurement_count)
+        self.experiment.open_experiment(self.working_directory, experiment_name, measurement_name, measurement_count)
         #exp.prepare_experiment(TRANSFER_MEASUREMENT,float_range(0,1.5,len=101),float_range(-1,1,len=5), True, INTEGRATION_MIDDLE, 0.001, 0.001)
         #exp.prepare_hardware()
 
@@ -758,33 +771,36 @@ class MainView(mainViewBase, mainViewForm):
         self.write_config_file()
 
       
-
-
-if __name__== "__main__":
+def ui_application():
     app = QtGui.QApplication(sys.argv)
     app.setApplicationName("LegacyNoiseMeasurementSetup")
     app.setStyle("cleanlooks")
-
-    ##css = "QLineEdit#sample_voltage_start {background-color: yellow}"
-    ##app.setStyleSheet(css)
-    ##sample_voltage_start
-
     wnd = MainView()
     wnd.show()
-    #exp = IV_Experiment()
-    #exp.init_hardware('GPIB0::5::INSTR', 'GPIB0::16::INSTR')
-    #exp.prepare_experiment(TRANSFER_MEASUREMENT,float_range(0,1.5,len=101),float_range(-1,1,len=5), True, INTEGRATION_MIDDLE, 0.001, 0.001)
-    #exp.prepare_hardware()
-    #exp.open_experiment("", "test_meas",1)
-    #exp.perform_measurement()
-    #exp.start()
-    
-    #exp.stop()
+    return app.exec_()
 
+def console_application():
+    exp = IV_Experiment()
+    exp.init_hardware('GPIB0::5::INSTR', 'GPIB0::16::INSTR')
+    exp.prepare_experiment(TRANSFER_MEASUREMENT,float_range(0,1.5,len=101),float_range(-1,1,len=5), True, INTEGRATION_MIDDLE, 0.001, 0.001,0)
+    exp.prepare_hardware()
+    exp.open_experiment("","experiment", "test_meas",1)
+    #exp.start()
+    #exp.stop()
     #exp.wait()
     #exp.perform_measurement()
-    #sys.exit(0)
-    sys.exit(app.exec_())
+    exp.perform_measurement()
+    return 0
+
+
+if __name__== "__main__":
+    sys.exit(ui_application())
+    #sys.exit(console_application())
+
+
+   
+    
+   
 
     
     
