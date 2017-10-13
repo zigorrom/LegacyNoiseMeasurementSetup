@@ -46,6 +46,7 @@ class IV_Experiment(QThread):
         self.integration_time = None
         self.current_compliance = None
         self.set_measure_delay = None
+        self.averaging_count = 0 
 
         self.experiment_name = None
         self.measurement_name = None
@@ -71,7 +72,7 @@ class IV_Experiment(QThread):
         self.measurement_name = measurement_name
         self.measurement_count = measurement_count
 
-    def prepare_experiment(self, measurement_type, gate_range, drain_range, hardware_sweep, integration_time, current_compliance, set_measure_delay):
+    def prepare_experiment(self, measurement_type, gate_range, drain_range, hardware_sweep, integration_time, current_compliance, set_measure_delay, averaging_count):
         self.measurement_type = measurement_type
         self.gate_range = gate_range
         self.drain_range = drain_range
@@ -79,6 +80,7 @@ class IV_Experiment(QThread):
         self.integration_time = integration_time
         self.current_compliance = current_compliance
         self.set_measure_delay = set_measure_delay
+        self.averaging_count = averaging_count
 
     def __prepare_device(self,device):
         assert isinstance(device, Keithley24XX), "Wrong device type. Expected Keithley24XX"
@@ -113,6 +115,15 @@ class IV_Experiment(QThread):
         device.SetCurrentSenseCompliance(self.current_compliance)
 
         device.SetDelay(self.set_measure_delay)
+
+        device.SetRepeatAverageFilter()
+
+        if self.averaging_count>0:
+            device.SetAverageFilterCount(self.averaging_count)
+            device.SwitchAveragingFilterOn()
+        else:
+            device.SwitchAveragingFilterOff()
+
 
     def __prepare_hardware_sweep(self, indep_device, dep_device, sweep_range):
         assert isinstance(sweep_range, float_range), "sweep range is not of type float_range"
@@ -312,7 +323,8 @@ class MainView(mainViewBase, mainViewForm):
                 experiment_name_option,
                 measurement_name_option,
                 measurement_count_option,
-                working_directory_option) = ("type",
+                working_directory_option,
+                averaging_count_option) = ("type",
                                              "ds_resource",
                                              "gs_resource",
                                              "drain_start",
@@ -328,7 +340,8 @@ class MainView(mainViewBase, mainViewForm):
                                              "experiment_name",
                                              "measuremtn_name",
                                              "measurement_count",
-                                             "working_directory")
+                                             "working_directory",
+                                             "averaging_count")
 
     def __init__(self, parent = None):
         super(mainViewBase, self).__init__(parent)
@@ -403,6 +416,8 @@ class MainView(mainViewBase, mainViewForm):
         self.ui_ds_resource.addItems(gpib_resources)
         self.ui_gs_resource.addItems(gpib_resources)
         self.ui_integration_time.addItems(INTEGRATION_SPEEDS)
+        integration_count_list = list(map(str,[0,1,5,10,20,40,50,80,100]))
+        self.ui_averaging_count.addItems(integration_count_list)
 
         self.__setup_ui_from_config()
 
@@ -506,6 +521,11 @@ class MainView(mainViewBase, mainViewForm):
         self.working_directory = working_directory
         self.set_selected_folder_context_menu_item_text(self.working_directory)
 
+        averaging_count = config[main_section][self.averaging_count_option]
+        self.__set_combobox_index_corresponding_to_text(self.ui_averaging_count, averaging_count)
+        
+
+
         self.__setup_ui_range_from_config()
         
     
@@ -530,10 +550,13 @@ class MainView(mainViewBase, mainViewForm):
         integration_time = self.ui_integration_time.currentText()
         current_compliance = self.ui_current_compliance.value()
         set_measure_delay = self.ui_set_meas_delay.value()
+        averaging_count = self.ui_averaging_count.currentText()
 
         experiment_name = self.ui_experimentName.text()
         measurement_name = self.ui_measurementName.text()
         measurement_count = self.ui_measurementCount.value()
+
+
 
         return (measurement_type,
                 drain_keithley_resource, 
@@ -544,6 +567,7 @@ class MainView(mainViewBase, mainViewForm):
                 integration_time, 
                 current_compliance,
                 set_measure_delay,
+                averaging_count,
                 experiment_name,
                 measurement_name,
                 measurement_count)
@@ -607,6 +631,7 @@ class MainView(mainViewBase, mainViewForm):
          current_compliance,
          set_measure_delay,
          experiment_name,
+         averaging_count,
          measurement_name,
          measurement_count) = self.__get_values_from_ui()
         (drain_range, gate_range) = self.__get_range_values_from_ui()
@@ -619,7 +644,8 @@ class MainView(mainViewBase, mainViewForm):
                                            hardware_sweep,
                                            integration_time,
                                            current_compliance,
-                                           set_measure_delay)
+                                           set_measure_delay,
+                                           averaging_count)
         self.experiment.prepare_hardware()
         self.experiment.open_experiment(self.working_directory, measurement_name, measurement_count)
         #exp.prepare_experiment(TRANSFER_MEASUREMENT,float_range(0,1.5,len=101),float_range(-1,1,len=5), True, INTEGRATION_MIDDLE, 0.001, 0.001)
@@ -662,6 +688,7 @@ class MainView(mainViewBase, mainViewForm):
                 integration_time, 
                 current_compliance,
                 set_measure_delay,
+                averaging_count,
                 experiment_name,
                 measurement_name,
                 measurement_count) = self.__get_values_from_ui()
@@ -682,6 +709,7 @@ class MainView(mainViewBase, mainViewForm):
                             self.current_compliance_option: str(current_compliance),
                             self.integration_time_option: str(integration_time ),
                             self.set_measure_delay_option: str(set_measure_delay),
+                            self.averaging_count_option: str(averaging_count),
                             self.experiment_name_option: str(experiment_name),
                             self.measurement_name_option: str(measurement_name),
                             self.measurement_count_option: str(measurement_count),

@@ -488,6 +488,50 @@ class Keithley24XX(VisaInstrument):
 ##        
 
 
+
+##################################################################################
+##
+##  FILTERING FUNCTIONS
+##
+
+    REPEAT_FILTER, MOVING_FILTER = FILTER_TYPES = ["REP", "MOV"]
+    def SetAverageFilter(self, filter):
+        if filter in self.FILTER_TYPES:
+            self.write(":SENS:AVER:TCON {0}".format(filter))
+
+    def SetRepeatAverageFilter(self):
+        self.SetAverageFilter(REPEAT_FILTER)
+
+    def SetMovingAverageFilter(self):
+        self.SetAverageFilter(MOVING_FILTER)
+
+    MIN_FILTER_COUNT,DEFAULT_FILTER_COUNT, MAX_FILTER_COUNT = (1,10,100)
+    def SetAverageFilterCount(self,count):
+        if count <= self.MAX_FILTER_COUNT and count >= self.MIN_FILTER_COUNT:
+            self.write(":SENS:AVER:COUN {0}".format(count))
+
+    def SetMinAverageFilterCount(self):
+        self.SetAverageFilterCount(self.MIN_FILTER_COUNT)
+
+    def SetDefaultAverageFilterCount(self):
+        self.SetAverageFilterCount(self.DEFAULT_FILTER_COUNT)
+
+    def SetMaxAverageFilterCount(self):
+        self.SetAverageFilterCount(self.MAX_FILTER_COUNT)
+    
+    def SwitchAveragingFilter(self, state):
+        if state in self.SWITCH_STATES:
+            self.write(":SENS:AVER:STAT {0}".format(state))
+
+    def SwitchAveragingFilterOn(self):
+        self.SwitchAveragingFilter(self.STATE_ON)
+
+    def SwitchAveragingFilterOff(self):
+        self.SwitchAveragingFilter(self.STATE_OFF)
+
+##
+##  END FILTERING FUNCTIONS
+## 
     
     ## implement fixed sourcing mode
 
@@ -504,21 +548,11 @@ class Keithley24XX(VisaInstrument):
         
     def OutputOn(self):
         self.write("OUTP:STAT ON")
-        #if self.query("OUTP:STAT?") == 'ON':
-        #    return True
-        #else:
-        #    return False
-
-        
+                
     def OutputOff(self):
         self.write("OUTP:STAT OFF")
-        #if self.query("OUTP:STAT?") == 'OFF':
-        #    return True
-        #else:
-        #    return False
-        
-        
-    
+          
+    #TRACE***********************
 
     def ClearBuffer(self):
         self.write(":TRAC:CLE")
@@ -551,7 +585,7 @@ class Keithley24XX(VisaInstrument):
         return self.query(":FETC?")
 
     
-
+    #***********************************************
     
     
     
