@@ -210,9 +210,18 @@ class IV_Experiment(QThread):
         NUMBER_OF_ELEMENTS_READ_FROM_DEVICE = 5
         cols = "{0} voltage; {0} current; {0} timestamp; {1} voltage; {1} current; {1} timestamp".format(independent_variable_name.title(), dependent_variable_name.title()).split(';')
         filename_format = "{0}_{1}_{2}.dat"
+        measurement_data_filename = os.path.join(self.working_folder,"MeasurmentData_{0}.dat".format(self.experiment_name))
+        need_to_write_header = not os.path.isfile(measurement_data_filename)
+        filename_option = "Filename"
+        timestamp_option = "Timestamp"
+        indep_var_option = "Independent Var"
+        dep_var_option = "Dependent Var"
+        dep_volt_option = "Dependent Voltage"
+
+        measurement_data_dataFrame = pd.DataFrame(columns = [filename_option, timestamp_option, indep_var_option, dep_var_option, dep_volt_option])
 
         self.__make_beep(dependent_device)
-        
+        #try:
         for dependent_voltage in np.linspace(dependent_range.start, dependent_range.stop, dependent_range.length, True):
             if not self.alive:
                 print("Measurement abort")
@@ -259,10 +268,27 @@ class IV_Experiment(QThread):
             #    self.measurementDataArrived.emit(("V{0} = {1:.5} V".format(dependent_variable_name[0], dependent_voltage), indep_voltages, dep_currents))
 
             df = pd.DataFrame(res_array,index = np.arange(independent_range.length), columns = cols)
-            filename = os.path.join(self.working_folder,filename_format.format(self.measurement_name,self.measurement_count, datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S") )) 
+            timestamp =  datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+            filename = os.path.join(self.working_folder,filename_format.format(self.measurement_name,self.measurement_count, timestamp )) 
             df.to_csv(filename, index = False)
 
+            meas_data = pd.DataFrame.from_dict({filename_option: filename, 
+                                                timestamp_option: timestamp,
+                                                indep_var_option: independent_variable_name,
+                                                dep_var_option: dependent_variable_name,
+                                                dep_volt_option: dependent_voltage})
+
+            measurement_data_dataFrame.append(meas_data)
+            
+
+
             self.__increment_file_count()
+        #except Exception as e:
+        #    independent_device.OutputOff()
+        #    dependent_device.OutputOff() 
+        
+
+        measurement_data_dataFrame.to_csv(measurement_data_filename, mode= 'a', header=need_to_write_header)
 
         self.__make_beep(dependent_device)
         self.measurementStopped.emit()
