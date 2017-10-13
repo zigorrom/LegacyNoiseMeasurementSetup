@@ -511,7 +511,7 @@ class MainView(mainViewBase, mainViewForm):
         experiment_name = config[main_section][self.experiment_name_option]
         self.ui_experimentName.setText(experiment_name)
 
-        measurement_name = config[main_section][self.experiment_name_option]
+        measurement_name = config[main_section][self.measurement_name_option]
         self.ui_measurementName.setText(measurement_name)
 
         measurement_count = int(config[main_section][self.measurement_count_option])
@@ -550,7 +550,7 @@ class MainView(mainViewBase, mainViewForm):
         integration_time = self.ui_integration_time.currentText()
         current_compliance = self.ui_current_compliance.value()
         set_measure_delay = self.ui_set_meas_delay.value()
-        averaging_count = self.ui_averaging_count.currentText()
+        averaging_count = int(self.ui_averaging_count.currentText())
 
         experiment_name = self.ui_experimentName.text()
         measurement_name = self.ui_measurementName.text()
@@ -630,8 +630,8 @@ class MainView(mainViewBase, mainViewForm):
          integration_time, 
          current_compliance,
          set_measure_delay,
-         experiment_name,
          averaging_count,
+         experiment_name,
          measurement_name,
          measurement_count) = self.__get_values_from_ui()
         (drain_range, gate_range) = self.__get_range_values_from_ui()

@@ -500,10 +500,10 @@ class Keithley24XX(VisaInstrument):
             self.write(":SENS:AVER:TCON {0}".format(filter))
 
     def SetRepeatAverageFilter(self):
-        self.SetAverageFilter(REPEAT_FILTER)
+        self.SetAverageFilter(self.REPEAT_FILTER)
 
     def SetMovingAverageFilter(self):
-        self.SetAverageFilter(MOVING_FILTER)
+        self.SetAverageFilter(self.MOVING_FILTER)
 
     MIN_FILTER_COUNT,DEFAULT_FILTER_COUNT, MAX_FILTER_COUNT = (1,10,100)
     def SetAverageFilterCount(self,count):
