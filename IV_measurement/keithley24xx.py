@@ -533,6 +533,59 @@ class Keithley24XX(VisaInstrument):
 ##  END FILTERING FUNCTIONS
 ## 
     
+##################################################################################
+##
+##  AUTO ZERO FUNCTIONS
+##
+
+    def SwitchAutoZero(self, state):
+        if state in self.SWITCH_STATES:
+            self.write(":SYST:AZER:STAT {0}".format(state))
+
+    def SwitchAutoZeroOn(self):
+        self.SwitchAutoZero(self.STATE_ON)
+
+    def SwitchAutoZeroOff(self):
+        self.SwitchAutoZero(self.STATE_OFF)
+
+    def ForceAutoZeroUpdate(self):
+        self.write(":SYST:AZER:STAT ONCE")
+
+##
+##  END AUTO ZERO FUNCTIONS
+## 
+   
+
+##################################################################################
+##
+##  NPLC CACHING FUNCTIONS
+##
+
+    def SwitchNPLCcaching(self, state):
+        if state in self.SWITCH_STATES:
+            self.write(":SYST:AZER:CACH:STAT {0}".format(state))
+
+    def SwitchNPLCcachingOn(self):
+        self.SwitchNPLCcaching(self.STATE_ON)
+
+    def SwitchNPLCcachingOff(self):
+        self.SwitchNPLCcaching(self.STATE_OFF)
+
+    def UpdateNPLCcacheValues(self):
+        self.write(":SYST:AZER:CACH:REFR")
+
+    def ClearNPLCcacheValues(self):
+        self.write(":SYST:AZER:CACH::RES")
+
+
+
+##
+##  END NPLC CACHING FUNCTIONS
+## 
+
+
+
+
     ## implement fixed sourcing mode
 
     ## implement range

@@ -102,6 +102,13 @@ class IV_Experiment(QThread):
         
         device.SetCurrentSenseFunction()
 
+        #configure autozero 
+        device.SwitchAutoZeroOff()
+        #configure nplc caching
+        device.SwitchNPLCcachingOn()
+
+
+
         assert self.integration_time in INTEGRATION_SPEEDS, "Integration time is not set correct"
 
         nplc = 1
@@ -230,6 +237,10 @@ class IV_Experiment(QThread):
 
             self.measurementStarted.emit(dependent_range.length)
             
+            #update autozero values
+            independent_device.ForceAutoZeroUpdate()
+            dependent_device.ForceAutoZeroUpdate()
+
             independent_device.OutputOn()
             dependent_device.OutputOn() 
             dependent_device.SetVoltageAmplitude(dependent_voltage)
@@ -638,6 +649,7 @@ class MainView(mainViewBase, mainViewForm):
     def _on_measurement_started(self, max_experiment_count):
         self.show_message("new measurement started", 1000)
         self.progressBar.setRange(0,max_experiment_count)
+        
 
     def _on_measurement_finished(self):
         self.show_message("measurement finished", 5000)
