@@ -655,6 +655,9 @@ class Keithley24XX(VisaInstrument):
     def Reset(self):
         self.write("*RST")
 
+    def ClearStatus(self):
+        self.write("*CLS")
+
     def OperationCompletedQuery(self):
         return bool(self.query("*OPC?"))
 

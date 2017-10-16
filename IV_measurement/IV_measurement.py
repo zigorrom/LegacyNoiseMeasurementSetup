@@ -26,8 +26,12 @@ OUTPUT_MEASUREMENT, TRANSFER_MEASUREMENT = MEASUREMENT_TYPES
      
 
 class IV_Experiment(QThread):
-    measurementStarted = QtCore.pyqtSignal(int) # int - max amount of points in the sweep
-    measurementStopped = QtCore.pyqtSignal()
+    measurementStarted = QtCore.pyqtSignal() # int - max amount of points in the sweep
+    measurementFinished = QtCore.pyqtSignal()
+
+    experimentStarted = QtCore.pyqtSignal(int)  # int - max amount of points in the sweep
+    experimentFinished = QtCore.pyqtSignal()
+
     measurementProgressChanged =QtCore.pyqtSignal(int)
     measurementDataArrived = QtCore.pyqtSignal(tuple) 
     measurementNextFile = QtCore.pyqtSignal()
@@ -56,9 +60,9 @@ class IV_Experiment(QThread):
     def __del__(self):
         self.wait()
 
-    def stop(self):
+    def stop(self,timeout = -1):
         self.alive = False
-        self.wait()
+        self.wait(timeout)
 
     def run(self):
         self.perform_measurement()
@@ -89,6 +93,9 @@ class IV_Experiment(QThread):
         device.Abort()
         #reset devices
         device.Reset()
+        #clear Status
+        device.ClearStatus()
+
         #switch beeper off
         device.SwitchBeeper(Keithley24XX.STATE_OFF)
         #switch off buffer control
@@ -229,13 +236,15 @@ class IV_Experiment(QThread):
         #measurement_data_dataFrame = pd.DataFrame(columns = [filename_option, timestamp_option, indep_var_option, dep_var_option, dep_volt_option])
 
         self.__make_beep(dependent_device)
+        self.experimentStarted.emit(dependent_range.length)
+
         #try:
         for count, dependent_voltage in enumerate(np.linspace(dependent_range.start, dependent_range.stop, dependent_range.length, True)):
             if not self.alive:
                 print("Measurement abort")
                 return
 
-            self.measurementStarted.emit(dependent_range.length)
+            self.measurementStarted.emit()#dependent_range.length)
             
             #update autozero values
             independent_device.ForceAutoZeroUpdate()
@@ -299,7 +308,7 @@ class IV_Experiment(QThread):
             
             self.__increment_file_count()
             self.measurementProgressChanged.emit(count+1)
-
+            self.measurementFinished.emit()
         #except Exception as e:
         #    independent_device.OutputOff()
         #    dependent_device.OutputOff() 
@@ -308,7 +317,7 @@ class IV_Experiment(QThread):
         
 
         self.__make_beep(dependent_device)
-        self.measurementStopped.emit()
+        self.experimentFinished.emit()
             #indep_voltages, indep_currents, indep_resistances, indep_times, indep_status  = data
             #dep_voltages, dep_currents, dep_resistances, dep_times, dep_status  = data2
             #print("VG={0}".format(dependent_voltage))
@@ -463,7 +472,9 @@ class MainView(mainViewBase, mainViewForm):
         self.ui_averaging_count.addItems(integration_count_list)
 
         self.progressBar = QtGui.QProgressBar(self)
+        self.progressBar.setVisible(False)
         self.statusbar.addPermanentWidget(self.progressBar)
+
 
         self.__setup_ui_from_config()
 
@@ -644,15 +655,17 @@ class MainView(mainViewBase, mainViewForm):
         self.ui_measurementCount.setValue(meas_count+1)
 
     def _on_measurement_progress_changed(self,progress):
+        print("progress_changed {0}".format(progress))
         self.progressBar.setValue(progress)
 
-    def _on_measurement_started(self, max_experiment_count):
-        self.show_message("new measurement started", 1000)
+    def _on_experiment_started(self, max_experiment_count):
         self.progressBar.setRange(0,max_experiment_count)
-        
+        self.progressBar.setValue(0)
+        self.progressBar.setVisible(True)
 
-    def _on_measurement_finished(self):
-        self.show_message("measurement finished", 5000)
+    def _on_experiment_finished(self):
+        self.show_message("experiment finished", 1000)
+
         msg = QtGui.QMessageBox()
         msg.setIcon(QtGui.QMessageBox.Information)
         msg.setText("Measurement completed!!!")
@@ -662,12 +675,41 @@ class MainView(mainViewBase, mainViewForm):
         msg.setStandardButtons(QtGui.QMessageBox.Ok | QtGui.QMessageBox.Cancel)
         retval = msg.exec_()
 
+        self.progressBar.setVisible(False)
+       
+
+    def _on_measurement_started(self): #, max_experiment_count):
+        self.show_message("new measurement started", 1000)
+        #self.progressBar.setRange(0,max_experiment_count)
+        ##self.progressBar.setValue(0)
+        ##self.progressBar.setVisible(True)
+        
+
+    def _on_measurement_finished(self):
+        self.show_message("measurement finished", 5000)
+        
+        #msg = QtGui.QMessageBox()
+        #msg.setIcon(QtGui.QMessageBox.Information)
+        #msg.setText("Measurement completed!!!")
+        #msg.setInformativeText("Additional info about measurement")
+        #msg.setWindowTitle("Measurement completed")
+        #msg.setDetailedText("Data saved in folder: {0}".format(self.working_directory))
+        #msg.setStandardButtons(QtGui.QMessageBox.Ok | QtGui.QMessageBox.Cancel)
+        #retval = msg.exec_()
+
+        #self.progressBar.setVisible(False)
+
+
     def initialize_experiment(self):
         self.experiment = IV_Experiment()
 
+        self.experiment.experimentStarted.connect(self._on_experiment_started)
+        self.experiment.experimentFinished.connect(self._on_experiment_finished)
 
         self.experiment.measurementStarted.connect(self._on_measurement_started)
-        self.experiment.measurementStopped.connect(self._on_measurement_finished)
+        self.experiment.measurementFinished.connect(self._on_measurement_finished)
+        self.experiment.measurementProgressChanged.connect(self._on_measurement_progress_changed)
+
         self.experiment.measurementDataArrived.connect(self.data_arrived)
         self.experiment.measurementNextFile.connect(self.on_next_file)
 
@@ -720,6 +762,13 @@ class MainView(mainViewBase, mainViewForm):
     @QtCore.pyqtSlot()
     def on_stopButton_clicked(self):
         print("stop")
+        if self.experiment:
+            self.experiment.stop(5000)
+            print("waiting for measurement stop")
+            self.experiment.terminate()
+            self.experiment.wait()
+            print("experiment stopped")
+            
         #self.ivPlotWidget.clear_curves()
         #self.experiment.stop()
         
