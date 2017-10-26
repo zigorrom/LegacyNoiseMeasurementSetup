@@ -38,6 +38,10 @@ def Convertion(a):
 
 
 SWITCH_STATE_ON, SWITCH_STATE_OFF = SWITCH_STATES = ["ON","OFF"]
+SWITCH_STATES_CONVERTER = {"0": False,
+                           "1": True,
+                           SWITCH_STATE_ON: True,
+                           SWITCH_STATE_OFF: False}
 
 AI_CHANNEL_101, AI_CHANNEL_102, AI_CHANNEL_103, AI_CHANNEL_104 = AI_CHANNELS = [101, 102, 103, 104]
 AO_CHANNEL_201, AO_CHANNEL_202 = AO_CHANNELS = [201,202]
@@ -93,6 +97,21 @@ def check_dig_bit_exists(channel, bit):
     else:
         return False
 
+def assert_state(state):
+    assert state in SWITCH_STATES, "Wrong state!"
+    return True
+
+def assert_dig_mode(mode):
+    assert mode in DIGITAL_MODES, "Wrong mode!"
+    return True
+
+def assert_polarity(polarity):
+    assert polarity in POLARITIES, "Wrong polarity!"
+    return True
+
+def assert_range(range):
+    assert range in DAQ_RANGES, "Wrong range!"
+    return True
 
 class AgilentU2542A_DSP(VisaInstrument):
     def __init__(self, resource):
@@ -127,31 +146,59 @@ class AgilentU2542A_DSP(VisaInstrument):
         self.write("*RST")
 
 
-    def switch_state(self, channel, state):
-        pass
+    def switch_enabled(self, channel, state):
+        assert check_analog_channel_exists(channel), "Channel is not existing in analog channels"
+        assert_state(state)
+        self.write("ROUT:ENAB {0},(@{1})".format(state,channel))
+        
 
-    def switch_state_for_channels(self, channels, state):
-        pass
+    def switch_enabled_for_channels(self, channels, state):
+        assert all((check_analog_channel_exists(channel) for channel in channels)), "At least one of channels is not existing"
+        assert_state(state)
+        self.write("ROUT:ENAB {0},(@{1})".format(state, ",".join(channels)))
+
+    def check_channels_enabled(self, channels):
+        if isinstance(channels, int):
+            channels = [channels]
+
+        assert all((check_analog_channel_exists(channel) for channel in channels)), "At least one of channels is not existing"
+        result = self.query("ROUT:ENAB? (@{0})".format(",".join(channels)))
+        spl = result.split(',')
+        assert len(spl) == len(channels), "Inconsistent result"
+        return {channel: SWITCH_STATES_CONVERTER[state] for (channel, state) in zip(channels, spl) }
+
 
     def set_digital_mode(self, channel, mode):
-        pass
+        assert check_dig_channel_exists(channel), "Digital channel is not existing"
+        assert_dig_mode(mode)
+        self.write("CONF:DIG:DIR {0},(@{1})".format(mode,channel))
 
     def set_digital_mode_for_channels(self, channels, mode):
-        pass
+        assert all((check_dig_channel_exists(channel) for channel in channels)),  "At least one of channels is not existing"
+        assert_dig_mode(mode)
+        self.write("CONF:DIG:DIR {0},(@{1})".format(mode,",".join(channels)))
 
     def set_polarity(self, channel, polarity):
-        pass
+        assert check_analog_channel_exists(channel)
+        assert_polarity(polarity)
+        self.write("ROUT:CHAN:POL {0}, (@{1})".format(polarity, channel))
 
     def set_polarity_for_channels(self, channels, polarity):
-        pass
+        assert all((check_analog_channel_exists(channel) for channel in channels )), "At least one of channels is not existing"
+        assert_polarity(polarity)
+        self.write("ROUT:CHAN:POL {0}, (@{1})".format(polarity, ",".join(channels)))
 
     def set_range(self, channel, range):
-        pass
+        assert check_analog_in_channel_exists(channel), "Specified analog in channel is not existing"
+        assert_range(range)
+        self.write("ROUT:RANG {0}, (@{1})".format(range,channel))
 
     def set_range_for_channels(self, channels, range):
-        pass
+        assert all((check_analog_in_channel_exists(channel) for channel in channels)), "At least one of channels is not existing"
+        assert_range(range)
+        self.write("ROUT:RANG {0}, (@{1})".format(range, ",".join(channels)))
 
-
+    def initialize_acquisition(self):
 
 
 
