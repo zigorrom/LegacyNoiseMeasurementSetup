@@ -78,8 +78,8 @@ def BipolarConversionFunction(range_value, data_code):
 def UnipolarConversionFunction(range_value, data_code):
     return (data_code/MAX_INT16+0.5)*range_value
 
-AI_CONVERSION_FUNCTION = {BIPOLAR: BipolarConversionFunction,
-                          UNIPOLAR: UnipolarConversionFunction}
+AI_CONVERSION_FUNCTION = {POLARITIES.index(BIPOLAR): BipolarConversionFunction,
+                          POLARITIES.index(UNIPOLAR): UnipolarConversionFunction}
 
 ERROR_SPECIFIED_CHANNEL_NOT_EXISTING = "Specified channel is not existing"
 
@@ -159,13 +159,28 @@ def check_continuous_acquisition_data_is_ready(state):
     else:
         return False
 
-#class ConversionHeder:
-#    def __init__(self, ):
-        
+
+def data_conversion_function(data):
+    polarity = data[1]
+    range_val = DAQ_RANGES[data[2]]
+    conversion_function = AI_CONVERSION_FUNCTION[polarity]
+    return conversion_function(range_val, data[3:])   #converted_data = 
 
 
-def acqusition_convert_raw_data(data, conversion_header):
-    pass
+ACQUIRED_DATA_HEADER_LENGTH = 10
+ACQUIRED_DATA_HEADER_START = 2
+
+def acqusition_convert_raw_data(raw_data, conversion_header):
+    data_length_from_buffer_header = int(raw_data[ACQUIRED_DATA_HEADER_START:ACQUIRED_DATA_HEADER_LENGTH])
+    raw_data = raw_data[ACQUIRED_DATA_HEADER_LENGTH:]
+    int_converted_data = np.fromstring(raw_data, dtype = '<i2')
+    number_of_channels = len(conversion_header)
+    single_channel_data_length = int(int_converted_data.size / number_of_channels)
+    array_for_final_convertion = np.hstack((conversion_header, int_converted_data.reshape((single_channel_data_length, number_of_channels)).transpose()))
+
+
+
+
 
 
 class AgilentU2542A_DSP(VisaInstrument):
@@ -400,7 +415,12 @@ class AgilentU2542A_DSP(VisaInstrument):
         polarities_for_channels = self.get_polarity_for_channels(enabled_channels)
         ranges_for_channels = self.get_range_for_channels(enabled_channels)
         
-        
+        list_of_params = []
+
+        for (channel, polarity, range_value) in zip(enabled_channels, polarities_for_channels, ranges_for_channels):
+            list_of_params.append([AI_CHANNELS.index(channel), POLARITIES.index(polarity), DAQ_RANGES.index(range_value)])
+
+        return np.asarray(list_of_params)
 
 
 
