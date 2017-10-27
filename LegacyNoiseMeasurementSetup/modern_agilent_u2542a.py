@@ -429,13 +429,6 @@ class AgilentU2542A_DSP(VisaInstrument):
         return acqusition_convert_raw_data(raw_data, self.conversion_header)
 
 
-    #    raw_data = self.acquisition_read_raw_data()
-    #    data_length_from_buffer_header = int(raw_data[2:10])
-    #    raw_data
-
-    #    pass
-
-
 
 
 
