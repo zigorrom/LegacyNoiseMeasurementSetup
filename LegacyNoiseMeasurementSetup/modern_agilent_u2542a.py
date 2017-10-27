@@ -159,6 +159,9 @@ def check_continuous_acquisition_data_is_ready(state):
     else:
         return False
 
+def acqusition_convert_raw_data(data, conversion_header):
+    pass
+
 
 class AgilentU2542A_DSP(VisaInstrument):
     def __init__(self, resource):
@@ -370,7 +373,18 @@ class AgilentU2542A_DSP(VisaInstrument):
 
     def acquisition_read_raw_data(self):
         self.write("WAV:DATA?")
-        #return self
+        return self.read_raw()
+
+    
+
+    #def acqusition_read_data(self):
+    #    raw_data = self.acquisition_read_raw_data()
+    #    data_length_from_buffer_header = int(raw_data[2:10])
+    #    raw_data
+
+    #    pass
+
+
 
 
 
