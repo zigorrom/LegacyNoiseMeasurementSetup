@@ -422,6 +422,9 @@ class AgilentU2542A_DSP(VisaInstrument):
 
         return np.asarray(list_of_params)
 
+    def initialize_acqusition(self, sample_rate, points_per_shot):
+        pass
+
 
 
     def acqusition_read_data(self):
