@@ -177,7 +177,7 @@ def acqusition_convert_raw_data(raw_data, conversion_header):
     number_of_channels = len(conversion_header)
     single_channel_data_length = int(int_converted_data.size / number_of_channels)
     array_for_final_convertion = np.hstack((conversion_header, int_converted_data.reshape((single_channel_data_length, number_of_channels)).transpose()))
-
+    return np.apply_along_axis(data_conversion_function, 1, array_for_final_convertion)
 
 
 
@@ -424,7 +424,11 @@ class AgilentU2542A_DSP(VisaInstrument):
 
 
 
-    #def acqusition_read_data(self):
+    def acqusition_read_data(self):
+        raw_data = self.acquisition_read_raw_data()
+        return acqusition_convert_raw_data(raw_data, self.conversion_header)
+
+
     #    raw_data = self.acquisition_read_raw_data()
     #    data_length_from_buffer_header = int(raw_data[2:10])
     #    raw_data
