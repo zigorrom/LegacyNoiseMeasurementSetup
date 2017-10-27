@@ -422,8 +422,14 @@ class AgilentU2542A_DSP(VisaInstrument):
 
         return np.asarray(list_of_params)
 
-    def initialize_acqusition(self, sample_rate, points_per_shot):
-        pass
+    def initialize_acqusition(self, sample_rate, points_per_shot, single_shot):
+        self.set_sample_rate(sample_rate)
+        if single_shot:
+            self.set_single_shot_acquisition_points(points_per_shot)
+        else: 
+            self.set_continuous_acquisition_points(points_per_shot)
+
+        self.conversion_header = self.create_conversion_header()
 
 
 
