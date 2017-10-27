@@ -95,3 +95,6 @@ class VisaInstrument:
 
     def read(self):
         return self.__instrument.read()
+
+    def read_raw(self):
+        return self.__instrument.read_raw()

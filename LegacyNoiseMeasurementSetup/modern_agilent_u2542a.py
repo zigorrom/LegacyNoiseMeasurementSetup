@@ -1,24 +1,13 @@
-
-import numpy as np
-#install all necessary files from here http://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy
-from scipy import signal
-import time
 import os
 import sys
+import time
+
+import numpy as np
+from scipy import signal
+
 from communication_layer import VisaInstrument, instrument_await_function
 
 
-maxInt16 = 65536
-maxInt16div2 = 32768
-def BipolarConversionFunction(range_value, data_code):
-    return (data_code*range_value)/maxInt16div2
-
-def UnipolarConversionFunction(range_value, data_code):
-    return (data_code/maxInt16+0.5)*range_value
-### maybe optimization of execution speed
-### IMPORTANT ORDER OF FUNCTIONS IN LIST -> CORRESPONDS TO ORDER IN AI_ALL_POLARITIES
-ai_convertion_functions = [BipolarConversionFunction,UnipolarConversionFunction]
-##ai_vect_convertion_functions = [np.vectorize(BipolarConversionFunction, otypes = [np.float]),np.vectorize(UnipolarConversionFunction, otypes = [np.float])]
 
 def Convertion(a):
     pol_idx = a[2]
@@ -29,13 +18,6 @@ def Convertion(a):
 ##    fft = np.fft.fft(timetrace)
 ##    res = np.concatenate(timetrace,fft).reshape((timetrace.size,2))
     return timetrace
-
-
-
-
-
-#All cahnnel names are integers
-
 
 SWITCH_STATE_ON, SWITCH_STATE_OFF = SWITCH_STATES = ["ON","OFF"]
 SWITCH_STATES_CONVERTER = {"0": False,
@@ -80,11 +62,26 @@ DIGITAL_BIT_ON, DIGITAL_BIT_OFF = DIGITAL_BIT_STATES = ['1','0']
 UNIPOLAR, BIPOLAR = POLARITIES = ["UNIP", "BIP"]
 
 RANGE_125, RANGE_25, RANGE_5, RANGE_10 = DAQ_RANGES = [1.25, 2.5, 5, 10]
+AUTO_RANGE = "AUTO"
+AI_RANGES = [AUTO_RANGE, RANGE_125, RANGE_25, RANGE_5, RANGE_10]
 
+MAX_INT16 = 65536
+MAX_INT16_HALF = 32768
+
+SINGLE_SHOT_READY, SINGLE_SHOT_IN_PROCESS = ["YES", "NO"]
+ACQUISITION_EMPTY, ACQUISITION_FRAGMENT, ACQUSITION_DATA, ACQUISITION_OVERLOAD = ["EPTY","FRAG","DATA","OVER"]
+
+
+def BipolarConversionFunction(range_value, data_code):
+    return (data_code*range_value)/MAX_INT16_HALF
+
+def UnipolarConversionFunction(range_value, data_code):
+    return (data_code/MAX_INT16+0.5)*range_value
+
+AI_CONVERSION_FUNCTION = {BIPOLAR: BipolarConversionFunction,
+                          UNIPOLAR: UnipolarConversionFunction}
 
 ERROR_SPECIFIED_CHANNEL_NOT_EXISTING = "Specified channel is not existing"
-
-
 
 
 
@@ -145,6 +142,23 @@ def assert_polarity(polarity):
 def assert_range(range_value):
     assert range_value in DAQ_RANGES, "Wrong range!"
     return True
+
+def assert_analog_range(range_value):
+    assert range_value in AI_RANGES, "Wrong range!"
+    return True
+
+def check_single_shot_data_is_ready(state):
+    if state == SINGLE_SHOT_READY:
+        return True
+
+def check_continuous_acquisition_data_is_ready(state):
+    if state == ACQUISITION_OVERLOAD:
+        raise OverflowError("Buffer is overloaded")
+    elif state == ACQUSITION_DATA:
+        return True
+    else:
+        return False
+
 
 class AgilentU2542A_DSP(VisaInstrument):
     def __init__(self, resource):
@@ -274,30 +288,89 @@ class AgilentU2542A_DSP(VisaInstrument):
     def digital_measure_channels(self, channels):
         raise NotImplementedError()
 
+    
     def analog_set_range(self, channel, range_value):
-        pass
+        assert check_analog_in_channel_exists(channel)
+        assert_analog_range(range_value)
+        self.write("VOLT:RANG {0}, (@{1})".format(range_value, channel))
 
+    def analog_set_range_for_channels(self, channels, range_value):
+        assert all((check_analog_in_channel_exists(channel) for channel in channels )), "At least one of channels is not existing"
+        assert_analog_range(range_value)
+        self.write("VOLT:RANG {0}, (@{1})".format(range_value, ",".join(channels)))
 
     def analog_set_polarity(self, channel, polarity):
-        pass
+        assert check_analog_in_channel_exists(channel)
+        assert_polarity(polarity)
+        self.write("VOLT:POL {0}, (@{1})".format(polarity, channel))
+
+    def analog_set_polarity_for_channels(self, channels, polarity):
+        assert all((check_analog_in_channel_exists(channel) for channel in channels )), "At least one of channels is not existing"
+        assert_polarity(polarity)
+        self.write("VOLT:POL {0}, (@{1})".format(polarity, ",".join(channels)))
 
     def analog_set_averaging(self, averaging):
-        pass
+        assert averaging > 0 and averaging < 1001, "Averaging is out of range"
+        self.write("VOLT:AVER {0}".format(aver))
+
+    def analog_averaging_query(self):
+        value = self.query("VOLT:AVER?")
+        return int(value)
 
     def analog_measure(self, channel):
-        pass
+        assert check_analog_in_channel_exists(channel)
+        value = self.query("MEAS? (@{0})".format(channel))
+        return float(value)
 
     def analog_measure_channels(self, channels):
-        pass
+        assert all((check_analog_in_channel_exists(channel) for channel in channels)), "At least one of channels is not existing"
+        str_result = self.query("MEAS? (@{0})".format(",".join(channels)))
+        spl = result.split(',')
+        assert len(spl) == len(channels), "Inconsistent result"
+        return {channel: float(value) for (channel, value) in zip(channels, spl)}
 
+    def analog_set_source_polarity(self, channel, polarity):
+        assert check_analog_out_channel_exists(channel)
+        assert_polarity(polarity)
+        self.write("SOUR:VOLT:POL {0}, (@{1})".format(polarity, channel))
 
+    def analog_set_source_polarity_for_channels(self,channels, polarity):
+        assert(all(check_analog_out_channel_exists(channel) for channel in channels))
+        assert_polarity(polarity)
+        self.write("SOUR:VOLT:POL {0}, (@{1})".format(polarity, ",".join(channels)))
 
+    def analog_source_voltage(self, channel, voltage):
+        assert check_analog_out_channel_exists(channel)
+        assert voltage >= -10 and voltage <= 10
+        self.write("SOUR:VOLT {0}, (@{1})".format(voltage, channel))
 
-    
+    def analog_source_voltage_for_channels(self, channels, voltage):
+        assert all((check_analog_out_channel_exists(channel) for channel in channels))
+        assert voltage >= -10 and voltage <= 10
+        self.write("SOUR:VOLT {0}, (@{1})".format(voltage, ",".join(channels)))
 
+    def analog_set_output_state(self,state):
+        assert state in SWITCH_STATES
+        self.write("OUTP {0}".format(state))
 
+    def start_acquisition(self):
+        self.write("RUN")
 
+    def start_single_shot_acquisition(self):
+        self.write("DIG")
 
+    def stop_acquisition(self):
+        self.write("STOP")
+
+    def single_shot_acquisition_completed(self):
+        return self.query("WAV:COMP?")
+
+    def continuous_acquisition_state(self):
+        return self.query("WAV:STAT?")
+
+    def acquisition_read_raw_data(self):
+        self.write("WAV:DATA?")
+        #return self
 
 
 
