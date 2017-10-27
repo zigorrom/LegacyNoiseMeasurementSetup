@@ -400,7 +400,7 @@ class AgilentU2542A_DSP(VisaInstrument):
         polarities_for_channels = self.get_polarity_for_channels(enabled_channels)
         ranges_for_channels = self.get_range_for_channels(enabled_channels)
         
-
+        
 
 
 
