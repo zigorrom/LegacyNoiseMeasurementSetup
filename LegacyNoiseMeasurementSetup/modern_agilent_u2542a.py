@@ -159,6 +159,11 @@ def check_continuous_acquisition_data_is_ready(state):
     else:
         return False
 
+#class ConversionHeder:
+#    def __init__(self, ):
+        
+
+
 def acqusition_convert_raw_data(data, conversion_header):
     pass
 
@@ -166,7 +171,7 @@ def acqusition_convert_raw_data(data, conversion_header):
 class AgilentU2542A_DSP(VisaInstrument):
     def __init__(self, resource):
         super().__init__(resource)
-
+        self.conversion_header = None
 
     def initialize_instrument(self, resource):
         pass
@@ -216,17 +221,6 @@ class AgilentU2542A_DSP(VisaInstrument):
         assert len(spl) == len(channels), "Inconsistent result"
         return {channel: SWITCH_STATES_CONVERTER[state] for (channel, state) in zip(channels, spl) }
 
-
-    def set_digital_mode(self, channel, mode):
-        assert check_dig_channel_exists(channel), "Digital channel is not existing"
-        assert_dig_mode(mode)
-        self.write("CONF:DIG:DIR {0},(@{1})".format(mode,channel))
-
-    def set_digital_mode_for_channels(self, channels, mode):
-        assert all((check_dig_channel_exists(channel) for channel in channels)),  "At least one of channels is not existing"
-        assert_dig_mode(mode)
-        self.write("CONF:DIG:DIR {0},(@{1})".format(mode,",".join(channels)))
-
     def set_polarity(self, channel, polarity):
         assert check_analog_channel_exists(channel)
         assert_polarity(polarity)
@@ -237,6 +231,13 @@ class AgilentU2542A_DSP(VisaInstrument):
         assert_polarity(polarity)
         self.write("ROUT:CHAN:POL {0}, (@{1})".format(polarity, ",".join(channels)))
 
+    def get_polarity_for_channels(self, channels):
+        assert all((check_analog_channel_exists(channel) for channel in channels )), "At least one of channels is not existing"
+        result = self.query("ROUT:CHAN:POL? (@{0})".format(",".join(channels)))
+        spl = result.split(',')
+        assert len(spl) == len(channels), "Inconsistent result"
+        return {channel: polarity for (channel, polarity) in zip(channels, spl) }
+
     def set_range(self, channel, range_value):
         assert check_analog_in_channel_exists(channel), "Specified analog in channel is not existing"
         assert_range(range_value)
@@ -246,6 +247,23 @@ class AgilentU2542A_DSP(VisaInstrument):
         assert all((check_analog_in_channel_exists(channel) for channel in channels)), "At least one of channels is not existing"
         assert_range(range_value)
         self.write("ROUT:RANG {0}, (@{1})".format(range_value, ",".join(channels)))
+
+    def get_range_for_channels(self, channels):
+        assert all((check_analog_in_channel_exists(channel) for channel in channels)), "At least one of channels is not existing"
+        result = self.write("ROUT:RANG? (@{0})".format(",".join(channels)))
+        spl = result.split(',')
+        assert len(spl) == len(channels), "Inconsistent result"
+        return {channel: float(range_value) for (channel, range_value) in zip(channels, spl) }
+
+    def set_digital_mode(self, channel, mode):
+        assert check_dig_channel_exists(channel), "Digital channel is not existing"
+        assert_dig_mode(mode)
+        self.write("CONF:DIG:DIR {0},(@{1})".format(mode,channel))
+
+    def set_digital_mode_for_channels(self, channels, mode):
+        assert all((check_dig_channel_exists(channel) for channel in channels)),  "At least one of channels is not existing"
+        assert_dig_mode(mode)
+        self.write("CONF:DIG:DIR {0},(@{1})".format(mode,",".join(channels)))
 
     def digital_write(self, channel, value):
         assert check_dig_channel_exists(channel), "Specified channel is not existing"
@@ -375,7 +393,16 @@ class AgilentU2542A_DSP(VisaInstrument):
         self.write("WAV:DATA?")
         return self.read_raw()
 
-    
+    def create_conversion_header(self):
+        #AI_CHANNELS 
+        channels_enable_list = self.check_channels_enabled(AI_CHANNELS)
+        enabled_channels = [channel for (channel, enabled) in channels_enable_list.items() if enabled]
+        polarities_for_channels = self.get_polarity_for_channels(enabled_channels)
+        ranges_for_channels = self.get_range_for_channels(enabled_channels)
+        
+
+
+
 
     #def acqusition_read_data(self):
     #    raw_data = self.acquisition_read_raw_data()
@@ -390,63 +417,13 @@ class AgilentU2542A_DSP(VisaInstrument):
 
 
 
-def test():
-    pass
-
-
-
 def main():
         d = AgilentU2542A('ADC')
-##        plt.ion()
-        try:
-            
-            counter = 0
-            d.daq_reset()
-            d.daq_setup(500000,50000)
-            d.daq_set_enable_ai_channels(STATES.ON,[AI_CHANNELS.AI_101,AI_CHANNELS.AI_102,AI_CHANNELS.AI_103,AI_CHANNELS.AI_104])
-            d.daq_run()
-            print("started")
-            init_time = time.time()
-            max_count = 10000
-            while counter < max_count:
-                try:
-                    if d.daq_is_data_ready():
 
-                        counter += 1
-                        t = time.time()-init_time
-
-                        data = d.daq_read_data()
-##                        q.put(t)
-##                        q.put(data)
-##                        if counter % 10 == 0:
-##                            plt.plot(data[0])
-##                            plt.pause(0.05)
-##                        print()
-                        print(t)
-                        print(len(data))
-                        print(data)
-                        
-                        
-
-                except Exception as e:
-                    err = str(e)
-                    print(err)
-                    if err== 'overload':
-                        counter = max_count
-                
-                    
-        except Exception as e:
-##            pass
-            print ("exception"+str(e))
-        finally:
-            d.daq_stop()
-            d.daq_reset()
-            print("finished")
 
 
 if __name__ == "__main__":
-
-    
+    main()
     os.system("pause")
 
    
