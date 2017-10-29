@@ -1,5 +1,7 @@
 from enum import Enum, unique
 
+import modern_agilent_u2542a as daq
+
 @unique
 class PGA_GAINS(Enum):
     PGA_1 = 1
@@ -57,6 +59,7 @@ class FILTER_GAINS(Enum):
     def default_filter_gain(cls):
         return cls.G1
 
+@unique
 class CS_HOLD(Enum):
     CS_HOLD_ON = "ON"
     CS_HOLD_OFF = "OFF"
@@ -65,11 +68,23 @@ class CS_HOLD(Enum):
     def default_cs_hold_state(cls):
         return cls.CS_HOLD_OFF
 
+@unique
+class AI_MODES(Enum):
+    AC = 0
+    DC = 1
+
+
+@unique
+class CONTROL_BITS(Enum):
+    AI_SET_PULSE_BIT = daq.DIG_CH504_BIT0
+    AI_SET_MODE_BIT = daq.DIG_CH504_BIT1
+    AI_ADC_LETCH_PULSE_BIT = daq.DIG_CH504_BIT2
+    AO_DAC_LETCH_PULSE_BIT = daq.DIG_CH504_BIT3
 
 
 
 if __name__ == "__main__":
     #print(PGA_GAINS.PGA_2 in PGA_GAINS)
-
+    
     assert isinstance(PGA_GAINS(10), PGA_GAINS), "afasfasf"
     #print(PGA_GAINS.PGA_1.value)
