@@ -4,9 +4,8 @@ import time
 
 import numpy as np
 from scipy import signal
-
+from enum import Enum, unique
 from communication_layer import VisaInstrument, instrument_await_function
-
 
 
 def Convertion(a):
@@ -18,6 +17,8 @@ def Convertion(a):
 ##    fft = np.fft.fft(timetrace)
 ##    res = np.concatenate(timetrace,fft).reshape((timetrace.size,2))
     return timetrace
+
+
 
 SWITCH_STATE_ON, SWITCH_STATE_OFF = SWITCH_STATES = ["ON","OFF"]
 SWITCH_STATES_CONVERTER = {"0": False,
