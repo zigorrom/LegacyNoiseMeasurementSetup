@@ -497,6 +497,7 @@ class FANS_CONTROLLER:
         return self.daq_device
 
 
+
     def initialize_hardware(self, resource):
         assert isinstance(resource, str), "Wrong resource type!"
         self.daq_device = daq.AgilentU2542A_DSP(resource)
