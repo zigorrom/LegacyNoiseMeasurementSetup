@@ -291,6 +291,8 @@ class FANS_AI_MULTICHANNEL:
     def analog_read(self):
         return self.fans_controller.analog_read_for_channels(self.daq_channels)
 
+    
+
 
    
 class FANS_CONTROLLER:
