@@ -112,9 +112,12 @@ def get_pga_value(pga_gain, cs_hold):
     assert isinstance(cs_hold, CS_HOLD)
     return (cs_hold.value << 2) | pga_gain.value
 
+
+
 class FANS_AI_CHANNEL:
-    def __init__(self, name, parent_device, **kwargs):
+    def __init__(self, name, selected_output, parent_device, **kwargs):
         self._name = name
+        self._selected_output = selected_output
         self._daq_device = parent_device
         self._enabled = daq.SWITCH_STATE_OFF
         self._range = daq.RANGE_10
@@ -124,8 +127,6 @@ class FANS_AI_CHANNEL:
         self._filter_cutoff = FILTER_CUTOFF_FREQUENCIES.F0
         self._filter_gain = FILTER_GAINS.G1
         self._pga_gain = PGA_GAINS.PGA_1
-        
-
         self.initialize_channel(kwargs)
 
 
@@ -139,11 +140,10 @@ class FANS_AI_CHANNEL:
         self._filter_gain = filter_gain
         self._pga_gain = pga_gain
 
-    
-
     def apply_fans_ai_channel_params(self):
         raise NotImplementedError()
-
+        
+        
         self._parent_device.dig_write_channel(self.ai_name, DIGITAL_CHANNELS.DIG_502)
 
         self._parent_device.dig_write_bit_channel(self.ai_mode,AI_SET_MODE_BIT,DIGITAL_CHANNELS.DIG_504)#AI_MODE_VAL[mode]
@@ -209,7 +209,6 @@ class FANS_AI_CHANNEL:
     def ai_mode(self,value):
         self._mode = value
         
-    
     @property
     def ai_cs_hold(self):
         return self._cs_hold
