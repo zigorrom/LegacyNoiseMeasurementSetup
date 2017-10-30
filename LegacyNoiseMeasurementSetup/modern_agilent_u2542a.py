@@ -230,6 +230,12 @@ class AgilentU2542A_DSP(VisaInstrument):
         assert_state(state)
         self.write("ROUT:ENAB {0},(@{1})".format(state, join_channels(channels)))
 
+    def get_channel_enabled(self, channel):
+        assert check_analog_channel_exists(channel), "Specified channel is not existing"
+        result = self.query("ROUT:ENAB? (@{0})".format(channel))
+        return SWITCH_STATES_CONVERTER[result]
+
+
     def check_channels_enabled(self, channels):
         if isinstance(channels, int):
             channels = [channels]
@@ -250,6 +256,12 @@ class AgilentU2542A_DSP(VisaInstrument):
         assert_polarity(polarity)
         self.write("ROUT:CHAN:POL {0}, (@{1})".format(polarity, join_channels(channels)))
 
+    def get_polarity(self, channel):
+        assert check_analog_in_channel_exists(channel), "Specified channel is not existing"
+        result = self.query("ROUT:CHAN:POL? (@{0})".format(channel))
+        assert result in POLARITIES, "unexpected response"
+        return result
+
     def get_polarity_for_channels(self, channels):
         assert all((check_analog_channel_exists(channel) for channel in channels )), "At least one of channels is not existing"
         result = self.query("ROUT:CHAN:POL? (@{0})".format(join_channels(channels)))
@@ -266,6 +278,14 @@ class AgilentU2542A_DSP(VisaInstrument):
         assert all((check_analog_in_channel_exists(channel) for channel in channels)), "At least one of channels is not existing"
         assert_range(range_value)
         self.write("ROUT:CHAN:RANG {0}, (@{1})".format(range_value, join_channels(channels)))
+
+    def get_range(self, channel):
+        assert check_analog_in_channel_exists(channel), "Specified channel is not existing"
+        result = self.query("ROUT:CHAN:RANG? (@{0})".format(channel))
+        range_val = float(result)
+        assert range_val in DAQ_RANGES, "unexpected responce"
+        return range_val
+
 
     def get_range_for_channels(self, channels):
         assert all((check_analog_in_channel_exists(channel) for channel in channels)), "At least one of channels is not existing"
@@ -328,7 +348,16 @@ class AgilentU2542A_DSP(VisaInstrument):
     def digital_measure_channels(self, channels):
         raise NotImplementedError()
 
-    
+    def analog_get_range(self, channel):
+        assert check_analog_in_channel_exists(channel), "Specified channel is not existing"
+        result = self.query("VOLT:RANG? (@{0})".format(channel))
+        if result == AUTO_RANGE:
+            return result
+        
+        range_val = float(result)
+        assert range_val in AI_RANGES, "unexpected response"
+        return range_val
+
     def analog_set_range(self, channel, range_value):
         assert check_analog_in_channel_exists(channel), "Specified channel is not existing"
         assert_analog_range(range_value)
@@ -338,6 +367,8 @@ class AgilentU2542A_DSP(VisaInstrument):
         assert all((check_analog_in_channel_exists(channel) for channel in channels )), "At least one of channels is not existing"
         assert_analog_range(range_value)
         self.write("VOLT:RANG {0}, (@{1})".format(range_value, join_channels(channels)))
+
+    
 
     def analog_set_polarity(self, channel, polarity):
         assert check_analog_in_channel_exists(channel)

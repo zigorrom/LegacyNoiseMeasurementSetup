@@ -145,9 +145,6 @@ class FANS_AI_CHANNEL:
         self._pga_gain = PGA_GAINS.PGA_1
         
 
-    def initialize_values_from_device(self):
-        raise NotImplementedError()
-
     @property
     def fans_controller(self):
         return self._fans_device
@@ -427,12 +424,6 @@ class FANS_AO_CHANNEL:
         self._daq_device.analog_set_source_polarity(self.ao_daq_output, polarity)
 
 
-    def apply_dac_hardware_params(self):
-        pass
-
-    def apply_fans_ao_channel_params(self):
-        pass
-
     def analog_write(self, voltage):
         self.fans_controller.analog_source_voltage(self.ao_daq_output, voltage)
 
@@ -446,7 +437,13 @@ class FANS_AO_MULTICHANNEL:
         assert all(fans_controller is channel.fans_controller for channel in args), "Not all channels reference same fans controller!"
         self._fans_controller = fans_controller
         self._fans_channels = list(args)
- 
+        self._daq_device = fans_controller.daq_parent_device
+
+        self._enabled = None
+        self._polarity = None
+        self._voltage = 0
+
+
     @property
     def fans_channels(self):
         return self._fans_channels
@@ -459,6 +456,29 @@ class FANS_AO_MULTICHANNEL:
     def daq_channels(self):
         daq_ch = [ch.ao_daq_output for ch in self.fans_channel]
         return daq_ch
+
+     #self._enabled = daq.SWITCH_STATE_OFF
+    @property
+    def ao_enabled(self):
+        return self._enabled
+
+    @ao_enabled.setter
+    def ao_enabled(self, state):
+        assert state in daq.SWITCH_STATES , "Wrong value of state"
+        self._enabled = state
+        self._daq_device.switch_enabled_for_channels(self.daq_channels, state)
+
+    #self._polarity = daq.BIPOLAR
+    @property
+    def ao_polarity(self):
+        return self._polarity
+
+    @ao_polarity.setter
+    def ao_polarity(self, polarity):
+        assert polarity in daq.POLARITIES, "Wrong polarity value" 
+        self._polarity = polarity
+        self._daq_device.analog_set_source_polarity_for_channels(self.daq_channels, polarity)
+
 
     def analog_write(self, voltage):
         self.fans_controller.analog_source_voltage_for_channels(self.daq_channels, voltage)
