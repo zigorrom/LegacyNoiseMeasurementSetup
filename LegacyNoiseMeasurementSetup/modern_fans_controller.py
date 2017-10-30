@@ -290,11 +290,7 @@ class FANS_AI_CHANNEL:
 
     def analog_read(self):
         return self._daq_device.analog_measure(self.ai_daq_input)
-        
-
-
-
-
+    
 class FANS_AI_MULTICHANNEL:
     def __init__(self, *args):
         assert len(args) > 0, "Too less channels to create multichannel"
@@ -427,8 +423,6 @@ class FANS_AO_CHANNEL:
     def analog_write(self, voltage):
         self.fans_controller.analog_source_voltage(self.ao_daq_output, voltage)
 
-
-
 class FANS_AO_MULTICHANNEL:
     def __init__(self, *args):
         assert len(args) > 0, "Too less channels to create multichannel"
@@ -482,9 +476,7 @@ class FANS_AO_MULTICHANNEL:
 
     def analog_write(self, voltage):
         self.fans_controller.analog_source_voltage_for_channels(self.daq_channels, voltage)
-
-
-   
+           
 class FANS_CONTROLLER:
     def __init__(self):
         self.daq_device = None
@@ -512,67 +504,14 @@ class FANS_CONTROLLER:
         # initialize all digital channels as output for control
         self.set_digital_channels_to_control_mode()
 
+    def set_sampling_rate(self, sample_rate):
+        self.daq_parent_device.set_sample_rate(sample_rate)
 
+    def set_single_shot_acquisition_points(self, points):
+        self.daq_device.set_single_shot_acquisition_points(points)
 
-    def set_digital_channels_to_control_mode(self):
-        self.daq_device.set_digital_mode_for_channels(daq.DIG_CHANNELS, daq.DIGITAL_MODE_OUTPUT)
-
-    def digital_write(self, value, channel):
-        self.daq_device.digital_write(channel, value)
-    
-    def digital_write_bit(self, value, bit):
-        self.daq_device.digital_write_bit(bit, value)
-
-    def digital_pulse_bit(self, bit):
-        self.daq_device.digital_pulse_bit(bit)
-    
-    def switch_daq_channel_enabled(self, channel, state):
-        self.daq_device.switch_enabled(channel, state)
-
-    def switch_daq_enabled_for_channels(self, channels, state):
-        self.daq_device.switch_enabled_for_channels(channels, state)
-
-    def set_acquisition_daq_range(self, channel, range_val):
-        self.daq_device.set_range(channel, range_val)
-
-    def set_acquisition_daq_range_for_channels(self, channels, range_val):
-        self.daq_device.set_range_for_channels(channels, range_val)
-
-    def set_acquisition_polarity(self, channel, polarity):
-        self.daq_device.set_polarity(channel, polarity)
-
-    def set_acquisition_polarity_for_channels(self, channels, polarity):
-        self.daq_device.set_polarity_for_channels(channels, polarity)
-
-    def set_analog_range(self, channel, range_val):
-        self.daq_device.analog_set_range(channel, range_val)
-
-    def set_analog_range(self, channels, range_val):
-        self.daq_device.analog_set_range_for_channels(channels, range_val)
-
-    def set_analog_polarity(self, channel, polarity):
-        self.daq_device.analog_set_polarity(channel, polarity)
-
-    def set_analog_polarity_for_channels(self, channels, polarity):
-        self.daq_device.analog_set_polarity_for_channels(channels, polarity)
-
-    def set_analog_source_polarity(self, channel, polarity):
-        self.daq_device.analog_set_source_polarity(channel, polarity)
-
-    def set_analog_source_polarity_for_channels(self, channels, polarity):
-        self.daq_device.analog_set_source_polarity_for_channels(channels, polarity)
-
-    def analog_read(self, channel):
-        return self.daq_device.analog_measure(channel)
-
-    def analog_read_for_channels(self, channels):
-        return self.daq_device.analog_measure_channels(channels)
-
-    def analog_source_voltage(self, channel, voltage):
-        self.daq_device.analog_source_voltage(channel, voltage)
-
-    def analog_source_voltage_for_channels(self, channels, voltage):
-        self.daq_device.analog_source_voltage_for_channels(channels, voltage)
+    def set_continuous_acquisition_points(self, points):
+        self.daq_device.set_continuous_acquisition_points(points)
 
     def switch_output_on(self):
         self.daq_device.analog_set_output_state(daq.SWITCH_STATE_ON)
