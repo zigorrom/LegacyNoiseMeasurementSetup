@@ -130,6 +130,7 @@ class FANS_AI_CHANNEL:
         #self._name = name
         self._daq_input = daq_input
         self._fans_device = parent_device
+        self._daq_device = parent_device.daq_parent_device
 
         self._enabled = daq.SWITCH_STATE_OFF
         self._range = daq.RANGE_10
@@ -143,30 +144,63 @@ class FANS_AI_CHANNEL:
         self._filter_gain = FILTER_GAINS.G1
         self._pga_gain = PGA_GAINS.PGA_1
         
-        #self.initialize_channel(**kwargs)
-
+#self._enabled = daq.SWITCH_STATE_OFF
     @property
     def ai_enabled(self):
         return self._enabled
 
+    @property.setter
     def ai_enabled(self, state):
         assert state in daq.SWITCH_STATES , "Wrong value of state"
         self._enabled = state
-        self.fans_controller.switch_daq_channel_enabled(self.ai_daq_input, state)
-        
+        self._daq_device.switch_enabled(self.ai_daq_input, state)
+#self._range = daq.RANGE_10
+    @property
+    def ai_range(self):
+        return self._range
+
+    @property.setter
+    def ai_range(self,range_value):
+        assert range_value in daq.DAQ_RANGES, "Wrong range value"
+        self._range_value = range_value
+        self._daq_device.set_range(self.ai_daq_input, range_value)
+#self._polling_range = daq.AUTO_RANGE
+    @property
+    def ai_polling_range(self):
+        return self._polling_range
+
+    @property.setter
+    def ai_polling_range(self, range_value):
+        assert range_value in daq.AI_RANGES, "Wrong range value"
+        self._polling_range = range_value
+        self._daq_device.analog_set_range(self.ai_daq_input, range_value)
+
+#self._polarity = daq.BIPOLAR
+    @property
+    def ai_polarity(self):
+        return self._polarity
+
+    @property.setter
+    def ai_polarity(self, polarity):
+        assert polarity in daq.POLARITIES, "Wrong polarity value" 
+        self._polarity = polarity
+        self._daq_device.set_polarity(self.ai_daq_input, polarity)
+#self._polling_polarity = daq.BIPOLAR
+
+    @property
+    def ai_polling_polarity(self):
+        return self._polling_polarity
+
+    @property.setter
+    def ai_polling_polarity(self, polarity):
+        assert polarity in daq.POLARITIES, "Wrong polarity"
+        self._polling_polarity = polarity
+        self._daq_device.analog_set_polarity(self.ai_daq_input, polarity)
 
     def __str__(self, **kwargs):
         return str(self.ai_daq_input, **kwargs)
 
-    def initialize_channel(self, enabled = daq.SWITCH_STATE_OFF, range_val = daq.RANGE_10, polarity = daq.BIPOLAR, mode = AI_MODES.DC, cs_hold = CS_HOLD.CS_HOLD_OFF, filter_cutoff = FILTER_CUTOFF_FREQUENCIES.F0, filter_gain = FILTER_GAINS.G1, pga_gain = PGA_GAINS.PGA_1):
-        self._enabled = enabled
-        self._range = range_val
-        self._polarity = polarity
-        self._mode = mode
-        self._cs_hold = cs_hold
-        self._filter_cutoff = filter_cutoff
-        self._filter_gain = filter_gain
-        self._pga_gain = pga_gain
+    
 
     def apply_acquisition_hardware_params(self):
         pass
@@ -232,7 +266,8 @@ class FANS_AI_CHANNEL:
         return self._pga_gain
     
     def analog_read(self):
-        return self.fans_controller.analog_read(self.ai_daq_input)
+        return self._daq_device.analog_measure(self.ai_daq_input)
+        
 
 
 
