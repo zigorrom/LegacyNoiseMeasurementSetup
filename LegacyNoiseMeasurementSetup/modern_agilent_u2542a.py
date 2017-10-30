@@ -350,6 +350,7 @@ class AgilentU2542A_DSP(VisaInstrument):
         self.write("VOLT:POL {0}, (@{1})".format(polarity, join_channels(channels)))
 
     def analog_set_averaging(self, averaging):
+        assert isinstance(averaging, int), "averaging should be integer"
         assert averaging > 0 and averaging < 1001, "Averaging is out of range"
         self.write("VOLT:AVER {0}".format(aver))
 
