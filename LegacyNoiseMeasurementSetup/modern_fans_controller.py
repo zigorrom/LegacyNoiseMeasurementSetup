@@ -140,6 +140,8 @@ class FANS_AI_CHANNEL:
         self._pga_gain = PGA_GAINS.PGA_1
         self.initialize_channel(**kwargs)
 
+    def __str__(self, **kwargs):
+        return str(self.ai_daq_input, **kwargs)
 
     def initialize_channel(self, enabled = daq.SWITCH_STATE_OFF, range_val = daq.RANGE_10, polarity = daq.BIPOLAR, mode = AI_MODES.DC, cs_hold = CS_HOLD.CS_HOLD_OFF, filter_cutoff = FILTER_CUTOFF_FREQUENCIES.F0, filter_gain = FILTER_GAINS.G1, pga_gain = PGA_GAINS.PGA_1):
         self._enabled = enabled
@@ -151,11 +153,11 @@ class FANS_AI_CHANNEL:
         self._filter_gain = filter_gain
         self._pga_gain = pga_gain
 
-    def apply_hardware_params(self):
+    def apply_daq_input_hardware_params(self):
         device = self._fans_device
         device.switch_daq_ai_channel_enabled(self.ai_daq_input, self.ai_enabled)
-        device.set_daq_range(self.ai_daq_input, self.ai_range)
-        device.set_polarity(self.ai_daq_input, self.ai_polarity)
+        device.set_acquisition_daq_range(self.ai_daq_input, self.ai_range)
+        device.set_acquisition_polarity(self.ai_daq_input, self.ai_polarity)
 
     def apply_fans_ai_channel_params(self):
         #raise NotImplementedError()
@@ -174,36 +176,24 @@ class FANS_AI_CHANNEL:
         device.digital_write(pga_val, daq.DIG_CHANNEL_503)
 
         device.digital_pulse_bit(CONTROL_BITS.AI_ADC_LETCH_PULSE_BIT)
-        #self._parent_device.dig_write_channel(self.ai_name, DIGITAL_CHANNELS.DIG_502)
-
-        #self._parent_device.dig_write_bit_channel(self.ai_mode,AI_SET_MODE_BIT,DIGITAL_CHANNELS.DIG_504)#AI_MODE_VAL[mode]
-        #self._parent_device.pulse_digital_bit(AI_SET_MODE_PULS_BIT,DIGITAL_CHANNELS.DIG_504)
         
-            
-        ## set filter frequency and gain parameters
-        #filter_val = get_filter_value(self.ai_filter_gain,self.ai_filter_cutoff)
-        #print("filter value {0:08b}".format(filter_val))
-        #self._parent_device.dig_write_channel(filter_val,DIGITAL_CHANNELS.DIG_501)
+    @property
+    def parent_device(self):
+        return self._fans_device
 
-        ## set pga params
-        #pga_val = get_pga_value(self.ai_pga_gain,self.ai_cs_hold)
-        #print("pga value {0:08b}".format(pga_val))
-        #self._parent_device.dig_write_channel(pga_val, DIGITAL_CHANNELS.DIG_503)
-        #self._parent_device.pulse_digital_bit(AI_ADC_LETCH_PULS_BIT,DIGITAL_CHANNELS.DIG_504)
-        
+    @property
+    def fans_controller(self):
+        return self._fans_device
 
     @property        
     def ai_amplification(self):
-        return self.ai_filter_gain * self.ai_pga_gain if self.ai_mode == AI_MODES.AC else 1
+        return self.ai_filter_gain.value * self.ai_pga_gain.value if self.ai_mode == AI_MODES.AC else 1
 
     @property
     def ai_daq_input(self):
         return self._daq_input
     
-    @ai_daq_input.setter
-    def ai_daq_input(self,value):
-        self._daq_input = value
-
+    
     @property
     def ai_enabled(self):
         return self._enabled
@@ -211,7 +201,6 @@ class FANS_AI_CHANNEL:
     @ai_enabled.setter
     def ai_enabled(self,value):
         self._enabled = value
-        #self._parent_device.daq_set_enable_ai_channel(self.ai_enabled,self.ai_name)
 
     @property
     def ai_range(self):
@@ -220,7 +209,6 @@ class FANS_AI_CHANNEL:
     @ai_range.setter
     def ai_range(self,value):
         self._range = value
-        #self._parent_device.daq_set_channel_range(self.ai_range,self.ai_name)
 
     @property
     def ai_polarity(self):
@@ -229,7 +217,6 @@ class FANS_AI_CHANNEL:
     @ai_polarity.setter
     def ai_polarity(self,value):
         self._polarity = value
-        #self._parent_device.daq_set_ai_channel_polarity(self.ai_polarity,self.ai_name)
     
     @property
     def ai_mode(self):
@@ -270,7 +257,39 @@ class FANS_AI_CHANNEL:
     @ai_pga_gain.setter
     def ai_pga_gain(self,value):
         self._pga_gain = value
-       
+    
+    #def analog_read(self, value):
+        
+
+
+
+class FANS_AI_MULTICHANNEL:
+    def __init__(self, *args):
+        assert len(args) > 0, "Too less channels to create multichannel"
+        assert all(isinstance(channel, FANS_AI_CHANNEL) for channel in args), "At least one channels has wrong type!"
+        fans_controller = args[0].parent_device
+        assert all(fans_controller is channel.parent_device for channel in args), "Not all channels reference same fans controller!"
+        self._fans_controller = fans_controller
+        self._fans_channels = list(args)
+
+
+    @property
+    def fans_channels(self):
+        return self._fans_channels
+
+    @property
+    def fans_controller(self):
+        return self._fans_controller
+
+    @property
+    def daq_channels(self):
+        daq_ch = [channel.ai_daq_input for channel in self.fans_channels]
+        return daq_ch
+
+
+
+
+   
 class FANS_CONTROLLER:
     def __init__(self):
         self.daq_device = None
@@ -284,6 +303,11 @@ class FANS_CONTROLLER:
         self.daq_device = daq.AgilentU2542A_DSP(resource)
         
         # initialize all digital channels as output for control
+        self.set_digital_channels_to_control_mode()
+
+
+
+    def set_digital_channels_to_control_mode(self):
         self.daq_device.set_digital_mode_for_channels(daq.DIG_CHANNELS, daq.DIGITAL_MODE_OUTPUT)
 
     def digital_write(self, value, channel):
@@ -298,15 +322,38 @@ class FANS_CONTROLLER:
     def switch_daq_ai_channel_enabled(self, channel, state):
         self.daq_device.switch_enabled(channel, state)
 
-    def set_daq_range(self, channel, range_val):
+    def switch_daq_ai_enabled_for_channels(self, channels, state):
+        self.daq_device.switch_enabled_for_channels(channels, state)
+
+    def set_acquisition_daq_range(self, channel, range_val):
         self.daq_device.set_range(channel, range_val)
 
-    def set_polarity(self, channel, polarity):
+    def set_acquisition_daq_range_for_channels(self, channels, range_val):
+        self.daq_device.set_range_for_channels(channels, range_val)
+
+    def set_acquisition_polarity(self, channel, polarity):
         self.daq_device.set_polarity(channel, polarity)
 
+    def set_acquisition_polarity_for_channels(self, channels, polarity):
+        self.daq_device.set_polarity_for_channels(channels, polarity)
 
+    def set_analog_range(self, channel, range_val):
+        self.daq_device.analog_set_range(channel, range_val)
 
+    def set_analog_range(self, channels, range_val):
+        self.daq_device.analog_set_range_for_channels(channels, range_val)
 
+    def set_analog_polarity(self, channel, polarity):
+        self.daq_device.analog_set_polarity(channel, polarity)
+
+    def set_analog_polarity_for_channels(self, channels, polarity):
+        self.daq_device.analog_set_polarity_for_channels(channels, polarity)
+
+    def set_analog_source_polarity(self, channel, polarity):
+        self.daq_device.analog_set_source_polarity(channel, polarity)
+
+    def set_analog_source_polarity_for_channels(self, channels, polarity):
+        self.daq_device.analog_set_source_polarity_for_channels(channels, polarity)
 
 
 if __name__ == "__main__":
@@ -316,7 +363,14 @@ if __name__ == "__main__":
     #print(ch)
 
     c = FANS_CONTROLLER()
+    ch1 = c.fans_ai_channels[daq.AI_CHANNEL_101]
+    ch2 = c.fans_ai_channels[daq.AI_CHANNEL_102]
+    ch3 = c.fans_ai_channels[daq.AI_CHANNEL_103]
+    ch4 = c.fans_ai_channels[daq.AI_CHANNEL_104]
 
+    mc = FANS_AI_MULTICHANNEL(ch1, ch2,ch3,ch4)
+    print(mc.daq_channels)
+    
     #print(convert_daq_ai_to_fans_channel(daq.AI_CHANNEL_101, AI_MODES.AC))
     #print(convert_daq_ai_to_fans_channel(daq.AI_CHANNEL_101, AI_MODES.DC))
     #print(convert_daq_ai_to_fans_channel(daq.AI_CHANNEL_104, AI_MODES.AC))
