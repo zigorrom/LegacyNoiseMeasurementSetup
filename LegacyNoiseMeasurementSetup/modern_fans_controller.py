@@ -130,15 +130,30 @@ class FANS_AI_CHANNEL:
         #self._name = name
         self._daq_input = daq_input
         self._fans_device = parent_device
+
         self._enabled = daq.SWITCH_STATE_OFF
         self._range = daq.RANGE_10
+        self._polling_range = daq.AUTO_RANGE
         self._polarity = daq.BIPOLAR
+        self._polling_polarity = daq.BIPOLAR
+        
         self._mode = AI_MODES.DC
         self._cs_hold = CS_HOLD.CS_HOLD_OFF
         self._filter_cutoff = FILTER_CUTOFF_FREQUENCIES.F0
         self._filter_gain = FILTER_GAINS.G1
         self._pga_gain = PGA_GAINS.PGA_1
-        self.initialize_channel(**kwargs)
+        
+        #self.initialize_channel(**kwargs)
+
+    @property
+    def ai_enabled(self):
+        return self._enabled
+
+    def ai_enabled(self, state):
+        assert state in daq.SWITCH_STATES , "Wrong value of state"
+        self._enabled = state
+        self.fans_controller.switch_daq_channel_enabled(self.ai_daq_input, state)
+        
 
     def __str__(self, **kwargs):
         return str(self.ai_daq_input, **kwargs)
@@ -153,11 +168,18 @@ class FANS_AI_CHANNEL:
         self._filter_gain = filter_gain
         self._pga_gain = pga_gain
 
-    def apply_daq_input_hardware_params(self):
-        device = self._fans_device
-        device.switch_daq_ai_channel_enabled(self.ai_daq_input, self.ai_enabled)
-        device.set_acquisition_daq_range(self.ai_daq_input, self.ai_range)
-        device.set_acquisition_polarity(self.ai_daq_input, self.ai_polarity)
+    def apply_acquisition_hardware_params(self):
+        pass
+        #device = self._fans_device
+        #device.switch_daq_ai_channel_enabled(self.ai_daq_input, self.ai_enabled)
+        #device.set_acquisition_daq_range(self.ai_daq_input, self.ai_range)
+        #device.set_acquisition_polarity(self.ai_daq_input, self.ai_polarity)
+
+    def apply_acquisition_params(self):
+        pass
+
+    def apply_polling_hardware_params(self):
+        pass
 
     def apply_fans_ai_channel_params(self):
         #raise NotImplementedError()
@@ -178,90 +200,40 @@ class FANS_AI_CHANNEL:
         device.digital_pulse_bit(CONTROL_BITS.AI_ADC_LETCH_PULSE_BIT)
         
     @property
-    def parent_device(self):
-        return self._fans_device
-
-    @property
     def fans_controller(self):
         return self._fans_device
-
-    @property        
-    def ai_amplification(self):
-        return self.ai_filter_gain.value * self.ai_pga_gain.value if self.ai_mode == AI_MODES.AC else 1
 
     @property
     def ai_daq_input(self):
         return self._daq_input
-    
-    
-    @property
-    def ai_enabled(self):
-        return self._enabled
-    
-    @ai_enabled.setter
-    def ai_enabled(self,value):
-        self._enabled = value
 
-    @property
-    def ai_range(self):
-        return self._range
-    
-    @ai_range.setter
-    def ai_range(self,value):
-        self._range = value
-
-    @property
-    def ai_polarity(self):
-        return self._polarity
-    
-    @ai_polarity.setter
-    def ai_polarity(self,value):
-        self._polarity = value
+    @property        
+    def ai_amplification(self):
+        return self.ai_filter_gain.value * self.ai_pga_gain.value if self.ai_mode == AI_MODES.AC else 1
     
     @property
     def ai_mode(self):
         return self._mode
-    
-    @ai_mode.setter
-    def ai_mode(self,value):
-        self._mode = value
         
     @property
     def ai_cs_hold(self):
         return self._cs_hold
     
-    @ai_cs_hold.setter
-    def ai_cs_hold(self,value):
-        self._cs_hold = value
-
     @property
     def ai_filter_cutoff(self):
         return self._filter_cutoff
-
-    @ai_filter_cutoff.setter
-    def ai_filter_cutoff(self,value):
-        self._filter_cutoff = value
         
     @property
     def ai_filter_gain(self):
         return self._filter_gain
 
-    @ai_filter_gain.setter
-    def ai_filter_gain(self,value):
-        self._filter_gain = value
-       
     @property
     def ai_pga_gain(self):
         return self._pga_gain
-
-    @ai_pga_gain.setter
-    def ai_pga_gain(self,value):
-        self._pga_gain = value
     
     def analog_read(self):
         return self.fans_controller.analog_read(self.ai_daq_input)
-        
-    
+
 
 
 
@@ -269,8 +241,8 @@ class FANS_AI_MULTICHANNEL:
     def __init__(self, *args):
         assert len(args) > 0, "Too less channels to create multichannel"
         assert all(isinstance(channel, FANS_AI_CHANNEL) for channel in args), "At least one channels has wrong type!"
-        fans_controller = args[0].parent_device
-        assert all(fans_controller is channel.parent_device for channel in args), "Not all channels reference same fans controller!"
+        fans_controller = args[0].fans_controller
+        assert all(fans_controller is channel.fans_controller for channel in args), "Not all channels reference same fans controller!"
         self._fans_controller = fans_controller
         self._fans_channels = list(args)
 
@@ -291,7 +263,59 @@ class FANS_AI_MULTICHANNEL:
     def analog_read(self):
         return self.fans_controller.analog_read_for_channels(self.daq_channels)
 
-    
+class FANS_AO_CHANNEL:
+    def __init__(self, daq_output, parent_device, **kwargs):
+        assert isinstance(parent_device, FANS_CONTROLLER), "parent device has wrong type"
+        assert daq_output in daq.AO_CHANNELS , "wrong channel number"
+        self._fans_device = parent_device
+        self._daq_output = daq_output
+        self._enabled = None
+        self._ao_polarity = None
+        self._voltage = 0
+
+    @property
+    def fans_controller(self):
+        return self._fans_device
+
+    @property
+    def ao_daq_output(self):
+        return self._daq_output
+
+    def apply_dac_hardware_params(self):
+        pass
+
+    def apply_fans_ao_channel_params(self):
+        pass
+
+    def analog_write(self, voltage):
+        self.fans_controller.analog_source_voltage(self.ao_daq_output, voltage)
+
+
+
+class FANS_AO_MULTICHANNEL:
+    def __init__(self, *args):
+        assert len(args) > 0, "Too less channels to create multichannel"
+        assert all(isinstance(channel, FANS_AO_CHANNEL) for channel in args), "At least one channels has wrong type!"
+        fans_controller = args[0].fans_controller
+        assert all(fans_controller is channel.fans_controller for channel in args), "Not all channels reference same fans controller!"
+        self._fans_controller = fans_controller
+        self._fans_channels = list(args)
+ 
+    @property
+    def fans_channels(self):
+        return self._fans_channels
+
+    @property
+    def fans_controller(self):
+        return self._fans_controller
+
+    @property
+    def daq_channels(self):
+        daq_ch = [ch.ao_daq_output for ch in self.fans_channel]
+        return daq_ch
+
+    def analog_write(self, voltage):
+        self.fans_controller.analog_source_voltage_for_channels(self.daq_channels, voltage)
 
 
    
@@ -299,8 +323,20 @@ class FANS_CONTROLLER:
     def __init__(self):
         self.daq_device = None
         ai_mode = AI_MODES.AC
-        self.fans_ai_channels = {ch: FANS_AI_CHANNEL(ch, self) for ch in daq.AI_CHANNELS}
+        self._fans_ai_channels = {ch: FANS_AI_CHANNEL(ch, self) for ch in daq.AI_CHANNELS}
+        self._fans_ao_channels = {ch: FANS_AO_CHANNEL(ch,self) for ch in daq.AO_CHANNELS}
 
+    @property
+    def fans_ao_channels(self):
+        return self._fans_ao_channels
+
+    @property
+    def fans_ai_channels(self):
+        return self._fans_ai_channels
+
+    @property
+    def daq_parent_device(self):
+        return self.daq_device
 
 
     def initialize_hardware(self, resource):
@@ -324,10 +360,10 @@ class FANS_CONTROLLER:
     def digital_pulse_bit(self, bit):
         self.daq_device.digital_pulse_bit(bit)
     
-    def switch_daq_ai_channel_enabled(self, channel, state):
+    def switch_daq_channel_enabled(self, channel, state):
         self.daq_device.switch_enabled(channel, state)
 
-    def switch_daq_ai_enabled_for_channels(self, channels, state):
+    def switch_daq_enabled_for_channels(self, channels, state):
         self.daq_device.switch_enabled_for_channels(channels, state)
 
     def set_acquisition_daq_range(self, channel, range_val):
@@ -397,7 +433,7 @@ if __name__ == "__main__":
     ch3 = c.fans_ai_channels[daq.AI_CHANNEL_103]
     ch4 = c.fans_ai_channels[daq.AI_CHANNEL_104]
 
-    mc = FANS_AI_MULTICHANNEL(ch1, ch2,ch3,ch4)
+    mc = FANS_AI_MULTICHANNEL(ch1, ch2,ch3)
     print(mc.daq_channels)
     
     #print(convert_daq_ai_to_fans_channel(daq.AI_CHANNEL_101, AI_MODES.AC))
