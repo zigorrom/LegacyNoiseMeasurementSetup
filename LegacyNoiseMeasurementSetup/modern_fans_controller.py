@@ -258,8 +258,10 @@ class FANS_AI_CHANNEL:
     def ai_pga_gain(self,value):
         self._pga_gain = value
     
-    #def analog_read(self, value):
+    def analog_read(self):
+        return self.fans_controller.analog_read(self.ai_daq_input)
         
+    
 
 
 
@@ -286,7 +288,8 @@ class FANS_AI_MULTICHANNEL:
         daq_ch = [channel.ai_daq_input for channel in self.fans_channels]
         return daq_ch
 
-
+    def analog_read(self):
+        return self.fans_controller.analog_read_for_channels(self.daq_channels)
 
 
    
@@ -354,6 +357,30 @@ class FANS_CONTROLLER:
 
     def set_analog_source_polarity_for_channels(self, channels, polarity):
         self.daq_device.analog_set_source_polarity_for_channels(channels, polarity)
+
+    def analog_read(self, channel):
+        return self.daq_device.analog_measure(channel)
+
+    def analog_read_for_channels(self, channels):
+        return self.daq_device.analog_measure_channels(channels)
+
+    def analog_source_voltage(self, channel, voltage):
+        self.daq_device.analog_source_voltage(channel, voltage)
+
+    def analog_source_voltage_for_channels(self, channels, voltage):
+        self.daq_device.analog_source_voltage_for_channels(channels, voltage)
+
+    def switch_output_on(self):
+        self.daq_device.analog_set_output_state(daq.SWITCH_STATE_ON)
+
+    def switch_output_off(self):
+        self.daq_device.analog_set_output_state(daq.SWITCH_STATE_OFF)
+
+    def set_analog_read_averaging(self, averaging):
+        self.daq_device.analog_set_averaging(averaging)
+
+    def query_analog_read_averaging(self):
+        return self.daq_device.analog_averaging_query()
 
 
 if __name__ == "__main__":
