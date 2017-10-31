@@ -5,6 +5,7 @@ import time
 import numpy as np
 from scipy import signal
 from enum import Enum, unique
+
 from communication_layer import VisaInstrument, instrument_await_function
 
 
@@ -323,8 +324,8 @@ class AgilentU2542A_DSP(VisaInstrument):
         channel, bit = dig_bit
         assert check_dig_bit_exists(channel, bit), "Specified digital bit is not exisiting"
         str_format = "SOUR:DIG:DATA:BIT {0}, {1}, (@{2})"
-        self.write(str_format.format(DIGITAL_BIT_OFF,bit,channel))
-        time.sleep(pulse_width)
+        #self.write(str_format.format(DIGITAL_BIT_OFF,bit,channel))
+        #time.sleep(pulse_width)
         self.write(str_format.format(DIGITAL_BIT_ON,bit,channel))
         time.sleep(pulse_width)
         self.write(str_format.format(DIGITAL_BIT_OFF,bit,channel))

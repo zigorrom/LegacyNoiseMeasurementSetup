@@ -927,7 +927,7 @@ def test():
 
 
 def main():
-    device = AgilentU2542A("USB0::0x0957::0x1718::TW52524501::INSTR")#"ADC")
+    device = AgilentU2542A("ADC")
     channel = FANS_AI_channel(AI_CHANNELS.AI_101, device, mode = AI_MODES.DC)
     channel = FANS_AI_channel(AI_CHANNELS.AI_102, device, mode = AI_MODES.DC)
     channel = FANS_AI_channel(AI_CHANNELS.AI_103, device, mode = AI_MODES.DC)
