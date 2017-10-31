@@ -406,7 +406,7 @@ class FANS_AI_MULTICHANNEL:
         self._daq_device.analog_set_polarity_for_channels(self.daq_channels, polarity)
 
     def analog_read(self):
-        return self.fans_controller.analog_read_for_channels(self.daq_channels)
+        return self._daq_device.analog_measure_channels(self.daq_channels) #.fans_controller.analog_read_for_channels(self.daq_channels)
 
 class FANS_AO_CHANNEL:
     def __init__(self, daq_output, parent_device, selected_output = 0, **kwargs):
@@ -612,8 +612,7 @@ class FANS_CONTROLLER:
 
     def get_fans_output_channel(self, fans_output):
         assert isinstance(fans_output, FANS_AO_CHANNELS)
-        selected_daq_channel, selected_output = convert_fans_ao_to_daq_channel(fans_output)
-        
+        selected_daq_channel, selected_output = convert_fans_ao_to_daq_channel(fans_output) 
         assert selected_output < 8, "unexpected selected output value"
       
         digital_channel_value = 0x00   #self.daq_parent_device.digital_read(daq.DIG_CHANNEL_501)    
@@ -629,25 +628,22 @@ class FANS_CONTROLLER:
         else:
             raise AssertionError("Specified daq output channel does not exist")
        
-        print("channel value {0:08b}".format(digital_channel_value))
-        print("off_channel_mask {0:08b}".format(off_channel_mask))
-        print("on channel value {0:08b}".format(on_channel_value))
+        #print("channel value {0:08b}".format(digital_channel_value))
+        #print("off_channel_mask {0:08b}".format(off_channel_mask))
+        #print("on channel value {0:08b}".format(on_channel_value))
         
         off_channel_mask = ~ off_channel_mask #0x88 #
 
-        print("channel value {0:08b}".format(digital_channel_value))
-        print("on channel value {0:08b}".format(on_channel_value))
-        print("off channel value {0:08b}".format(off_channel_mask))
+        #print("channel value {0:08b}".format(digital_channel_value))
+        #print("on channel value {0:08b}".format(on_channel_value))
+        #print("off channel value {0:08b}".format(off_channel_mask))
 
         #switch off unnecessery channel 
         digital_channel_value = digital_channel_value & off_channel_mask
 
         #switch on requested channel
         digital_channel_value = digital_channel_value | on_channel_value
-
         print("channel value {0:08b} = {1}".format(digital_channel_value, digital_channel_value))
-
-
         self.daq_parent_device.digital_write(daq.DIG_CHANNEL_501, digital_channel_value)
 
         #pulse bit to remember the channel

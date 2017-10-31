@@ -1,4 +1,4 @@
-import time
+﻿import time
 import math
 
 import modern_fans_controller as mfc
@@ -181,7 +181,6 @@ class FANS_SMU:
 
     def init_smu_mode(self):
         # here use multichannel !!!
-
         for ch in [self.smu_drain_source_feedback, self.smu_gate_feedback, self.smu_main_feedback]:
             ai_feedback = self._fans_controller.get_fans_channel_by_name(ch)
             assert isinstance(ai_feedback, mfc.FANS_AI_CHANNEL)
@@ -264,17 +263,16 @@ class FANS_SMU:
         #
 
         output_channel = self._fans_controller.get_fans_output_channel(voltage_set_channel)
-        #self._fans_controller.fans_ao_switch.select_channel(voltage_set_channel)
         
-
-        assert isinstance(output_channel, FANS_AO_channel)
+        #self._fans_controller.fans_ao_switch.select_channel(voltage_set_channel)
+        assert isinstance(output_channel, mfc.FANS_AO_CHANNEL)
 
         #set read averaging to small value for fast acquisition
         coarse_averaging = 1
         fine_averaging = 50
         stabilization_counter = 200
 
-        self.set_analog_read_averaging(coarse_averaging)
+        self.smu_averaging_number = coarse_averaging
 
         prev_value = self.analog_read(feedback_channel)
         fine_tuning = False
@@ -350,12 +348,24 @@ class FANS_SMU:
     def smu_set_gate_voltage(self,voltage):
         self.__set_voltage_for_function(voltage, self.smu_gate_motor, self.smu_gate_relay, self.smu_gate_feedback)
 
+    def analog_read(self, channel):
+        fans_channel = self._fans_controller.get_fans_channel_by_name(channel)
+        assert isinstance(fans_channel, mfc.FANS_AI_CHANNEL)
+        return fans_channel.analog_read()
+
+    def analog_read_channels(self, channels):
+        fans_channels = [self._fans_controller.get_fans_channel_by_name(ch) for ch in channels]
+        fans_multichannel = mfc.FANS_AI_MULTICHANNEL(*fans_channels)
+        result = fans_multichannel.analog_read()
+        converted_dict = {ch for fans_ch.ai_daq_input, fans_ch in zip(channels,fans_channels) }
+        return converted_dict
+
     def analog_read(self,channels):
         return self._fans_controller.analog_read(channels)
 
     def read_all_parameters(self):
         # can be a problem with an order of arguments
-        result = self.analog_read([self.smu_drain_source_feedback,self.smu_gate_feedback,self.smu_main_feedback])
+        result = self.analog_read_channels([self.smu_drain_source_feedback,self.smu_gate_feedback,self.smu_main_feedback])
         ds_voltage = result[self.smu_drain_source_feedback]
         main_voltage = result[self.smu_main_feedback]
         gate_voltage = result[self.smu_gate_feedback]
@@ -373,19 +383,6 @@ class FANS_SMU:
 
 
 
-        
-
-
-    
-    
-
-
-
-
-
-
-  
-
 
 #    def set_fans_voltage(self, voltage,channel):
 #        pass
@@ -393,43 +390,42 @@ class FANS_SMU:
 
 
 if __name__ == "__main__":
-    f = FANS_CONTROLLER("ADC");   #USB0::0x0957::0x1718::TW52524501::INSTR")
+    f = mfc.FANS_CONTROLLER("ADC");   #USB0::0x0957::0x1718::TW52524501::INSTR")
     
-    smu = FANS_SMU(f, AO_BOX_CHANNELS.ao_ch_1, AO_BOX_CHANNELS.ao_ch_4, AI_CHANNELS.AI_101, AO_BOX_CHANNELS.ao_ch_9, AO_BOX_CHANNELS.ao_ch_12, AI_CHANNELS.AI_102, AI_CHANNELS.AI_103, 5000)
+    smu = FANS_SMU(f, mfc.FANS_AO_CHANNELS.AO_CH_1,
+                   mfc.FANS_AO_CHANNELS.AO_CH_4, 
+                   mfc.FANS_AI_CHANNELS.AI_CH_2, 
+                   mfc.FANS_AO_CHANNELS.AO_CH_9,
+                   mfc.FANS_AO_CHANNELS.AO_CH_12, 
+                   mfc.FANS_AI_CHANNELS.AI_CH_4, 
+                   mfc.FANS_AI_CHANNELS.AI_CH_3)
 
-    mult1 = HP34401A("GPIB0::23::INSTR")
-    mult1.set_nplc(0.1)
-    mult2 = HP34401A("GPIB0::22::INSTR")
-    mult2.set_nplc(0.1)
-
-    smu_h = HybridSMU_System(f, AO_BOX_CHANNELS.ao_ch_1, AO_BOX_CHANNELS.ao_ch_4, mult1, AO_BOX_CHANNELS.ao_ch_9, AO_BOX_CHANNELS.ao_ch_12, mult2, mult2, 5000)
-
-    print(smu_h.analog_read([0,1,2]))
-
-    #smu_h.set_drain_source_polarity_negativ()
-    #time.sleep(1)
-    #smu_h.set_drain_source_polarity_positiv()
-    #time.sleep(1)
-
-    #smu_h.set_gate_polarity_negativ()
-    #time.sleep(1)
-    #smu_h.set_gate_polarity_positiv()
-    #time.sleep(1)
-
+    smu.set_smu_parameters(100, 5000)
 
     try:
-        smu_h.smu_set_drain_source_voltage(0.2)
-        for vg in np.arange(-0.3,0.2,0.05):
+        smu.smu_set_drain_source_voltage(0.1)
+        for vg in np.arange(0,3,0.2):
           print("setting gate")
-          smu_h.smu_set_gate_voltage(vg)
-          print(smu_h.read_all_parameters())
+          smu.smu_set_gate_voltage(vg)
+          print(smu.read_all_parameters())
           
-       
+        #  time.sleep(2)
+
+        #smu.smu_set_drain_source_voltage(1)
+        #smu.smu_set_gate_voltage(1)
+        #smu.smu_set_drain_source_voltage(-1)
+        #smu.smu_set_gate_voltage(-1)
+
+        #smu.smu_set_drain_source_voltage(0)
+        #smu.smu_set_gate_voltage(0)
+
+
+        #print("finish")
+        #smu.smu_set_drain_source_voltage(-1)
+        #print(smu.read_all_parameters())
     except Exception as e:
         raise
         print(str(e))
     finally:
-        f.get_ao_channel(AO_CHANNELS.AO_201).ao_voltage = 0
-        f.get_ao_channel(AO_CHANNELS.AO_202).ao_voltage = 0
-
+        f.switch_all_fans_output_state(mfc.SWITCH_STATES.OFF)
   

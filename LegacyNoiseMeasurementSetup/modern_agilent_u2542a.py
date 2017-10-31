@@ -158,7 +158,7 @@ def check_single_shot_data_is_ready(state):
 def check_continuous_acquisition_data_is_ready(state):
     if state == ACQUISITION_OVERLOAD:
         raise OverflowError("Buffer is overloaded")
-    elif state == ACQUSITION_DATA:
+    elif state == ACQUSITION_D
         return True
     else:
         return False
