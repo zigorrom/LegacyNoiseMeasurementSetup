@@ -822,3 +822,4 @@ if __name__ == "__main__":
     #        resistance = 0
         
     #    return {"Vds":ds_voltage,"Vgs":gate_voltage,"Vmain":main_voltage, "Ids":current,"Rs":resistance}
+_

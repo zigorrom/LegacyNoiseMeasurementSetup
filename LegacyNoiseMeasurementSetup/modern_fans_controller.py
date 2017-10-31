@@ -235,7 +235,6 @@ class FANS_AI_CHANNEL:
         #raise NotImplementedError()
         device = self._daq_device
         # here should be daq_input - 100
-
         channel_value = self.ai_daq_input - 101
         device.digital_write(daq.DIG_CHANNEL_502, channel_value)
 
@@ -253,8 +252,6 @@ class FANS_AI_CHANNEL:
 
             device.digital_pulse_bit(CONTROL_BITS.AI_ADC_LETCH_PULSE_BIT.value)
         
-    
-
     @property        
     def ai_amplification(self):
         return self.ai_filter_gain.value * self.ai_pga_gain.value if self.ai_mode == AI_MODES.AC else 1
@@ -422,6 +419,7 @@ class FANS_AO_CHANNEL:
         self._enabled = None
         self._polarity = None
         self._voltage = 0
+        self._selected_output = 0
 
     @property
     def fans_controller(self):
@@ -430,6 +428,14 @@ class FANS_AO_CHANNEL:
     @property
     def ao_daq_output(self):
         return self._daq_output
+
+    @property
+    def ao_selected_output(self):
+        return self._selected_output
+
+    @ao_selected_output.setter
+    def ao_selected_output(self, value):
+        self._selected_output = value
 
     @property
     def _daq_device(self):
@@ -547,6 +553,16 @@ class FANS_CONTROLLER:
     def daq_parent_device(self):
         return self.daq_device
 
+    def get_fans_channel_by_name(self, channel_name):
+        if isinstance(channel_name, FANS_AI_CHANNELS):
+            daq_channel, mode = convert_fans_ai_to_daq_channel(channel_name)
+            return self.fans_ai_channels[daq_channel]
+        elif isinstance(channel_name, FANS_AO_CHANNELS):
+            daq_channel, selected_output = convert_fans_ao_to_daq_channel(channel_name)
+            return self.fans_ao_channels[daq_channel]
+        else:
+            raise AssertionError("Wrong channel name")
+
 
     def set_digital_channels_to_control_mode(self):
         self.daq_device.set_digital_mode_for_channels(daq.DIG_CHANNELS, daq.DIGITAL_MODE_OUTPUT)
@@ -599,8 +615,7 @@ class FANS_CONTROLLER:
         selected_daq_channel, selected_output = convert_fans_ao_to_daq_channel(fans_output)
         
         assert selected_output < 8, "unexpected selected output value"
-        fans_channel = self.fans_ao_channels[selected_daq_channel]
-
+      
         digital_channel_value = 0x00   #self.daq_parent_device.digital_read(daq.DIG_CHANNEL_501)    
         off_channel_mask = 0x08
         on_channel_value = 0x08 | selected_output
@@ -637,7 +652,9 @@ class FANS_CONTROLLER:
 
         #pulse bit to remember the channel
         self.daq_parent_device.digital_pulse_bit(CONTROL_BITS.AO_DAC_LETCH_PULSE_BIT.value)
-
+        
+        fans_channel = self.fans_ao_channels[selected_daq_channel]
+        fans_channel.ao_selected_output = selected_output
         return fans_channel
         #return None
 
