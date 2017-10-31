@@ -76,8 +76,8 @@ class CS_HOLD(IntEnum):
 
 @unique
 class AI_MODES(Enum):
-    DC = 0
-    AC = 1
+    DC = 1
+    AC = 0
 
 
 @unique
@@ -97,7 +97,7 @@ def convert_fans_ai_to_daq_channel(fans_channel):
     val = fans_channel.value - 1 
     div, mod = divmod(val, 4)
     mode = AI_MODES.DC if div == 0 else AI_MODES.AC
-    channel = 100 + mod
+    channel = 101 + mod
     return (channel, mode)
 
 def convert_daq_ai_to_fans_channel(daq_channel, mode):
@@ -230,6 +230,13 @@ class FANS_AI_CHANNEL:
 
     def __str__(self, **kwargs):
         return str(self.ai_daq_input, **kwargs)
+
+#    @unique
+#class CONTROL_BITS(Enum):
+#    AI_SET_MODE_PULSE_BIT = daq.DIG_CH504_BIT0
+#    AI_SET_MODE_BIT = daq.DIG_CH504_BIT1
+#    AI_ADC_LETCH_PULSE_BIT = daq.DIG_CH504_BIT2
+#    AO_DAC_LETCH_PULSE_BIT = daq.DIG_CH504_BIT3
 
     def apply_fans_ai_channel_params(self):
         #raise NotImplementedError()

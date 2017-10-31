@@ -158,7 +158,7 @@ def check_single_shot_data_is_ready(state):
 def check_continuous_acquisition_data_is_ready(state):
     if state == ACQUISITION_OVERLOAD:
         raise OverflowError("Buffer is overloaded")
-    elif state == ACQUSITION_D
+    elif state == ACQUSITION_DATA:
         return True
     else:
         return False
@@ -384,7 +384,7 @@ class AgilentU2542A_DSP(VisaInstrument):
     def analog_set_averaging(self, averaging):
         assert isinstance(averaging, int), "averaging should be integer"
         assert averaging > 0 and averaging < 1001, "Averaging is out of range"
-        self.write("VOLT:AVER {0}".format(aver))
+        self.write("VOLT:AVER {0}".format(averaging))
 
     def analog_averaging_query(self):
         value = self.query("VOLT:AVER?")
@@ -398,7 +398,7 @@ class AgilentU2542A_DSP(VisaInstrument):
     def analog_measure_channels(self, channels):
         assert all((check_analog_in_channel_exists(channel) for channel in channels)), "At least one of channels is not existing"
         str_result = self.query("MEAS? (@{0})".format(join_channels(channels)))
-        spl = result.split(',')
+        spl = str_result.split(',')
         assert len(spl) == len(channels), "Inconsistent result"
         return {channel: float(value) for (channel, value) in zip(channels, spl)}
 

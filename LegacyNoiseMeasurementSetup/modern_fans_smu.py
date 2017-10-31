@@ -246,13 +246,13 @@ class FANS_SMU:
 
    
     def __set_voltage_for_function(self,voltage, voltage_set_channel, relay_channel, feedback_channel):
-        assert isinstance(voltage, float)
+        assert isinstance(voltage, float) or isinstance(voltage, int)
         assert isinstance(voltage_set_channel, mfc.FANS_AO_CHANNELS)
         assert isinstance(relay_channel, mfc.FANS_AO_CHANNELS)
         assert isinstance(feedback_channel, mfc.FANS_AI_CHANNELS)
         
 
-        self.init_smu_mode()
+        #self.init_smu_mode()
 
         #ai_feedback = self._fans_controller.get_ai_channel(feedback_channel)
         #ai_feedback.ai_mode = AI_MODES.DC
@@ -268,7 +268,7 @@ class FANS_SMU:
         assert isinstance(output_channel, mfc.FANS_AO_CHANNEL)
 
         #set read averaging to small value for fast acquisition
-        coarse_averaging = 1
+        coarse_averaging = 20
         fine_averaging = 50
         stabilization_counter = 200
 
@@ -339,7 +339,8 @@ class FANS_SMU:
                     else:
                         value_to_set = -abs_value
             print("current: {0}; goal: {1};to set: {2};".format(current_value,voltage, value_to_set))    
-            output_channel.ao_voltage = value_to_set 
+            output_channel.analog_write(value_to_set)
+            #output_channel.ao_voltage = value_to_set 
 
 
     def smu_set_drain_source_voltage(self,voltage):
@@ -357,11 +358,16 @@ class FANS_SMU:
         fans_channels = [self._fans_controller.get_fans_channel_by_name(ch) for ch in channels]
         fans_multichannel = mfc.FANS_AI_MULTICHANNEL(*fans_channels)
         result = fans_multichannel.analog_read()
-        converted_dict = {ch for fans_ch.ai_daq_input, fans_ch in zip(channels,fans_channels) }
+        converted_dict = {ch: result[fans_ch.ai_daq_input] for ch, fans_ch in zip(channels,fans_channels) }
         return converted_dict
 
-    def analog_read(self,channels):
-        return self._fans_controller.analog_read(channels)
+    def read_all_test(self):
+        result = self.analog_read_channels([self.smu_drain_source_feedback,self.smu_gate_feedback,self.smu_main_feedback])
+        ds_voltage = result[self.smu_drain_source_feedback]
+        main_voltage = result[self.smu_main_feedback]
+        gate_voltage = result[self.smu_gate_feedback]
+
+        print("ds: {0}; gs: {1}; m: {2}".format(ds_voltage, gate_voltage, main_voltage))
 
     def read_all_parameters(self):
         # can be a problem with an order of arguments
@@ -390,6 +396,8 @@ class FANS_SMU:
 
 
 if __name__ == "__main__":
+
+   
     f = mfc.FANS_CONTROLLER("ADC");   #USB0::0x0957::0x1718::TW52524501::INSTR")
     
     smu = FANS_SMU(f, mfc.FANS_AO_CHANNELS.AO_CH_1,
@@ -402,27 +410,36 @@ if __name__ == "__main__":
 
     smu.set_smu_parameters(100, 5000)
 
+    smu.init_smu_mode()
+
+
+
     try:
+
+        #while True:
+        #    smu.read_all_test()
+        #    time.sleep(0.5)
+
         smu.smu_set_drain_source_voltage(0.1)
-        for vg in np.arange(0,3,0.2):
+        for vg in np.arange(-2,2,0.5):
           print("setting gate")
           smu.smu_set_gate_voltage(vg)
           print(smu.read_all_parameters())
           
-        #  time.sleep(2)
+          time.sleep(2)
 
-        #smu.smu_set_drain_source_voltage(1)
-        #smu.smu_set_gate_voltage(1)
-        #smu.smu_set_drain_source_voltage(-1)
-        #smu.smu_set_gate_voltage(-1)
+        smu.smu_set_drain_source_voltage(1)
+        smu.smu_set_gate_voltage(1) 
+        smu.smu_set_drain_source_voltage(-1)
+        smu.smu_set_gate_voltage(-1)
 
-        #smu.smu_set_drain_source_voltage(0)
-        #smu.smu_set_gate_voltage(0)
+        smu.smu_set_drain_source_voltage(0)
+        smu.smu_set_gate_voltage(0)
 
 
-        #print("finish")
-        #smu.smu_set_drain_source_voltage(-1)
-        #print(smu.read_all_parameters())
+        print("finish")
+        smu.smu_set_drain_source_voltage(-1)
+        print(smu.read_all_parameters())
     except Exception as e:
         raise
         print(str(e))
