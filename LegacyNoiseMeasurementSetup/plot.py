@@ -32,11 +32,17 @@ class SpectrumPlotWidget:
         
 
     def create_curves(self):
-        for rang in self.spectrum_ranges:
-            curve = self.plot.plot(pen=self.main_curve_color)
+        colors = [pg.mkColor("b"), pg.mkColor("g")]
+        counter = 0
+        l = len(colors)
+        for rang, vals in self.spectrum_ranges.items():
+            #curve = self.plot.plot(pen=self.main_curve_color)
+            color = colors[counter%l]
+            curve = self.plot.plot(pen=color)
             curve.setZValue(900)
             curve.setVisible(True)
             self.curves[rang] = curve
+            counter += 1
 
         curve = self.plot.plot(pen = self.resulting_curve_color)
         curve.setZValue(1000)
