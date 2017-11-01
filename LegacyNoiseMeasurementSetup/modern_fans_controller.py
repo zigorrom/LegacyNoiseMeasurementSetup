@@ -565,8 +565,7 @@ class FANS_ACQUISITION:
         else:
             raise AssertionError("Wrong acquisition type")
 
-
-
+    
     #def set_sample_rate(self,sample_rate):
     #    #assert isinstance(self.daq_device, daq.AgilentU2542A_DSP)
     #    self.daq_device.set_sample_rate(sample_rate)
@@ -599,6 +598,7 @@ class FANS_ACQUISITION:
         channel.ai_filter_gain = filter_gain
         channel.ai_pga_gain = pga_gain
         channel.apply_fans_ai_channel_params()
+
 
     def __automatic_select_range_for_acquisition(self):
         ### TO DO
