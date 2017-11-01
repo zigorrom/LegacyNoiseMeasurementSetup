@@ -184,12 +184,16 @@ class FANS_SMU:
     def init_smu_mode(self):
         # here use multichannel !!!
         for ch in [self.smu_drain_source_feedback, self.smu_gate_feedback, self.smu_main_feedback]:
+            #TODO insert here check of selected feedback channel - it should correspond to DC mode!!!
             ai_feedback = self._fans_controller.get_fans_channel_by_name(ch)
             assert isinstance(ai_feedback, mfc.FANS_AI_CHANNEL)
             ai_feedback.ai_mode = mfc.AI_MODES.DC
             ai_feedback.ai_polling_polarity = mdaq.BIPOLAR
             ai_feedback.ai_polling_range = mdaq.AUTO_RANGE
             ai_feedback.apply_fans_ai_channel_params()
+
+
+       ## TODO: set also parameters for output channels
 
 
 
@@ -373,6 +377,14 @@ class FANS_SMU:
         gate_voltage = result[self.smu_gate_feedback]
 
         print("ds: {0}; gs: {1}; m: {2}".format(ds_voltage, gate_voltage, main_voltage))
+
+    def read_feedback_voltages(self):
+        result = self.analog_read_channels([self.smu_drain_source_feedback,self.smu_gate_feedback,self.smu_main_feedback])
+        ds_voltage = result[self.smu_drain_source_feedback]
+        main_voltage = result[self.smu_main_feedback]
+        gate_voltage = result[self.smu_gate_feedback]
+        return (ds_voltage, main_voltage, gate_voltage)
+
 
     def read_all_parameters(self):
         # can be a problem with an order of arguments

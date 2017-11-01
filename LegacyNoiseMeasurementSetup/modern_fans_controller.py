@@ -97,6 +97,14 @@ class CONTROL_BITS(Enum):
 FANS_AI_CHANNELS = IntEnum("FANS_AI_CHANNELS", ["AI_CH_{0}".format(ch) for ch in range(1,9,1)])
 FANS_AO_CHANNELS = IntEnum("FANS_AO_CHANNELS", ["AO_CH_{0}".format(ch) for ch in range(1,17,1)])
     
+def get_ai_mode_for_fans_ai_channel(fans_channel):
+    assert isinstance(fans_channel, FANS_AI_CHANNELS), "Wrong channel!"
+    val = fans_channel.value - 1 
+    div, mod = divmod(val, 4)
+    mode = AI_MODES.DC if div == 0 else AI_MODES.AC
+    return mode
+
+
 def convert_fans_ai_to_daq_channel(fans_channel):
     assert isinstance(fans_channel, FANS_AI_CHANNELS), "Wrong channel!"
     val = fans_channel.value - 1 
