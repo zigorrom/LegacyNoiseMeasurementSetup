@@ -91,11 +91,13 @@ class FANS_SMU:
         self._gate_feedback = gate_feedback
         self._main_feedback = main_feedback
         
-        
-        #self._feedback_multichannel = mfc.FANS_AI_MULTICHANNEL(
+        ###
+        ### TO DO
+        ### get references to the channels in init_smu method in order to use them in read methods and set_voltage
+        ###
+
 
         self._load_resistance = 5000
-
         self._averageing_number = 100
         self.set_smu_parameters(self.smu_averaging_number, self.smu_load_resistance)
 
@@ -355,6 +357,9 @@ class FANS_SMU:
         return fans_channel.analog_read()
 
     def analog_read_channels(self, channels):
+        ## to do 
+        ## improve speed here 
+
         fans_channels = [self._fans_controller.get_fans_channel_by_name(ch) for ch in channels]
         fans_multichannel = mfc.FANS_AI_MULTICHANNEL(*fans_channels)
         result = fans_multichannel.analog_read()
@@ -409,10 +414,7 @@ if __name__ == "__main__":
                    mfc.FANS_AI_CHANNELS.AI_CH_3)
 
     smu.set_smu_parameters(100, 5000)
-
     smu.init_smu_mode()
-
-
 
     try:
 

@@ -4,6 +4,11 @@ from enum import Enum, IntEnum, unique
 import modern_agilent_u2542a as daq
 
 @unique
+class ACQUISITION_TYPE(IntEnum):
+    CONT = 0
+    SHOT = 1
+
+@unique
 class SWITCH_STATES(Enum):
     ON = daq.SWITCH_STATE_ON
     OFF = daq.SWITCH_STATE_OFF
@@ -534,6 +539,104 @@ class FANS_AO_MULTICHANNEL:
         self._daq_device.analog_source_voltage_for_channels(self.daq_channels, voltage)
         #self.fans_controller.analog_source_voltage_for_channels(self.daq_channels, voltage)
            
+class FANS_ACQUISITION:
+    def __init__(self, fans_controller):
+        assert isinstance(fans_controller, FANS_CONTROLLER), "Wrong fans controller type"
+        self._fans_controller = fans_controller
+        self._acquisition_channel = None
+        self._acquisition_type = None
+
+
+    @property
+    def fans_controller(self):
+        return self._fans_controller
+
+    @property
+    def daq_device(self):
+        return self._fans_controller.daq_parent_device
+
+    def initialize_acquisition_params(self, sample_rate, points_per_shot, acquisition_type):
+        #assert isinstance(acquisition_type, ACQUISITION_TYPE), "Wrong acquisition type"
+        self._acquisition_type = acquisition_type
+        if acquisition_type == ACQUISITION_TYPE.CONT:
+            self.daq_device.initialize_acqusition(sample_rate, points_per_shot, False)
+        elif acquisition_type == ACQUISITION_TYPE.SHOT:
+            self.daq_device.initialize_acqusition(sample_rate, points_per_shot, True)
+        else:
+            raise AssertionError("Wrong acquisition type")
+
+
+
+    #def set_sample_rate(self,sample_rate):
+    #    #assert isinstance(self.daq_device, daq.AgilentU2542A_DSP)
+    #    self.daq_device.set_sample_rate(sample_rate)
+
+    #def set_single_shot_points(self, points):
+    #    self.daq_device.set_single_shot_acquisition_points(points)
+
+    #def set_continuous_points(self, points):
+    #    self.daq_device.set_continuous_acquisition_points(points)
+
+    def initialize_acquisition(self, acquisition_channel, filter_cutoff, filter_gain, pga_gain):
+        #this should be called after initialize acquisition method
+        assert isinstance(acquisition_channel, FANS_AI_CHANNELS), "Acquisition channel is not properly initialized"
+        assert isinstance(filter_cutoff, FILTER_CUTOFF_FREQUENCIES), "Wrong filter cutoff" 
+        assert isinstance(filter_gain, FILTER_GAINS), "Wrong filter gain"
+        assert isinstance(pga_gain, PGA_GAINS), "Wrong PGA gain"
+
+        daq_channel, mode = convert_fans_ai_to_daq_channel(acquisition_channel)
+
+        self._acquisition_channel = channel = self.fans_controller.get_fans_channel_by_name(acquisition_channel)
+        device = self.daq_device
+        device.switch_enabled_for_channels(daq.AI_CHANNELS, daq.SWITCH_STATE_OFF)
+        channel.ai_enabled = SWITCH_STATES.ON.value
+        channel.ai_polarity = daq.BIPOLAR
+        channel.ai_range = daq.RANGE_10
+
+        channel.ai_mode = mode #AI_MODES.AC
+        channel.ai_cs_hold = CS_HOLD.CS_HOLD_OFF
+        channel.ai_filter_cutoff = filter_cutoff
+        channel.ai_filter_gain = filter_gain
+        channel.ai_pga_gain = pga_gain
+        channel.apply_fans_ai_channel_params()
+
+    def __automatic_select_range_for_acquisition(self):
+        ### TO DO
+        pass
+
+    def start(self):
+        assert isinstance(self._acquisition_channel, FANS_AI_CHANNEL), "Not properl initialized acquisition channel. Cannot start acquisition"
+        if self._acquisition_type != ACQUISITION_TYPE.CONT:
+            raise AssertionError("Continuous acquisitio was not properly initialized!")
+
+        self.daq_device.start_acquisition()
+
+
+    def stop(self):
+        self.daq_device.stop_acquisition()
+
+    def read_acquisition_data_when_ready(self):
+        return self.daq_device.read_acquisition_data_when_ready()
+
+    def start_single_shot(self):
+        assert isinstance(self._acquisition_channel, FANS_AI_CHANNEL), "Not properl initialized acquisition channel. Cannot start acquisition"
+        if self._acquisition_type != ACQUISITION_TYPE.SHOT:
+            raise AssertionError("Single shot acquisitio was not properly initialized!")
+
+        self.daq_device.start_single_shot_acquisition()
+
+    def stop_single_shot(self):
+        self.daq_device.stop_acquisition()
+
+    def read_single_shot_data_when_ready(self):
+        return self.daq_device.read_single_shot_data_when_ready()
+    
+    
+        
+
+
+
+
 class FANS_CONTROLLER:
     def __init__(self, resource):
         assert isinstance(resource, str), "Wrong resource type!"
@@ -638,9 +741,7 @@ class FANS_CONTROLLER:
         #print("channel value {0:08b}".format(digital_channel_value))
         #print("off_channel_mask {0:08b}".format(off_channel_mask))
         #print("on channel value {0:08b}".format(on_channel_value))
-        
         off_channel_mask = ~ off_channel_mask #0x88 #
-
         #print("channel value {0:08b}".format(digital_channel_value))
         #print("on channel value {0:08b}".format(on_channel_value))
         #print("off channel value {0:08b}".format(off_channel_mask))
@@ -659,15 +760,10 @@ class FANS_CONTROLLER:
         fans_channel = self.fans_ao_channels[selected_daq_channel]
         fans_channel.ao_selected_output = selected_output
         return fans_channel
-        #return None
+        
 
 
-if __name__ == "__main__":
-    #print(PGA_GAINS.PGA_2 in PGA_GAINS)
-    #ch = convert_fans_ai_to_daq_channel(FANS_AI_CHANNELS.AI_CH_6)
-    
-    #print(ch)
-
+def test_ao_channels():
     c = FANS_CONTROLLER("ADC")
     channels = c.fans_ao_channels.values()
     moc = FANS_AO_MULTICHANNEL(*channels)
@@ -691,19 +787,57 @@ if __name__ == "__main__":
 
     moc.analog_write(0)
     c.switch_all_fans_output_state(SWITCH_STATES.OFF)
-    pass
+    
+
+def test_acqusition():
+    c = FANS_CONTROLLER("ADC")
+    adc = FANS_ACQUISITION(c)
+    adc.initialize_acquisition(FANS_AI_CHANNELS.AI_CH_1, FILTER_CUTOFF_FREQUENCIES.F0, FILTER_GAINS.G1, PGA_GAINS.PGA_1)
+    #this should be called after initialize acquisition methodprint("")
+    adc.initialize_acquisition_params(500000, 5000000, ACQUISITION_TYPE.SHOT)
+    
+    adc.start_single_shot()
+    data = adc.read_single_shot_data_when_ready()
+    adc.stop_single_shot()
+    
+
+    print(data)
+    print("DATA LENGTH = {0}".format(data.shape))
+
+
+def test_cont_acquisition():
+    c = FANS_CONTROLLER("ADC")
+    adc = FANS_ACQUISITION(c)
+
+    sample_rate = 500000
+    points = 50000
+    n_aquis = sample_rate / points
+
+    adc.initialize_acquisition(FANS_AI_CHANNELS.AI_CH_1, FILTER_CUTOFF_FREQUENCIES.F0, FILTER_GAINS.G1, PGA_GAINS.PGA_1)
+    #this should be called after initialize acquisition methodprint("")
+    adc.initialize_acquisition_params(sample_rate, points, ACQUISITION_TYPE.CONT)
+
+    max_count = 5* 60 * n_aquis
+    counter = 0
+    adc.start()
+
+    while counter < max_count:
+        data = adc.read_acquisition_data_when_ready()
+        print("{0}: DATA LENGTH = {1}".format(counter, data.shape))
+        counter += 1
+
+        
+    adc.stop() 
+
+
+
+
+
+if __name__ == "__main__":
+    #test_ao_channels()
+    #test_acqusition()
+    test_cont_acquisition()
 
 
     
-    #ch1 = c.fans_ai_channels[daq.AI_CHANNEL_101]
-    #ch2 = c.fans_ai_channels[daq.AI_CHANNEL_102]
-    #ch3 = c.fans_ai_channels[daq.AI_CHANNEL_103]
-    #ch4 = c.fans_ai_channels[daq.AI_CHANNEL_104]
-
-    #mc = FANS_AI_MULTICHANNEL(ch1, ch2,ch3)
-    #print(mc.daq_channels)
     
-    #print(convert_daq_ai_to_fans_channel(daq.AI_CHANNEL_101, AI_MODES.AC))
-    #print(convert_daq_ai_to_fans_channel(daq.AI_CHANNEL_101, AI_MODES.DC))
-    #print(convert_daq_ai_to_fans_channel(daq.AI_CHANNEL_104, AI_MODES.AC))
-    #print(convert_daq_ai_to_fans_channel(daq.AI_CHANNEL_104, AI_MODES.DC))

@@ -443,6 +443,9 @@ class AgilentU2542A_DSP(VisaInstrument):
 
         return np.asarray(list_of_params)
 
+    def initialize_conversion_header(self):
+        self.conversion_header = self.create_conversion_header()
+
     def initialize_acqusition(self, sample_rate, points_per_shot, single_shot):
         self.set_sample_rate(sample_rate)
         if single_shot:
@@ -450,7 +453,8 @@ class AgilentU2542A_DSP(VisaInstrument):
         else: 
             self.set_continuous_acquisition_points(points_per_shot)
 
-        self.conversion_header = self.create_conversion_header()
+        self.initialize_conversion_header()
+        #self.conversion_header = self.create_conversion_header()
 
     def start_acquisition(self):
         self.write("RUN")
@@ -475,7 +479,13 @@ class AgilentU2542A_DSP(VisaInstrument):
         raw_data = self.acquisition_read_raw_data()
         return acqusition_convert_raw_data(raw_data, self.conversion_header)
 
+    def read_acquisition_data_when_ready(self):
+        while not check_continuous_acquisition_data_is_ready(self.continuous_acquisition_state()): pass
+        return self.acqusition_read_data()
 
+    def read_single_shot_data_when_ready(self):
+        while not check_single_shot_data_is_ready(self.single_shot_acquisition_completed()): pass
+        return self.acqusition_read_data()
 
 
 
