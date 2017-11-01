@@ -57,8 +57,11 @@ class FANSExperimentHandler(Process):
 class FANSExperiment(eh.Experiment):
     def __init__(self, input_data_queue = None, stop_event = None):
         super().__init__(False, input_data_queue, stop_event)
-        self._spectrum_ranges = {0: (0,1600,1),1:(0,250000,10)}
-        self._spectrum_linking_frequencies = {0:(1,1600),1:(1600,250000)}
+        self._spectrum_ranges = {0: (0,5000,1),1:(0,250000,10)}
+        self._spectrum_linking_frequencies = {0:(1,3000),1:(3000,250000)}
+        self._frequencies = self._get_frequencies(self._spectrum_ranges)
+        self._frequency_indexes = self._get_frequency_linking_indexes(self._spectrum_ranges, self._spectrum_linking_frequencies)
+        pass
         #eh.Experiment.__init__(False, input_data_queue, stop_event)
          
     def initialize_hardware(self):
@@ -85,7 +88,10 @@ class FANSExperiment(eh.Experiment):
 
         self.fans_acquisition = mfans.FANS_ACQUISITION(self.fans_controller)
         #self.temperature_controller = tc.LakeShore211TemperatureSensor("COM9")
-               
+       
+    
+              
+         
     def prepare_to_set_voltages(self):
         self.fans_smu.init_smu_mode()
 
@@ -136,7 +142,8 @@ class FANSExperiment(eh.Experiment):
         decimation_factor = int(fs / new_fs)
         new_fs = int(fs/ decimation_factor)
         total_array = np.zeros((1,fs))
-        
+        total_array = np.zeros(fs)
+
         df1 = 1
         df2 = fs / npoints
 
@@ -156,40 +163,53 @@ class FANSExperiment(eh.Experiment):
         while counter < total_averaging:
             try:
                 
-                f2_aver_counter += 1
+                #f2_aver_counter += 1
                 new_fill_value = fill_value + npoints
-                data = read_data()
-                total_array[:,fill_value:new_fill_value] = data
+                data = read_data()[0]
+                total_array[fill_value:new_fill_value] = data
                 fill_value = new_fill_value
 
-                if second_range is None or fill_value == 0:
-                    print("create second range")
-                    freq_2, second_range = periodogram(data, fs)
-                            
-                else:
-                    f, psd = periodogram(data, fs)
-                    #np.average((self.average, data['p']), axis=0, weights=(self.average_counter - 1, 1))
-                    second_range = np.average((second_range,psd),axis=0,weights=(f2_aver_counter - 1, 1))   
-                    #self.update_spectrum(second_range,1,1)
+                f, psd = periodogram(data, fs)
+                self.update_spectrum(psd,1,1)
 
                 if new_fill_value % fs == 0:
-                    
-                    decimated = decimate(total_array,decimation_factor,n=8,ftype="iir",axis = 1 ,zero_phase=True)
-                    freq_1, first_range = periodogram(decimated, new_fs)
-                    res_freq  = np.hstack((freq_1[1:freq1_idx],freq_2[freq2_idx:]))
-                    res = np.hstack((first_range[:,1:freq1_idx],second_range[:,freq2_idx:]))
-                    timetrace = np.copy(total_array)
-                    
-                    #self.update_spectrum(first_range, 0,1)
-                    #result = {COMMAND: ExperimentCommands.DATA, SPECTRUM_RANGE: rang, FREQUENCIES: freq, DATA:average_data, INDEX: 1}#data, 'i': 1}
-                    #if q:
-                    #    q.put_nowait(result) 
-
-
-                    print(res_freq)
+                    decimated = decimate(total_array,decimation_factor,n=8,ftype="iir",axis = 0 ,zero_phase=True)
+                    f, psd = periodogram(decimated, new_fs)
+                    self.update_spectrum(psd, 0,1)
                     fill_value = 0
-                    f2_aver_counter = 0
+                    #f2_aver_counter = 0
                     counter+=1
+                ###OLDER VERSION WORKS
+                #if second_range is None or fill_value == 0:
+                #    print("create second range")
+                #    freq_2, second_range = periodogram(data, fs)
+                            
+                #else:
+                #    f, psd = periodogram(data, fs)
+                #    #np.average((self.average, data['p']), axis=0, weights=(self.average_counter - 1, 1))
+                #    second_range = np.average((second_range,psd),axis=0,weights=(f2_aver_counter - 1, 1))   
+                #    #self.update_spectrum(second_range,1,1)
+
+                #if new_fill_value % fs == 0:
+                #    #decimated = decimate(total_array,decimation_factor,n=8,ftype="iir",axis = 1 ,zero_phase=True)
+                #    decimated = decimate(total_array,decimation_factor,n=8,ftype="iir",axis = 0 ,zero_phase=True)
+                #    freq_1, first_range = periodogram(decimated, new_fs)
+                #    res_freq  = np.hstack((freq_1[1:freq1_idx],freq_2[freq2_idx:]))
+                #    #res = np.hstack((first_range[:,1:freq1_idx],second_range[:,freq2_idx:]))
+                #    res = np.hstack((first_range[1:freq1_idx],second_range[freq2_idx:]))
+                #    timetrace = np.copy(total_array)
+                    
+                #    #self.update_spectrum(first_range, 0,1)
+                #    #q = self._input_data_queue
+                #    #result = {COMMAND: ExperimentCommands.DATA, SPECTRUM_RANGE: 0, FREQUENCIES: res_freq, DATA:res, INDEX: 1}#data, 'i': 1}
+                #    #if q:
+                #    #    q.put_nowait(result) 
+
+
+                    #print(res_freq)
+                    #fill_value = 0
+                    #f2_aver_counter = 0
+                    #counter+=1
 
 
 
@@ -198,6 +218,9 @@ class FANSExperiment(eh.Experiment):
                 print(e)
                 break
         adc.stop()
+        data = self.update_resulting_spectrum()
+        data = data.transpose()
+        self._experiment_writer.write_measurement(data)
         adc.clear_buffer()
 
 

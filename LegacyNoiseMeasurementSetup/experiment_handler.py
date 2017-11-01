@@ -718,7 +718,7 @@ class Experiment:
         #    self.calibration.set_amplifier_gain("second_amp",self._measurement_info.second_amplifier_gain)
         #    data = self.calibration.apply_calibration(data) 
 
-        self._calibration.apply_calibration(data, 178, self._measurement_info.second_amplifier_gain)
+        #self._calibration.apply_calibration(data, 178, self._measurement_info.second_amplifier_gain)
 
         #if self._calibration:
         #    data = self._calibration.apply_calibration(data)
