@@ -636,6 +636,11 @@ class FANS_ACQUISITION:
 
     def read_single_shot_data_when_ready(self):
         return self.daq_device.read_single_shot_data_when_ready()
+
+    def clear_buffer(self):
+        self.daq_device.empty_continuous_acquisition_buffer() # daq.ACQUISITION_EMPTY
+
+
     
 class FANS_CONTROLLER:
     def __init__(self, resource):

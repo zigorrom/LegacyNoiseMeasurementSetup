@@ -163,6 +163,12 @@ def check_continuous_acquisition_data_is_ready(state):
     else:
         return False
 
+def check_continuous_acquisition_buffer_is_empty(state):
+    if state == ACQUISITION_EMPTY:
+        return True
+    else:
+        return False
+
 
 def data_conversion_function(data):
     polarity = data[1]
@@ -487,7 +493,10 @@ class AgilentU2542A_DSP(VisaInstrument):
         while not check_single_shot_data_is_ready(self.single_shot_acquisition_completed()): pass
         return self.acqusition_read_data()
 
-
+    def empty_continuous_acquisition_buffer(self):
+        # TODO send command to clear buffer
+        while not check_continuous_acquisition_buffer_is_empty(self.continuous_acquisition_state()):
+            rest_data = self.acquisition_read_raw_data()
 
 
 

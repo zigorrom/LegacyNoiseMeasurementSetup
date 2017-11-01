@@ -74,6 +74,7 @@ class ExperimentController(QtCore.QObject):
         self._processing_thread.commandReceived.connect(self._command_received)
 
     def __init_experiment_thread(self):
+        #self._experiment_thread = ExperimentHandler(self._input_data_queue) #ExperimentProcess(self._input_data_queue,True)
         self._experiment_thread = ExperimentHandler(self._input_data_queue) #ExperimentProcess(self._input_data_queue,True)
 
     def _command_received(self,cmd):
@@ -303,7 +304,8 @@ class ExperimentHandler(Process):
         if simulate:
             self._experiment = SimulateExperiment(self._input_data_queue, self._exit)
         else:
-            self._experiment = PerformExperiment(self._input_data_queue, self._exit)
+            #self._experiment = PerformExperiment(self._input_data_queue, self._exit)
+            self._experiment = mfe.FANSExperiment(self._input_data_queue, self._exit)
         
         self._experiment.initialize_settings(cfg)
         self._experiment.initialize_hardware()
@@ -755,6 +757,10 @@ class Experiment:
         self.open_experiment()
         self._execution_function()
         self.close_experiment()
+
+####
+####this import should be after experiment class since it is required in modern_fans_experiment for import 
+import modern_fans_experiment as mfe
 
 class SimulateExperiment(Experiment):
     def __init__(self, input_data_queue = None, stop_event = None):

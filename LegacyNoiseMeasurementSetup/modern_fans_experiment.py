@@ -10,6 +10,7 @@ from multiprocessing import Process, Event
 from scipy.signal import periodogram
 from scipy.signal import decimate
 from nodes import ExperimentSettings, ValueRange, HardwareSettings
+from process_communication_protocol import *
 
 def get_fans_ai_channels_from_number(number):
     assert isinstance(number, int), "Number should be integer"
@@ -56,6 +57,8 @@ class FANSExperimentHandler(Process):
 class FANSExperiment(eh.Experiment):
     def __init__(self, input_data_queue = None, stop_event = None):
         super().__init__(False, input_data_queue, stop_event)
+        self._spectrum_ranges = {0: (0,1600,1),1:(0,250000,10)}
+        self._spectrum_linking_frequencies = {0:(1,1600),1:(1600,250000)}
         #eh.Experiment.__init__(False, input_data_queue, stop_event)
          
     def initialize_hardware(self):
@@ -112,6 +115,8 @@ class FANSExperiment(eh.Experiment):
         self._measurement_info.update_end_values(main_voltage, sample_voltage, gate_voltage,temperature)
         self.send_end_measurement_info()
 
+    
+
     def perform_single_value_measurement(self):
         assert isinstance(self.experiment_settings, ExperimentSettings)
         #counter = 0
@@ -138,7 +143,6 @@ class FANSExperiment(eh.Experiment):
         freq1_idx = math.floor(f1_max/df1)+1
         freq2_idx = math.ceil(f1_max/df2)+1
 
-
         second_range = None
         first_range = None
         freq_2 = None
@@ -146,7 +150,9 @@ class FANSExperiment(eh.Experiment):
         #f1_aver_counter = 0
         f2_aver_counter = 0
         fill_value = 0
+
         adc.start()
+        
         while counter < total_averaging:
             try:
                 
@@ -164,19 +170,27 @@ class FANSExperiment(eh.Experiment):
                     f, psd = periodogram(data, fs)
                     #np.average((self.average, data['p']), axis=0, weights=(self.average_counter - 1, 1))
                     second_range = np.average((second_range,psd),axis=0,weights=(f2_aver_counter - 1, 1))   
-
+                    #self.update_spectrum(second_range,1,1)
 
                 if new_fill_value % fs == 0:
-                    fill_value = 0
-                    f2_aver_counter = 0
-
+                    
                     decimated = decimate(total_array,decimation_factor,n=8,ftype="iir",axis = 1 ,zero_phase=True)
                     freq_1, first_range = periodogram(decimated, new_fs)
                     res_freq  = np.hstack((freq_1[1:freq1_idx],freq_2[freq2_idx:]))
                     res = np.hstack((first_range[:,1:freq1_idx],second_range[:,freq2_idx:]))
                     timetrace = np.copy(total_array)
+                    
+                    #self.update_spectrum(first_range, 0,1)
+                    #result = {COMMAND: ExperimentCommands.DATA, SPECTRUM_RANGE: rang, FREQUENCIES: freq, DATA:average_data, INDEX: 1}#data, 'i': 1}
+                    #if q:
+                    #    q.put_nowait(result) 
+
+
                     print(res_freq)
+                    fill_value = 0
+                    f2_aver_counter = 0
                     counter+=1
+
 
 
 
@@ -184,6 +198,7 @@ class FANSExperiment(eh.Experiment):
                 print(e)
                 break
         adc.stop()
+        adc.clear_buffer()
 
 
 
