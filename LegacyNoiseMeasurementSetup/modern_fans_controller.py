@@ -418,7 +418,7 @@ class FANS_AI_MULTICHANNEL:
         self._daq_device.analog_set_polarity_for_channels(self.daq_channels, polarity)
 
     def analog_read(self):
-        return self._daq_device.analog_measure_channels(self.daq_channels) #.fans_controller.analog_read_for_channels(self.daq_channels)
+        return self._daq_device.analog_measure_channels(self.daq_channels) 
 
 class FANS_AO_CHANNEL:
     def __init__(self, daq_output, parent_device, selected_output = 0, **kwargs):
@@ -478,8 +478,7 @@ class FANS_AO_CHANNEL:
 
     def analog_write(self, voltage):
         self._daq_device.analog_source_voltage(self.ao_daq_output, voltage)
-        #self.fans_controller.analog_source_voltage(self.ao_daq_output, voltage)
-
+    
 class FANS_AO_MULTICHANNEL:
     def __init__(self, *args):
         assert len(args) > 0, "Too less channels to create multichannel"
@@ -537,8 +536,7 @@ class FANS_AO_MULTICHANNEL:
 
     def analog_write(self, voltage):
         self._daq_device.analog_source_voltage_for_channels(self.daq_channels, voltage)
-        #self.fans_controller.analog_source_voltage_for_channels(self.daq_channels, voltage)
-           
+     
 class FANS_ACQUISITION:
     def __init__(self, fans_controller):
         assert isinstance(fans_controller, FANS_CONTROLLER), "Wrong fans controller type"
@@ -631,12 +629,6 @@ class FANS_ACQUISITION:
     def read_single_shot_data_when_ready(self):
         return self.daq_device.read_single_shot_data_when_ready()
     
-    
-        
-
-
-
-
 class FANS_CONTROLLER:
     def __init__(self, resource):
         assert isinstance(resource, str), "Wrong resource type!"
@@ -760,7 +752,7 @@ class FANS_CONTROLLER:
         fans_channel = self.fans_ao_channels[selected_daq_channel]
         fans_channel.ao_selected_output = selected_output
         return fans_channel
-        
+
 
 
 def test_ao_channels():

@@ -814,6 +814,10 @@ class SimulateExperiment(Experiment):
         print("simulating non gated single measurement vds:{0}".format(drain_source_voltage))
         self.close_measurement()
 
+
+
+
+
 class PerformExperiment(Experiment):
     def __init__(self, input_data_queue = None, stop_event = None):
         Experiment.__init__(self,False, input_data_queue, stop_event)  
@@ -922,8 +926,6 @@ class PerformExperiment(Experiment):
         else:
             return
 
-
-
     def prepare_to_set_voltages(self):
         self.switch_voltage_measurement_relay_to("sample")
         #### set averaging to low values
@@ -967,7 +969,6 @@ class PerformExperiment(Experiment):
         self.switch_voltage_measurement_relay_to("main")
         self.wait_for_stabilization_after_switch()
         
-
 
     def prepare_to_measure_timetrace(self):
         self.switch_voltage_measurement_relay_to("main")
@@ -1047,7 +1048,7 @@ class PerformExperiment(Experiment):
         
        
        
-
+    
         
        
 
