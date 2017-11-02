@@ -1,4 +1,5 @@
-﻿import numpy as np
+﻿import time
+import numpy as np
 import experiment_handler as eh
 import modern_fans_controller as mfans
 import modern_agilent_u2542a as mdaq
@@ -73,10 +74,10 @@ class FANSExperiment(eh.Experiment):
         sample_relay = get_fans_ao_channels_from_number(self.hardware_settings.sample_relay_channel)
         gate_relay = get_fans_ao_channels_from_number(self.hardware_settings.gate_relay_channel)
 
-        sample_feedback_pin = mfans.FANS_AI_CHANNELS.AI_CH_2
-        gate_feedback_pin = mfans.FANS_AI_CHANNELS.AI_CH_3
-        main_feedback_pin = mfans.FANS_AI_CHANNELS.AI_CH_4
-        self.acquistion_channel = mfans.FANS_AI_CHANNELS.AI_CH_5
+        sample_feedback_pin = mfans.FANS_AI_CHANNELS.AI_CH_6
+        gate_feedback_pin = mfans.FANS_AI_CHANNELS.AI_CH_7
+        main_feedback_pin = mfans.FANS_AI_CHANNELS.AI_CH_8
+        self.acquistion_channel = mfans.FANS_AI_CHANNELS.AI_CH_1 ### here should be 1
 
 
         self.load_resistance = self.experiment_settings.load_resistance
@@ -97,11 +98,17 @@ class FANSExperiment(eh.Experiment):
 
     def prepare_to_measure_voltages(self):
         self.fans_smu.init_smu_mode()
+        self.wait_for_stabilization_after_switch(5)
     
+    
+
     def prepare_to_measure_spectrum(self):
         self.fans_acquisition.initialize_acquisition(self.acquistion_channel, mfans.FILTER_CUTOFF_FREQUENCIES.F150, mfans.FILTER_GAINS.G1, mfans.PGA_GAINS.PGA_1)
+        #self.fans_acquisition.initialize_acquisition(self.acquistion_channel, mfans.FILTER_CUTOFF_FREQUENCIES.F150, mfans.FILTER_GAINS.G1, mfans.PGA_GAINS.PGA_1)
         self.fans_acquisition.initialize_acquisition_params(self.sample_rate, self.points_per_shot, mfans.ACQUISITION_TYPE.CONT) 
-        
+        #switch off all output to the control circuit in order to reduce noiseness of the system
+        self.fans_controller.switch_all_fans_output_state(mfans.SWITCH_STATES.OFF)
+        self.wait_for_stabilization_after_switch(10)
 
     def prepare_to_measure_timetrace(self):
         return super().prepare_to_measure_timetrace()

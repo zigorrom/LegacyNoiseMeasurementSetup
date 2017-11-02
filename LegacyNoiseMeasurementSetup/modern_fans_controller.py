@@ -99,11 +99,13 @@ FANS_AO_CHANNELS = IntEnum("FANS_AO_CHANNELS", ["AO_CH_{0}".format(ch) for ch in
     
 def __get_ai_mode_from_div(div):
     assert isinstance(div, int)
-    return AI_MODES.DC if div == 0 else AI_MODES.AC
+    return AI_MODES.AC if div == 0 else AI_MODES.DC
+    #return AI_MODES.DC if div == 0 else AI_MODES.AC
 
 def __get_ai_div_from_mode(mode):
     assert isinstance(mode, AI_MODES)
-    return 0 if mode == AI_MODES.DC else 1
+    return 0 if mode == AI_MODES.AC else 1
+    #return 0 if mode == AI_MODES.DC else 1
 
 def get_ai_mode_for_fans_ai_channel(fans_channel):
     assert isinstance(fans_channel, FANS_AI_CHANNELS), "Wrong channel!"
@@ -596,8 +598,13 @@ class FANS_ACQUISITION:
         assert isinstance(filter_gain, FILTER_GAINS), "Wrong filter gain"
         assert isinstance(pga_gain, PGA_GAINS), "Wrong PGA gain"
 
-        daq_channel, mode = convert_fans_ai_to_daq_channel(acquisition_channel)
+        ## put all channels into AC mode in order to disconnect from noise source
+        for ch in self.fans_controller.fans_ai_channels_values:
+            ch.ai_mode = AI_MODES.AC
+            ch.apply_fans_ai_channel_params()
 
+        daq_channel, mode = convert_fans_ai_to_daq_channel(acquisition_channel)
+        assert mode == AI_MODES.AC, "Selected channel has no AC configuration"
         self._acquisition_channel = channel = self.fans_controller.get_fans_channel_by_name(acquisition_channel)
         device = self.daq_device
         device.switch_enabled_for_channels(daq.AI_CHANNELS, daq.SWITCH_STATE_OFF)
@@ -675,6 +682,10 @@ class FANS_CONTROLLER:
     @property
     def daq_parent_device(self):
         return self.daq_device
+
+    @property
+    def fans_ai_channels_values(self):
+        return self._fans_ai_channels.values()
 
     def get_fans_channel_by_name(self, channel_name):
         if isinstance(channel_name, FANS_AI_CHANNELS):
