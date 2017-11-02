@@ -521,6 +521,7 @@ class Experiment:
         raise NotImplementedError()
 
     def wait_for_stabilization_after_switch(self, time_to_wait_sec = 5 ):
+        print("waiting for stabilization")
         time.sleep(time_to_wait_sec)
     #value: sample or main
     def switch_voltage_measurement_relay_to(self, value):

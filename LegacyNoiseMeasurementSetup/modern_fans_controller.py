@@ -599,9 +599,14 @@ class FANS_ACQUISITION:
         assert isinstance(pga_gain, PGA_GAINS), "Wrong PGA gain"
 
         ## put all channels into AC mode in order to disconnect from noise source
-        for ch in self.fans_controller.fans_ai_channels_values:
-            ch.ai_mode = AI_MODES.AC
-            ch.apply_fans_ai_channel_params()
+        #for ch in self.fans_controller.fans_ai_channels_values:
+        #    ch.ai_mode = AI_MODES.DC
+        #    ch.apply_fans_ai_channel_params()
+        #ch = self.fans_controller.fans_ai_channels[daq.AI_CHANNEL_102]
+        #ch.ai_mode = AI_MODES.AC
+        #ch.ai_cs_hold = CS_HOLD.CS_HOLD_OFF
+        #ch.ai_filter_cutoff = FILTER_CUTOFF_FREQUENCIES.F0
+        #ch.apply_fans_ai_channel_params()
 
         daq_channel, mode = convert_fans_ai_to_daq_channel(acquisition_channel)
         assert mode == AI_MODES.AC, "Selected channel has no AC configuration"
@@ -862,11 +867,38 @@ def test_channel_conversion():
     print(convert_fans_ai_to_daq_channel(FANS_AI_CHANNELS.AI_CH_8))
 
 
+def test_switch():
+    c = FANS_CONTROLLER("ADC")
+    chan = c.get_fans_output_channel(FANS_AO_CHANNELS.AO_CH_5)
+    assert isinstance(chan, FANS_AO_CHANNEL)
+    voltage = 8.4
+    chan.analog_write(voltage)
+    time.sleep(0.5)
+    chan.analog_write(0)
+    time.sleep(3)
+    chan.analog_write(-voltage)
+    time.sleep(0.5)
+    chan.analog_write(0)
+
+def switch_relay_on():
+    c = FANS_CONTROLLER("ADC")
+    chan = c.get_fans_output_channel(FANS_AO_CHANNELS.AO_CH_5)
+    assert isinstance(chan, FANS_AO_CHANNEL)
+    chan.analog_write(8.4)
+
+def switch_relay_off():
+    c = FANS_CONTROLLER("ADC")
+    chan = c.get_fans_output_channel(FANS_AO_CHANNELS.AO_CH_5)
+    assert isinstance(chan, FANS_AO_CHANNEL)
+    chan.analog_write(0)
+
+
 if __name__ == "__main__":
     #test_ao_channels()
     #test_acqusition()
     #test_cont_acquisition()
-    test_channel_conversion()
-
-    
+    #test_channel_conversion()
+    #test_switch()
+    switch_relay_on()
+    #switch_relay_off()
     

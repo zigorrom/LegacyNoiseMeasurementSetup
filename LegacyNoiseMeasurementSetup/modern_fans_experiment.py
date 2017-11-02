@@ -74,6 +74,11 @@ class FANSExperiment(eh.Experiment):
         sample_relay = get_fans_ao_channels_from_number(self.hardware_settings.sample_relay_channel)
         gate_relay = get_fans_ao_channels_from_number(self.hardware_settings.gate_relay_channel)
 
+        #sample_feedback_pin = mfans.FANS_AI_CHANNELS.AI_CH_6
+        #gate_feedback_pin = mfans.FANS_AI_CHANNELS.AI_CH_7
+        #main_feedback_pin = mfans.FANS_AI_CHANNELS.AI_CH_8
+        #self.acquistion_channel = mfans.FANS_AI_CHANNELS.AI_CH_1 ### here should be 1
+
         sample_feedback_pin = mfans.FANS_AI_CHANNELS.AI_CH_6
         gate_feedback_pin = mfans.FANS_AI_CHANNELS.AI_CH_7
         main_feedback_pin = mfans.FANS_AI_CHANNELS.AI_CH_8
