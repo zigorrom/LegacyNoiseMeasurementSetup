@@ -1,4 +1,4 @@
-import numpy as np
+﻿import numpy as np
 import experiment_handler as eh
 import modern_fans_controller as mfans
 import modern_agilent_u2542a as mdaq
@@ -73,10 +73,10 @@ class FANSExperiment(eh.Experiment):
         sample_relay = get_fans_ao_channels_from_number(self.hardware_settings.sample_relay_channel)
         gate_relay = get_fans_ao_channels_from_number(self.hardware_settings.gate_relay_channel)
 
-        sample_feedback_pin = mfans.FANS_AI_CHANNELS.AI_CH_6
-        gate_feedback_pin = mfans.FANS_AI_CHANNELS.AI_CH_7
-        main_feedback_pin = mfans.FANS_AI_CHANNELS.AI_CH_8
-        self.acquistion_channel = mfans.FANS_AI_CHANNELS.AI_CH_1
+        sample_feedback_pin = mfans.FANS_AI_CHANNELS.AI_CH_2
+        gate_feedback_pin = mfans.FANS_AI_CHANNELS.AI_CH_3
+        main_feedback_pin = mfans.FANS_AI_CHANNELS.AI_CH_4
+        self.acquistion_channel = mfans.FANS_AI_CHANNELS.AI_CH_5
 
 
         self.load_resistance = self.experiment_settings.load_resistance

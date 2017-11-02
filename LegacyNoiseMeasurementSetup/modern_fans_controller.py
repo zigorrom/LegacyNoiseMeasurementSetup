@@ -81,8 +81,8 @@ class CS_HOLD(IntEnum):
 
 @unique
 class AI_MODES(Enum):
-    DC = 1
-    AC = 0
+    DC = 0
+    AC = 1
 
 
 @unique
@@ -97,19 +97,26 @@ class CONTROL_BITS(Enum):
 FANS_AI_CHANNELS = IntEnum("FANS_AI_CHANNELS", ["AI_CH_{0}".format(ch) for ch in range(1,9,1)])
 FANS_AO_CHANNELS = IntEnum("FANS_AO_CHANNELS", ["AO_CH_{0}".format(ch) for ch in range(1,17,1)])
     
+def __get_ai_mode_from_div(div):
+    assert isinstance(div, int)
+    return AI_MODES.DC if div == 0 else AI_MODES.AC
+
+def __get_ai_div_from_mode(mode):
+    assert isinstance(mode, AI_MODES)
+    return 0 if mode == AI_MODES.DC else 1
+
 def get_ai_mode_for_fans_ai_channel(fans_channel):
     assert isinstance(fans_channel, FANS_AI_CHANNELS), "Wrong channel!"
     val = fans_channel.value - 1 
     div, mod = divmod(val, 4)
-    mode = AI_MODES.DC if div == 0 else AI_MODES.AC
+    mode = __get_ai_mode_from_div(div) #AI_MODES.DC if div == 0 else AI_MODES.AC
     return mode
-
 
 def convert_fans_ai_to_daq_channel(fans_channel):
     assert isinstance(fans_channel, FANS_AI_CHANNELS), "Wrong channel!"
     val = fans_channel.value - 1 
     div, mod = divmod(val, 4)
-    mode = AI_MODES.DC if div == 0 else AI_MODES.AC
+    mode =  __get_ai_mode_from_div(div) #AI_MODES.AC if div == 0 else AI_MODES.DC
     channel = 101 + mod
     return (channel, mode)
 
@@ -117,7 +124,7 @@ def convert_daq_ai_to_fans_channel(daq_channel, mode):
     assert daq_channel in daq.AI_CHANNELS, "Channel is not in the list"
     assert isinstance(mode, AI_MODES)
     mod = daq_channel - 101
-    div = 0 if mode == AI_MODES.DC else 1
+    div = __get_ai_div_from_mode(mode) #0 if mode == AI_MODES.DC else 1
     fans_channel = FANS_AI_CHANNELS(div*4+mod)
     return fans_channel
 
@@ -639,6 +646,7 @@ class FANS_ACQUISITION:
 
     def clear_buffer(self):
         self.daq_device.empty_continuous_acquisition_buffer() # daq.ACQUISITION_EMPTY
+        #self.daq_device.clear_status()
 
 
     
@@ -836,13 +844,18 @@ def test_cont_acquisition():
 
 
 
+def test_channel_conversion():
+    print(convert_fans_ai_to_daq_channel(FANS_AI_CHANNELS.AI_CH_1))
+    print(convert_fans_ai_to_daq_channel(FANS_AI_CHANNELS.AI_CH_4))
+    print(convert_fans_ai_to_daq_channel(FANS_AI_CHANNELS.AI_CH_5))
+    print(convert_fans_ai_to_daq_channel(FANS_AI_CHANNELS.AI_CH_8))
 
 
 if __name__ == "__main__":
     #test_ao_channels()
     #test_acqusition()
-    test_cont_acquisition()
-
+    #test_cont_acquisition()
+    test_channel_conversion()
 
     
     

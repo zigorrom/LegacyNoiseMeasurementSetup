@@ -185,9 +185,12 @@ class FANS_SMU:
         # here use multichannel !!!
         for ch in [self.smu_drain_source_feedback, self.smu_gate_feedback, self.smu_main_feedback]:
             #TODO insert here check of selected feedback channel - it should correspond to DC mode!!!
+            ai_mode = mfc.get_ai_mode_for_fans_ai_channel(ch)
+            assert ai_mode == mfc.AI_MODES.DC, "Selected channel has no DC configuration"
             ai_feedback = self._fans_controller.get_fans_channel_by_name(ch)
             assert isinstance(ai_feedback, mfc.FANS_AI_CHANNEL)
-            ai_feedback.ai_mode = mfc.AI_MODES.DC
+
+            ai_feedback.ai_mode = ai_mode #mfc.AI_MODES.DC
             ai_feedback.ai_polling_polarity = mdaq.BIPOLAR
             ai_feedback.ai_polling_range = mdaq.AUTO_RANGE
             ai_feedback.apply_fans_ai_channel_params()
@@ -419,11 +422,11 @@ if __name__ == "__main__":
     
     smu = FANS_SMU(f, mfc.FANS_AO_CHANNELS.AO_CH_1,
                    mfc.FANS_AO_CHANNELS.AO_CH_4, 
-                   mfc.FANS_AI_CHANNELS.AI_CH_2, 
+                   mfc.FANS_AI_CHANNELS.AI_CH_2, #ds
                    mfc.FANS_AO_CHANNELS.AO_CH_9,
                    mfc.FANS_AO_CHANNELS.AO_CH_12, 
-                   mfc.FANS_AI_CHANNELS.AI_CH_4, 
-                   mfc.FANS_AI_CHANNELS.AI_CH_3)
+                   mfc.FANS_AI_CHANNELS.AI_CH_4, #gate
+                   mfc.FANS_AI_CHANNELS.AI_CH_3) #main
 
     smu.set_smu_parameters(100, 5000)
     smu.init_smu_mode()
