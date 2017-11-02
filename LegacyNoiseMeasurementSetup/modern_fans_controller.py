@@ -81,8 +81,8 @@ class CS_HOLD(IntEnum):
 
 @unique
 class AI_MODES(Enum):
-    DC = 0
-    AC = 1
+    DC = 1 #0
+    AC = 0 #1
 
 
 @unique
