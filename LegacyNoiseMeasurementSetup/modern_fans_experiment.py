@@ -103,7 +103,7 @@ class FANSExperiment(eh.Experiment):
 
     def prepare_to_measure_voltages(self):
         self.fans_smu.init_smu_mode()
-        self.wait_for_stabilization_after_switch(5)
+        self.wait_for_stabilization_after_switch(10)
     
     
 
@@ -113,7 +113,7 @@ class FANSExperiment(eh.Experiment):
         self.fans_acquisition.initialize_acquisition_params(self.sample_rate, self.points_per_shot, mfans.ACQUISITION_TYPE.CONT) 
         #switch off all output to the control circuit in order to reduce noiseness of the system
         self.fans_controller.switch_all_fans_output_state(mfans.SWITCH_STATES.OFF)
-        self.wait_for_stabilization_after_switch(10)
+        self.wait_for_stabilization_after_switch(30)
 
     def prepare_to_measure_timetrace(self):
         return super().prepare_to_measure_timetrace()
