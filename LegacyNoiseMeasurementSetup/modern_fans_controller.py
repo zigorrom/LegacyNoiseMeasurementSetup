@@ -916,10 +916,10 @@ def test_switch():
     chan.analog_write(voltage)
     time.sleep(0.5)
     chan.analog_write(0)
-    time.sleep(3)
-    chan.analog_write(-voltage)
-    time.sleep(0.5)
-    chan.analog_write(0)
+    #time.sleep(3)
+    #chan.analog_write(-voltage)
+    #time.sleep(0.5)
+    #chan.analog_write(0)
 
 def switch_relay_on():
     c = FANS_CONTROLLER("ADC")
@@ -939,7 +939,7 @@ if __name__ == "__main__":
     #test_acqusition()
     #test_cont_acquisition()
     #test_channel_conversion()
-    #test_switch()
-    switch_relay_on()
-    #switch_relay_off()
+    test_switch()
+#    switch_relay_on()
+#    switch_relay_off()
     
