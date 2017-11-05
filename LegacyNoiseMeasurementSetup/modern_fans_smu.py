@@ -311,7 +311,98 @@ class FANS_SMU:
 
             if abs_distance < VoltageSetError and fine_tuning: #FANS_VOLTAGE_SET_ERROR and fine_tuning:
                 # set high averaging, moving voltage to 0 and check condition again count times if is of return true if not repeat adjustment
-                output_channel.ao_voltage = 0
+                output_channel.analog_write(0)
+                condition_sattisfied = True
+                for i in range(fine_averaging):
+                    current_value = self.analog_read(feedback_channel)
+                    abs_distance = math.fabs(current_value - voltage)
+
+                    print("current distanse: {0}, trust_error: {1}, count: {2}, value: {3}".format(abs_distance, VoltageSetError, i, current_value))
+                    if abs_distance > VoltageSetError:
+                        condition_sattisfied = False
+                        break
+
+                if condition_sattisfied:
+                    return True
+                #self.set_analog_read_averaging(fine_averaging)
+                #current_value = self.analog_read(feedback_channel)
+                #abs_distance = math.fabs(current_value - voltage)
+                #if abs_distance < VoltageSetError:
+                #    return True
+                ##for i in range(stabilization_counter):
+                ##    current_value = self.analog_read(feedback_channel)
+                #self.set_analog_read_averaging(coarse_averaging)
+
+
+            elif abs_distance < VoltageTuningInterval or fine_tuning: #FANS_VOLTAGE_FINE_TUNING_INTERVAL:
+                fine_tuning = True
+                value_to_set = voltage_setting_function(current_value,voltage,True)
+            
+            
+            
+            if polarity_switched:
+                abs_value = math.fabs(value_to_set)
+                if voltage * current_value < 0:
+                    if voltage > 0:
+                        value_to_set = abs_value
+                    else:
+                        value_to_set = -abs_value
+            print("current: {0}; goal: {1};to set: {2};".format(current_value,voltage, value_to_set))    
+            output_channel.analog_write(value_to_set)
+            #output_channel.ao_voltage = value_to_set 
+
+    def __set_voltage_for_function_refactored(self,voltage, voltage_set_channel, relay_channel, feedback_channel):
+        assert isinstance(voltage, float) or isinstance(voltage, int)
+        assert isinstance(voltage_set_channel, mfc.FANS_AO_CHANNELS)
+        assert isinstance(relay_channel, mfc.FANS_AO_CHANNELS)
+        assert isinstance(feedback_channel, mfc.FANS_AI_CHANNELS)
+        
+
+        #
+        #  TO IMPLEMENT: use here UNIPOLAR voltage read and select appropriate range
+        #
+
+        output_channel = self._fans_controller.get_fans_output_channel(voltage_set_channel)
+        
+        #self._fans_controller.fans_ao_switch.select_channel(voltage_set_channel)
+        assert isinstance(output_channel, mfc.FANS_AO_CHANNEL)
+
+        #set read averaging to small value for fast acquisition
+        coarse_averaging = 20
+        fine_averaging = 50
+        stabilization_counter = 200
+
+        self.smu_averaging_number = coarse_averaging
+
+        prev_value = self.analog_read(feedback_channel)
+        fine_tuning = False
+        polarity_switched = False
+        
+        VoltageSetError = FANS_VOLTAGE_SET_ERROR
+        VoltageTuningInterval = FANS_VOLTAGE_FINE_TUNING_INTERVAL_FUNCTION(VoltageSetError)
+
+        if math.fabs(voltage) < FANS_ZERO_VOLTAGE_INTERVAL :
+            VoltageSetError = FANS_ZERO_VOLTAGE_INTERVAL
+            VoltageTuningInterval =  VoltageTuningInterval+VoltageSetError     #5*VoltageSetError   
+
+        while True: #continue_setting:    
+            current_value = self.analog_read(feedback_channel)
+            if current_value*voltage<0 and not polarity_switched:
+                set_result = self.__set_voltage_for_function(0, voltage_set_channel, relay_channel, feedback_channel)
+        
+                if set_result:
+                    polarity = FANS_NEGATIVE_POLARITY if voltage<0 else FANS_POSITIVE_POLARITY
+                    self.__set_voltage_polarity(polarity, voltage_set_channel, relay_channel)
+                    polarity_switched = True
+                else:
+                    return set_result
+
+            value_to_set = voltage_setting_function(current_value,voltage)
+            abs_distance = math.fabs(current_value - voltage)
+
+            if abs_distance < VoltageSetError and fine_tuning: #FANS_VOLTAGE_SET_ERROR and fine_tuning:
+                # set high averaging, moving voltage to 0 and check condition again count times if is of return true if not repeat adjustment
+                output_channel.analog_write(0)
                 condition_sattisfied = True
                 for i in range(fine_averaging):
                     current_value = self.analog_read(feedback_channel)
