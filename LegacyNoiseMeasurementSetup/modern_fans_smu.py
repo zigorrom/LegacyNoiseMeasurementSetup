@@ -351,19 +351,44 @@ class FANS_SMU:
             output_channel.analog_write(value_to_set)
             #output_channel.ao_voltage = value_to_set 
 
-    def __set_voltage_for_function_refactored(self,voltage, voltage_set_channel, relay_channel, feedback_channel):
+
+    def __set_voltage_polarity_specialized(self, polarity, voltage_set_channel, relay_channel, additional_channel = None, additional_control_voltage = 0.0):
+        assert isinstance(relay_channel, mfc.FANS_AO_CHANNELS), "Wrong channel!"
+        assert isinstance(voltage_set_channel, mfc.FANS_AO_CHANNELS), "Wrong channel!"
+        assert isinstance(additional_control_voltage, float)
+        rel_ch = self._fans_controller.get_fans_output_channel(relay_channel) #.fans_ao_switch.select_channel(relay_channel)
+        #assert isinstance(rel_ch, mfc.FANS_AO_CHANNEL)
+        rel_ch.analog_write(polarity)
+        time.sleep(0.5)
+        rel_ch.analog_write(0)
+
+        if isinstance(additional_channel, mfc.FANS_AO_CHANNELS):
+            output_channel, additional_output_channel = self._fans_controller.get_fans_output_channels(voltage_set_channel, additional_channel)
+            assert output_channel != additional_output_channel, "Cannot use same channel for different functions"
+            assert isinstance(additional_output_channel, mfc.FANS_AO_CHANNEL)
+            additional_output_channel.analog_write(additional_control_voltage)
+        else:
+            self._fans_controller.get_fans_output_channel(voltage_set_channel)
+
+
+    def __set_voltage_for_function_specialized(self,voltage, voltage_set_channel, relay_channel, feedback_channel, additional_channel = None, additional_control_voltage = 0.0):
         assert isinstance(voltage, float) or isinstance(voltage, int)
         assert isinstance(voltage_set_channel, mfc.FANS_AO_CHANNELS)
         assert isinstance(relay_channel, mfc.FANS_AO_CHANNELS)
         assert isinstance(feedback_channel, mfc.FANS_AI_CHANNELS)
-        
+        assert isinstance(additional_control_voltage, float)
 
-        #
-        #  TO IMPLEMENT: use here UNIPOLAR voltage read and select appropriate range
-        #
+        output_channel = None
+        additional_output_channel = None
 
-        output_channel = self._fans_controller.get_fans_output_channel(voltage_set_channel)
-        
+        if isinstance(additional_channel, mfc.FANS_AO_CHANNELS):
+            output_channel, additional_output_channel = self._fans_controller.get_fans_output_channels(voltage_set_channel, additional_channel)
+            assert output_channel != additional_output_channel, "Cannot use same channel for different functions"
+            assert isinstance(additional_output_channel, mfc.FANS_AO_CHANNEL)
+            additional_output_channel.analog_write(additional_control_voltage)
+        else:
+            output_channel = self._fans_controller.get_fans_output_channel(voltage_set_channel)
+
         #self._fans_controller.fans_ao_switch.select_channel(voltage_set_channel)
         assert isinstance(output_channel, mfc.FANS_AO_CHANNEL)
 
