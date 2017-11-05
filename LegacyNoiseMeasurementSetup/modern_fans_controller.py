@@ -790,6 +790,47 @@ class FANS_CONTROLLER:
         fans_channel.ao_selected_output = selected_output
         return fans_channel
 
+    def get_fans_output_channels(self, fans_output_1, fans_output_2):
+        assert isinstance(fans_output_1, FANS_AO_CHANNELS)
+        assert isinstance(fans_output_2, FANS_AO_CHANNELS)
+
+        selected_daq_channel_1, selected_output_1 = convert_fans_ao_to_daq_channel(fans_output_1) 
+        selected_daq_channel_2, selected_output_2 = convert_fans_ao_to_daq_channel(fans_output_2) 
+        
+        assert selected_daq_channel_1 != selected_daq_channel_2, "Specified channels correspond the same daq channel" 
+
+        assert selected_output_1 < 8, "unexpected selected output value"
+        assert selected_output_2 < 8, "unexpected selected output value"
+        
+        digital_channel_value = 0x00   #self.daq_parent_device.digital_read(daq.DIG_CHANNEL_501)    
+        #off_channel_mask = 0x08
+        #on_channel_value = 0x08 | selected_output
+        on_channel_mask = 0x88
+        
+        if selected_daq_channel_1 == daq.AO_CHANNEL_201 and selected_daq_channel_2 == daq.AO_CHANNEL_202:
+            selected_daq_channel_1 = selected_daq_channel_1 << 4
+            
+        elif selected_daq_channel_1 == daq.AO_CHANNEL_202 and selected_daq_channel_2 == daq.AO_CHANNEL_201:
+            selected_daq_channel_2 = selected_daq_channel_2 << 4
+        
+        else:
+            raise AssertionError("Specified daq output channel does not exist")
+       
+        digital_channel_value = selected_daq_channel_1 | selected_daq_channel_2
+        #switch on requested channels
+        digital_channel_value = digital_channel_value | on_channel_mask
+        
+        print("channel value {0:08b} = {1}".format(digital_channel_value, digital_channel_value))
+        self.daq_parent_device.digital_write(daq.DIG_CHANNEL_501, digital_channel_value)
+
+        #pulse bit to remember the channel
+        self.daq_parent_device.digital_pulse_bit(CONTROL_BITS.AO_DAC_LETCH_PULSE_BIT.value)
+        
+        fans_channel1 = self.fans_ao_channels[selected_daq_channel_1]
+        fans_channel2 = self.fans_ao_channels[selected_daq_channel_2]
+        fans_channel1.ao_selected_output = selected_output_1
+        fans_channel2.ao_selected_output = selected_output_2
+        return (fans_channel1,fans_channel2)
 
 
 def test_ao_channels():
