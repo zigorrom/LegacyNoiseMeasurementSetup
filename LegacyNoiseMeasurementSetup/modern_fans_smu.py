@@ -311,7 +311,7 @@ class FANS_SMU:
 
             if abs_distance < VoltageSetError and fine_tuning: #FANS_VOLTAGE_SET_ERROR and fine_tuning:
                 # set high averaging, moving voltage to 0 and check condition again count times if is of return true if not repeat adjustment
-                output_channel.ao_voltage = 0
+                output_channel.analog_write(0)
                 condition_sattisfied = True
                 for i in range(fine_averaging):
                     current_value = self.analog_read(feedback_channel)
@@ -353,22 +353,19 @@ class FANS_SMU:
 
     def __set_voltage_for_function_refactored(self,voltage, voltage_set_channel, relay_channel, feedback_channel):
         assert isinstance(voltage, float) or isinstance(voltage, int)
-        assert isinstance(voltage_set_channel, mfc.FANS_AO_CHANNEL)
-        assert isinstance(relay_channel, mfc.FANS_AO_CHANNEL)
-        assert isinstance(feedback_channel, mfc.FANS_AI_CHANNEL)
+        assert isinstance(voltage_set_channel, mfc.FANS_AO_CHANNELS)
+        assert isinstance(relay_channel, mfc.FANS_AO_CHANNELS)
+        assert isinstance(feedback_channel, mfc.FANS_AI_CHANNELS)
         
-
-        #self.init_smu_mode()
-
-        #ai_feedback = self._fans_controller.get_ai_channel(feedback_channel)
-        #ai_feedback.ai_mode = AI_MODES.DC
-        #ai_feedback.set_fans_ai_channel_params()
 
         #
         #  TO IMPLEMENT: use here UNIPOLAR voltage read and select appropriate range
         #
 
+        output_channel = self._fans_controller.get_fans_output_channel(voltage_set_channel)
         
+        #self._fans_controller.fans_ao_switch.select_channel(voltage_set_channel)
+        assert isinstance(output_channel, mfc.FANS_AO_CHANNEL)
 
         #set read averaging to small value for fast acquisition
         coarse_averaging = 20
@@ -405,8 +402,7 @@ class FANS_SMU:
 
             if abs_distance < VoltageSetError and fine_tuning: #FANS_VOLTAGE_SET_ERROR and fine_tuning:
                 # set high averaging, moving voltage to 0 and check condition again count times if is of return true if not repeat adjustment
-                voltage_set_channel.analog_write(0)
-                #output_channel.ao_voltage = 0
+                output_channel.analog_write(0)
                 condition_sattisfied = True
                 for i in range(fine_averaging):
                     current_value = self.analog_read(feedback_channel)
@@ -443,7 +439,7 @@ class FANS_SMU:
                     else:
                         value_to_set = -abs_value
             print("current: {0}; goal: {1};to set: {2};".format(current_value,voltage, value_to_set))    
-            voltage_set_channel.analog_write(value_to_set)
+            output_channel.analog_write(value_to_set)
             #output_channel.ao_voltage = value_to_set 
 
 
