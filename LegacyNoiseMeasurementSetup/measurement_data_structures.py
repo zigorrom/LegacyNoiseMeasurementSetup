@@ -1,6 +1,4 @@
-﻿
-
-class measurement_parameter_property(property):
+﻿class measurement_parameter_property(property):
     def __init__(self,name,units,description, **kwargs):
         super().__init__(**kwargs)
         self._name = name
@@ -38,6 +36,26 @@ def generate_measurement_info_filename(measurement_name, measurement_count, file
     return "{0}_{1}.{2}".format(measurement_name,measurement_count, file_extension)
 
 class MeasurementInfo:
+    SAMPLE_VOLTAGE_END_OPTION = "Vds (end)" #self.start_sample_voltage, 
+    SAMPLE_CURRENT_END_OPTION = "Id (end)" #            self.sample_current_start,
+    EQUIVALENT_RESISTANCE_END_OPTION = "Req (end)"                #self._equivalent_resistance_start,
+    FILENAME_OPTION = "Filename" #generate_measurement_info_filename(self.measurement_filename, self.measurement_count,self._measurement_file_extension),
+    LOAD_RESISTANCE_OPTION = "Rload" #                self._load_resistance,
+    MAIN_VOLTAGE_END_OPTION = "Vmain (end)" #                self.end_main_voltage,
+    SAMPLE_VOLTAGE_START_OPTION = "Vds (start)"  #               self.start_sample_voltage,
+    MAIN_VOLTAGE_START_OPTION = "Vmain (start)"  #               self.start_main_voltage,
+    SAMPLE_RESISTANCE_START_OPTION = "Rs (start)" #                self._sample_resistance_start,
+    SAMPLE_RESISTANCE_END_OPTION = "Rs (end)"     #           self._sample_resistance_end,
+    TEMPERATURE_START_OPTION = "T (start)"  #                self.start_temperature,
+    TEMPERATURE_END_OPTION = "T (end)" #                self.end_temperature,
+    AMPLIFICATION_OPTION = "Kampl"#    amplification                None,
+    AVERAGES_OPTION = "Naver"#    averages                None,
+    GATE_VOLTAGE_END_OPTION = "Vgate (end)" #            self.end_gate_voltage
+    GATE_VOLTAGE_START_OPTION = "Vgate (start)"
+                
+
+
+
     def __init__(self, measurement_filename = "", measurement_count = 0,file_extension = "dat", load_resistance = 5000, second_amplifier_gain=100):
         self._measurement_filename = measurement_filename
         self._measurement_count = measurement_count
@@ -161,12 +179,6 @@ class MeasurementInfo:
     def sample_resistance_end(self,value):
         self._sample_resistance_end = value
 
-
-
-
-
-
-
     @property
     def measurement_count(self):
         return self._measurement_count
@@ -262,6 +274,46 @@ class MeasurementInfo:
         #    ["k\-(ampl)","int"],
         #    ["N\-(aver)","int"],
         #    ["V\-(Gate)","V"]
+    @property
+    def header_list(self):
+        return [
+            self.SAMPLE_VOLTAGE_END_OPTION,
+            self.SAMPLE_CURRENT_END_OPTION,
+            self.EQUIVALENT_RESISTANCE_END_OPTION,
+            self.FILENAME_OPTION,
+            self.LOAD_RESISTANCE_OPTION,
+            self.MAIN_VOLTAGE_END_OPTION,
+            self.SAMPLE_VOLTAGE_START_OPTION,
+            self.MAIN_VOLTAGE_START_OPTION,
+            self.SAMPLE_RESISTANCE_START_OPTION,
+            self.SAMPLE_RESISTANCE_END_OPTION,
+            self.TEMPERATURE_START_OPTION,
+            self.TEMPERATURE_END_OPTION,
+            self.AMPLIFICATION_OPTION,
+            self.AVERAGES_OPTION,
+            self.GATE_VOLTAGE_END_OPTION,
+            self.GATE_VOLTAGE_START_OPTION
+            ]
+
+    def to_dict(self):
+        return {
+            self.SAMPLE_VOLTAGE_END_OPTION: self.end_sample_voltage,
+            self.SAMPLE_CURRENT_END_OPTION: self.sample_current_end,
+            self.EQUIVALENT_RESISTANCE_END_OPTION: self.equivalent_resistance_end,
+            self.FILENAME_OPTION: generate_measurement_info_filename(self.measurement_filename, self.measurement_count,self._measurement_file_extension),
+            self.LOAD_RESISTANCE_OPTION: self._load_resistance,
+            self.MAIN_VOLTAGE_END_OPTION: self.end_main_voltage,
+            self.SAMPLE_VOLTAGE_START_OPTION: self.start_sample_voltage,
+            self.MAIN_VOLTAGE_START_OPTION:self.start_main_voltage,
+            self.SAMPLE_RESISTANCE_START_OPTION: self.sample_resistance_start,
+            self.SAMPLE_RESISTANCE_END_OPTION: self.sample_resistance_end,
+            self.TEMPERATURE_START_OPTION: self.start_temperature,
+            self.TEMPERATURE_END_OPTION: self.end_temperature,
+            self.AMPLIFICATION_OPTION: self.second_amplifier_gain,
+            self.AVERAGES_OPTION: None,
+            self.GATE_VOLTAGE_END_OPTION: self.end_gate_voltage,
+            self.GATE_VOLTAGE_START_OPTION: self.start_gate_voltage
+            }
 
     def __str__(self):
         list = [self.start_sample_voltage, 

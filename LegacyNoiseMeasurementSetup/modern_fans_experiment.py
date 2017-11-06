@@ -191,43 +191,8 @@ class FANSExperiment(eh.Experiment):
                     f, psd = periodogram(decimated, new_fs)
                     self.update_spectrum(psd, 0,1)
                     fill_value = 0
-                    #f2_aver_counter = 0
                     counter+=1
-                ###OLDER VERSION WORKS
-                #if second_range is None or fill_value == 0:
-                #    print("create second range")
-                #    freq_2, second_range = periodogram(data, fs)
-                            
-                #else:
-                #    f, psd = periodogram(data, fs)
-                #    #np.average((self.average, data['p']), axis=0, weights=(self.average_counter - 1, 1))
-                #    second_range = np.average((second_range,psd),axis=0,weights=(f2_aver_counter - 1, 1))   
-                #    #self.update_spectrum(second_range,1,1)
-
-                #if new_fill_value % fs == 0:
-                #    #decimated = decimate(total_array,decimation_factor,n=8,ftype="iir",axis = 1 ,zero_phase=True)
-                #    decimated = decimate(total_array,decimation_factor,n=8,ftype="iir",axis = 0 ,zero_phase=True)
-                #    freq_1, first_range = periodogram(decimated, new_fs)
-                #    res_freq  = np.hstack((freq_1[1:freq1_idx],freq_2[freq2_idx:]))
-                #    #res = np.hstack((first_range[:,1:freq1_idx],second_range[:,freq2_idx:]))
-                #    res = np.hstack((first_range[1:freq1_idx],second_range[freq2_idx:]))
-                #    timetrace = np.copy(total_array)
-                    
-                #    #self.update_spectrum(first_range, 0,1)
-                #    #q = self._input_data_queue
-                #    #result = {COMMAND: ExperimentCommands.DATA, SPECTRUM_RANGE: 0, FREQUENCIES: res_freq, DATA:res, INDEX: 1}#data, 'i': 1}
-                #    #if q:
-                #    #    q.put_nowait(result) 
-
-
-                    #print(res_freq)
-                    #fill_value = 0
-                    #f2_aver_counter = 0
-                    #counter+=1
-
-
-
-
+               
             except Exception as e:
                 print(e)
                 break

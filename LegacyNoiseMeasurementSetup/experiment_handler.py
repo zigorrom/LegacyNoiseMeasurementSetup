@@ -603,6 +603,7 @@ class Experiment:
         self.prepare_to_measure_spectrum()
         self.perform_non_gated_single_value_measurement()
         self.perform_end_param_measurement()
+        self.save_measurement_info()
         self.close_measurement()
 
 
