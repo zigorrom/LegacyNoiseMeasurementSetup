@@ -72,6 +72,9 @@
     <Compile Include="modern_fans_experiment.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="modern_fans_experiment_writer.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="modern_fans_smu.py">
       <SubType>Code</SubType>
     </Compile>
