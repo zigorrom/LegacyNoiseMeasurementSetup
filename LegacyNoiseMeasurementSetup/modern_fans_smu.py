@@ -5,6 +5,9 @@ import modern_fans_controller as mfc
 import modern_agilent_u2542a as mdaq
 import numpy as np
 
+DRAIN_SOURCE_SWITCH_VOLTAGE = 8.4
+
+
 MIN_MOVING_VOLTAGE = 0.3
 MAX_MOVING_VOLTAGE = 6
 VALUE_DIFFERENCE = MAX_MOVING_VOLTAGE-MIN_MOVING_VOLTAGE
@@ -398,8 +401,10 @@ class FANS_SMU:
         return {"Vds":ds_voltage,"Vgs":gate_voltage,"Vmain":main_voltage, "Ids":current,"Rs":resistance}
 
 
+
+
 class FANS_SMU_Specialized(FANS_SMU):
-    def __init__(self, fans_controller, drain_source_motor, drain_source_relay, drain_source_feedback,  gate_motor, gate_relay, gate_feedback, main_feedback, drain_source_switch_channel, drain_source_switch_voltage = 0.0):
+    def __init__(self, fans_controller, drain_source_motor, drain_source_relay, drain_source_feedback,  gate_motor, gate_relay, gate_feedback, main_feedback, drain_source_switch_channel, drain_source_switch_voltage = DRAIN_SOURCE_SWITCH_VOLTAGE):
         super().__init__(fans_controller, drain_source_motor, drain_source_relay, drain_source_feedback,  gate_motor, gate_relay, gate_feedback, main_feedback)
         assert isinstance(drain_source_switch_channel, mfc.FANS_AO_CHANNELS)
         assert isinstance(drain_source_switch_voltage, float)
