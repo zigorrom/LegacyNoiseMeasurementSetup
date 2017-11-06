@@ -68,6 +68,8 @@ OUT_ENABLED_CH, OUT_CH, FEEDBACK_CH, POLARITY_RELAY_CH , CH_POLARITY = [0,1,2,3,
 LOW_SPEED, FAST_SPEED = (1,5)
 SHORT_TIME,LONG_TIME = (0.3,2)
 
+
+
 class FANS_SMU:
     def __init__(self,fans_controller, drain_source_motor, drain_source_relay, drain_source_feedback,  gate_motor, gate_relay, gate_feedback, main_feedback):
         assert isinstance(fans_controller, mfc.FANS_CONTROLLER), "Wrong controller type"
@@ -260,13 +262,6 @@ class FANS_SMU:
         assert isinstance(relay_channel, mfc.FANS_AO_CHANNELS)
         assert isinstance(feedback_channel, mfc.FANS_AI_CHANNELS)
         
-
-        #self.init_smu_mode()
-
-        #ai_feedback = self._fans_controller.get_ai_channel(feedback_channel)
-        #ai_feedback.ai_mode = AI_MODES.DC
-        #ai_feedback.set_fans_ai_channel_params()
-
         #
         #  TO IMPLEMENT: use here UNIPOLAR voltage read and select appropriate range
         #
@@ -324,15 +319,7 @@ class FANS_SMU:
 
                 if condition_sattisfied:
                     return True
-                #self.set_analog_read_averaging(fine_averaging)
-                #current_value = self.analog_read(feedback_channel)
-                #abs_distance = math.fabs(current_value - voltage)
-                #if abs_distance < VoltageSetError:
-                #    return True
-                ##for i in range(stabilization_counter):
-                ##    current_value = self.analog_read(feedback_channel)
-                #self.set_analog_read_averaging(coarse_averaging)
-
+                
 
             elif abs_distance < VoltageTuningInterval or fine_tuning: #FANS_VOLTAGE_FINE_TUNING_INTERVAL:
                 fine_tuning = True
@@ -352,7 +339,76 @@ class FANS_SMU:
             #output_channel.ao_voltage = value_to_set 
 
 
-    def __set_voltage_polarity_specialized(self, polarity, voltage_set_channel, relay_channel, additional_channel = None, additional_control_voltage = 0.0):
+   
+
+
+    def smu_set_drain_source_voltage(self,voltage):
+        self.__set_voltage_for_function(voltage, self.smu_ds_motor, self.smu_ds_relay, self.smu_drain_source_feedback)
+
+    def smu_set_gate_voltage(self,voltage):
+        self.__set_voltage_for_function(voltage, self.smu_gate_motor, self.smu_gate_relay, self.smu_gate_feedback)
+
+    def analog_read(self, channel):
+        fans_channel = self._fans_controller.get_fans_channel_by_name(channel)
+        assert isinstance(fans_channel, mfc.FANS_AI_CHANNEL)
+        return fans_channel.analog_read()
+
+    def analog_read_channels(self, channels):
+        ## to do 
+        ## improve speed here 
+
+        fans_channels = [self._fans_controller.get_fans_channel_by_name(ch) for ch in channels]
+        fans_multichannel = mfc.FANS_AI_MULTICHANNEL(*fans_channels)
+        result = fans_multichannel.analog_read()
+        converted_dict = {ch: result[fans_ch.ai_daq_input] for ch, fans_ch in zip(channels,fans_channels) }
+        return converted_dict
+
+    def read_all_test(self):
+        result = self.analog_read_channels([self.smu_drain_source_feedback,self.smu_gate_feedback,self.smu_main_feedback])
+        ds_voltage = result[self.smu_drain_source_feedback]
+        main_voltage = result[self.smu_main_feedback]
+        gate_voltage = result[self.smu_gate_feedback]
+
+        print("ds: {0}; gs: {1}; m: {2}".format(ds_voltage, gate_voltage, main_voltage))
+
+    def read_feedback_voltages(self):
+        result = self.analog_read_channels([self.smu_drain_source_feedback,self.smu_gate_feedback,self.smu_main_feedback])
+        ds_voltage = result[self.smu_drain_source_feedback]
+        main_voltage = result[self.smu_main_feedback]
+        gate_voltage = result[self.smu_gate_feedback]
+        return (ds_voltage, main_voltage, gate_voltage)
+
+
+    def read_all_parameters(self):
+        # can be a problem with an order of arguments
+        result = self.analog_read_channels([self.smu_drain_source_feedback,self.smu_gate_feedback,self.smu_main_feedback])
+        ds_voltage = result[self.smu_drain_source_feedback]
+        main_voltage = result[self.smu_main_feedback]
+        gate_voltage = result[self.smu_gate_feedback]
+
+
+        ### fix divide by zero exception
+        try:
+            current = (main_voltage-ds_voltage)/self.smu_load_resistance
+            resistance = ds_voltage/current
+        except ZeroDivisionError:
+            current = 0
+            resistance = 0
+        
+        return {"Vds":ds_voltage,"Vgs":gate_voltage,"Vmain":main_voltage, "Ids":current,"Rs":resistance}
+
+
+class FANS_SMU_Specialized(FANS_SMU):
+    def __init__(self, fans_controller, drain_source_motor, drain_source_relay, drain_source_feedback,  gate_motor, gate_relay, gate_feedback, main_feedback, drain_source_switch_channel, drain_source_switch_voltage = 0.0):
+        super().__init__(fans_controller, drain_source_motor, drain_source_relay, drain_source_feedback,  gate_motor, gate_relay, gate_feedback, main_feedback)
+        assert isinstance(drain_source_switch_channel, mfc.FANS_AO_CHANNELS)
+        assert isinstance(drain_source_switch_voltage, float)
+
+        self._drain_source_switch_channel = drain_source_switch_channel
+        self._drain_source_switch_voltage = drain_source_switch_voltage
+
+
+    def __set_voltage_polarity(self, polarity, voltage_set_channel, relay_channel, additional_channel = None, additional_control_voltage = 0.0):
         assert isinstance(relay_channel, mfc.FANS_AO_CHANNELS), "Wrong channel!"
         assert isinstance(voltage_set_channel, mfc.FANS_AO_CHANNELS), "Wrong channel!"
         assert isinstance(additional_control_voltage, float)
@@ -371,7 +427,7 @@ class FANS_SMU:
             self._fans_controller.get_fans_output_channel(voltage_set_channel)
 
 
-    def __set_voltage_for_function_specialized(self,voltage, voltage_set_channel, relay_channel, feedback_channel, additional_channel = None, additional_control_voltage = 0.0):
+    def __set_voltage_for_function(self,voltage, voltage_set_channel, relay_channel, feedback_channel, additional_channel = None, additional_control_voltage = 0.0):
         assert isinstance(voltage, float) or isinstance(voltage, int)
         assert isinstance(voltage_set_channel, mfc.FANS_AO_CHANNELS)
         assert isinstance(relay_channel, mfc.FANS_AO_CHANNELS)
@@ -467,64 +523,8 @@ class FANS_SMU:
             output_channel.analog_write(value_to_set)
             #output_channel.ao_voltage = value_to_set 
 
-
-    def smu_set_drain_source_voltage(self,voltage):
-        self.__set_voltage_for_function(voltage, self.smu_ds_motor, self.smu_ds_relay, self.smu_drain_source_feedback)
-
-    def smu_set_gate_voltage(self,voltage):
-        self.__set_voltage_for_function(voltage, self.smu_gate_motor, self.smu_gate_relay, self.smu_gate_feedback)
-
-    def analog_read(self, channel):
-        fans_channel = self._fans_controller.get_fans_channel_by_name(channel)
-        assert isinstance(fans_channel, mfc.FANS_AI_CHANNEL)
-        return fans_channel.analog_read()
-
-    def analog_read_channels(self, channels):
-        ## to do 
-        ## improve speed here 
-
-        fans_channels = [self._fans_controller.get_fans_channel_by_name(ch) for ch in channels]
-        fans_multichannel = mfc.FANS_AI_MULTICHANNEL(*fans_channels)
-        result = fans_multichannel.analog_read()
-        converted_dict = {ch: result[fans_ch.ai_daq_input] for ch, fans_ch in zip(channels,fans_channels) }
-        return converted_dict
-
-    def read_all_test(self):
-        result = self.analog_read_channels([self.smu_drain_source_feedback,self.smu_gate_feedback,self.smu_main_feedback])
-        ds_voltage = result[self.smu_drain_source_feedback]
-        main_voltage = result[self.smu_main_feedback]
-        gate_voltage = result[self.smu_gate_feedback]
-
-        print("ds: {0}; gs: {1}; m: {2}".format(ds_voltage, gate_voltage, main_voltage))
-
-    def read_feedback_voltages(self):
-        result = self.analog_read_channels([self.smu_drain_source_feedback,self.smu_gate_feedback,self.smu_main_feedback])
-        ds_voltage = result[self.smu_drain_source_feedback]
-        main_voltage = result[self.smu_main_feedback]
-        gate_voltage = result[self.smu_gate_feedback]
-        return (ds_voltage, main_voltage, gate_voltage)
-
-
-    def read_all_parameters(self):
-        # can be a problem with an order of arguments
-        result = self.analog_read_channels([self.smu_drain_source_feedback,self.smu_gate_feedback,self.smu_main_feedback])
-        ds_voltage = result[self.smu_drain_source_feedback]
-        main_voltage = result[self.smu_main_feedback]
-        gate_voltage = result[self.smu_gate_feedback]
-
-
-        ### fix divide by zero exception
-        try:
-            current = (main_voltage-ds_voltage)/self.smu_load_resistance
-            resistance = ds_voltage/current
-        except ZeroDivisionError:
-            current = 0
-            resistance = 0
-        
-        return {"Vds":ds_voltage,"Vgs":gate_voltage,"Vmain":main_voltage, "Ids":current,"Rs":resistance}
-
-
-
+    def smu_set_drain_source_voltage(self, voltage):
+        self.__set_voltage_for_function(voltage, self.smu_ds_motor, self.smu_ds_relay, self.smu_drain_source_feedback, self._drain_source_switch_channel, self._drain_source_switch_voltage)
 
 #    def set_fans_voltage(self, voltage,channel):
 #        pass
