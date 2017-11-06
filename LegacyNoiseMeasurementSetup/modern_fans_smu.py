@@ -531,9 +531,28 @@ class FANS_SMU_Specialized(FANS_SMU):
     def smu_set_drain_source_voltage(self, voltage):
         self.__set_voltage_for_function(voltage, self.smu_ds_motor, self.smu_ds_relay, self.smu_drain_source_feedback, self._drain_source_switch_channel, self._drain_source_switch_voltage)
 
-#    def set_fans_voltage(self, voltage,channel):
-#        pass
-#    
+    
+
+    def read_all_test(self):
+        drain_source_switch_channel = self._fans_controller.get_fans_output_channel(self._drain_source_switch_channel)
+        drain_source_switch_channel.analog_write(self._drain_source_switch_voltage)
+        result = super().read_all_test() 
+        drain_source_switch_channel.analog_write(0)
+        return result
+
+    def read_feedback_voltages(self):
+        drain_source_switch_channel = self._fans_controller.get_fans_output_channel(self._drain_source_switch_channel)
+        drain_source_switch_channel.analog_write(self._drain_source_switch_voltage)
+        result = super().read_feedback_voltages()
+        drain_source_switch_channel.analog_write(0)
+        return result
+
+    def read_all_parameters(self):
+        drain_source_switch_channel = self._fans_controller.get_fans_output_channel(self._drain_source_switch_channel)
+        drain_source_switch_channel.analog_write(self._drain_source_switch_voltage)
+        result = super().read_all_parameters()
+        drain_source_switch_channel.analog_write(0)
+        return result
 
 
 if __name__ == "__main__":
