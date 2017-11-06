@@ -80,8 +80,8 @@ class FANSExperiment(eh.Experiment):
         #self.acquistion_channel = mfans.FANS_AI_CHANNELS.AI_CH_1 ### here should be 1
 
         sample_feedback_pin = mfans.FANS_AI_CHANNELS.AI_CH_6
-        gate_feedback_pin = mfans.FANS_AI_CHANNELS.AI_CH_7
-        main_feedback_pin = mfans.FANS_AI_CHANNELS.AI_CH_8
+        gate_feedback_pin = mfans.FANS_AI_CHANNELS.AI_CH_8
+        main_feedback_pin = mfans.FANS_AI_CHANNELS.AI_CH_7
         self.acquistion_channel = mfans.FANS_AI_CHANNELS.AI_CH_1 ### here should be 1
 
         drain_source_voltage_switch_channel = mfans.FANS_AO_CHANNELS.AO_CH_10
