@@ -808,15 +808,15 @@ class FANS_CONTROLLER:
         on_channel_mask = 0x88
         
         if selected_daq_channel_1 == daq.AO_CHANNEL_201 and selected_daq_channel_2 == daq.AO_CHANNEL_202:
-            selected_daq_channel_1 = selected_daq_channel_1 << 4
+            selected_output_1 = selected_output_1 << 4
             
         elif selected_daq_channel_1 == daq.AO_CHANNEL_202 and selected_daq_channel_2 == daq.AO_CHANNEL_201:
-            selected_daq_channel_2 = selected_daq_channel_2 << 4
+            selected_output_2 = selected_output_2 << 4
         
         else:
             raise AssertionError("Specified daq output channel does not exist")
        
-        digital_channel_value = selected_daq_channel_1 | selected_daq_channel_2
+        digital_channel_value = selected_output_1 | selected_output_2
         #switch on requested channels
         digital_channel_value = digital_channel_value | on_channel_mask
         

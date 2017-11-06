@@ -84,7 +84,7 @@ class FANSExperiment(eh.Experiment):
         main_feedback_pin = mfans.FANS_AI_CHANNELS.AI_CH_8
         self.acquistion_channel = mfans.FANS_AI_CHANNELS.AI_CH_1 ### here should be 1
 
-        drain_source_voltage_switch_channel = mfans.FANS_AO_CHANNELS.AO_CH_5
+        drain_source_voltage_switch_channel = mfans.FANS_AO_CHANNELS.AO_CH_10
 
         self.load_resistance = self.experiment_settings.load_resistance
         self.sample_rate = 500000
@@ -249,12 +249,11 @@ class FANSExperiment(eh.Experiment):
 
     def set_front_gate_voltage(self, voltage):
         print("setting gate voltage")
-        
-        #self.fans_smu.smu_set_gate_voltage(voltage)
+        self.fans_smu.smu_set_gate_voltage(voltage)
 
     def set_drain_source_voltage(self, voltage):
         print("setting drain voltage")
-        #self.fans_smu.smu_set_drain_source_voltage(voltage)
+        self.fans_smu.smu_set_drain_source_voltage(voltage)
 
 
 if __name__ == "__main__":
