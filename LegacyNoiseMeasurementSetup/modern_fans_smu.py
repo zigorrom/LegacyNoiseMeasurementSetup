@@ -31,7 +31,7 @@ FANS_POLARITY_CHANGE_VOLTAGE = (-5,5)
 FANS_NEGATIVE_POLARITY,FANS_POSITIVE_POLARITY = FANS_POLARITY_CHANGE_VOLTAGE
  
 X0_VOLTAGE_SET = 0.1
-POWER_VOLTAGE_SET = 3
+POWER_VOLTAGE_SET = 5#3
 
 
 def voltage_setting_function(current_value, set_value, fine_tuning = False):
@@ -474,11 +474,11 @@ class FANS_SMU_Specialized(FANS_SMU):
         while True: #continue_setting:    
             current_value = self.analog_read(feedback_channel)
             if current_value*voltage<0 and not polarity_switched:
-                set_result = self.__set_voltage_for_function(0, voltage_set_channel, relay_channel, feedback_channel)
+                set_result = self.__set_voltage_for_function(0, voltage_set_channel, relay_channel, feedback_channel,additional_channel, additional_control_voltage )
         
                 if set_result:
                     polarity = FANS_NEGATIVE_POLARITY if voltage<0 else FANS_POSITIVE_POLARITY
-                    self.__set_voltage_polarity(polarity, voltage_set_channel, relay_channel)
+                    self.__set_voltage_polarity(polarity, voltage_set_channel, relay_channel, additional_channel, additional_control_voltage)
                     polarity_switched = True
                 else:
                     return set_result
